@@ -87,9 +87,17 @@ const AuthSidebar = ({ mode, onClose, switchMode }) => {
         </p>
         <p className="text-sm mt-4 text-center">or </p>
 
-        <button type="button" className="text-blue-700 border mt-4 w-full py-2 rounded hover:bg-blue-50">
-          Work with us?
-        </button>
+        <button
+  type="button"
+  onClick={() => {
+    onClose();
+    navigate('/worker'); // Navigate to worker section
+  }}
+  className="text-blue-700 border mt-4 w-full py-2 rounded hover:bg-blue-50"
+>
+  Work with us?
+</button>
+
       </form>
     </div>
   );
