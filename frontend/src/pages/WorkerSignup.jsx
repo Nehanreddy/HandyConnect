@@ -9,6 +9,8 @@ const WorkerSignup = () => {
     address: '', city: '', state: '', pincode: '', aadhaar: ''
   });
 
+  const [profilePhoto, setProfilePhoto] = useState(null);
+  const [aadhaarCard, setAadhaarCard] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
@@ -19,11 +21,29 @@ const WorkerSignup = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!profilePhoto || !aadhaarCard) {
+      alert('Please upload both profile photo and Aadhaar card');
+      return;
+    }
+
+    const formData = new FormData();
+    for (const key in form) {
+      formData.append(key, form[key]);
+    }
+    formData.append('profile', profilePhoto);
+    formData.append('aadhaarCard', aadhaarCard);
+
     try {
-      await API.post('/worker/signup', form);
+      await API.post('/worker/signup', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
       alert("Worker signup successful!");
       navigate('/worker');
     } catch (err) {
+      console.error(err);
       alert(err.response?.data?.msg || 'Signup failed');
     }
   };
@@ -71,6 +91,16 @@ const WorkerSignup = () => {
         <input name="city" placeholder="City" value={form.city} onChange={handleChange} className="border p-2 rounded" />
         <input name="state" placeholder="State" value={form.state} onChange={handleChange} className="border p-2 rounded" />
         <input name="pincode" placeholder="Pincode" value={form.pincode} onChange={handleChange} className="col-span-2 border p-2 rounded" />
+
+        <div className="col-span-2">
+          <label className="block mb-1 text-sm font-medium">Profile Photo</label>
+          <input type="file" accept="image/*" onChange={(e) => setProfilePhoto(e.target.files[0])} className="border p-2 rounded w-full" required />
+        </div>
+
+        <div className="col-span-2">
+          <label className="block mb-1 text-sm font-medium">Aadhaar Card</label>
+          <input type="file" accept="image/*" onChange={(e) => setAadhaarCard(e.target.files[0])} className="border p-2 rounded w-full" required />
+        </div>
 
         <button type="submit" className="col-span-2 bg-blue-600 text-white py-2 rounded">Register</button>
       </form>

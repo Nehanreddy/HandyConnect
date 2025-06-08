@@ -6,24 +6,19 @@ const WorkerSchema = new mongoose.Schema({
   phone: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  address: { type: String },
-  city: { type: String },
-  state: { type: String },
-  pincode: { type: String },
-  aadhaar: { type: String, required: true }
+  address: String,
+  city: String,
+  state: String,
+  pincode: String,
+  aadhaar: { type: String, required: true },
+  profilePhoto: String,
+  aadhaarPhoto: String,
 }, { timestamps: true });
 
-// Hash password before save
 WorkerSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();
-  const salt = await bcrypt.genSalt(10);
-  this.password = await bcrypt.hash(this.password, salt);
+  this.password = await bcrypt.hash(this.password, 10);
   next();
 });
-
-// Compare password method
-WorkerSchema.methods.matchPassword = async function (enteredPassword) {
-  return await bcrypt.compare(enteredPassword, this.password);
-};
 
 module.exports = mongoose.model('Worker', WorkerSchema);

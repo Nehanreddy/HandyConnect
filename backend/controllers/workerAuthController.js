@@ -1,6 +1,8 @@
+const cloudinary = require('../config/cloudinary');
 const Worker = require('../models/Worker');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+const fs = require('fs');
 
 // Generate JWT Token
 const generateToken = (id) => {
@@ -21,22 +23,33 @@ const workerSignup = async (req, res) => {
       return res.status(400).json({ msg: 'Passwords do not match' });
     }
 
-    const existing = await Worker.findOne({ email });
-    if (existing) {
-      return res.status(400).json({ msg: 'Email already registered' });
+    if (!req.files || !req.files.profile || !req.files.aadhaarCard) {
+      return res.status(400).json({ msg: 'Both profile and Aadhaar images are required' });
     }
 
-    const worker = await Worker.create({
-      name, phone, email, password, address, city, state, pincode, aadhaar,
+    const existing = await Worker.findOne({ email });
+    if (existing) return res.status(400).json({ msg: 'Email already registered' });
+
+    const profileUpload = await cloudinary.uploader.upload(req.files.profile[0].path, {
+      folder: 'handyconnect/workers',
     });
 
-    const token = generateToken(worker._id);
+    const aadhaarUpload = await cloudinary.uploader.upload(req.files.aadhaarCard[0].path, {
+      folder: 'handyconnect/workers',
+    });
+
+    const worker = await Worker.create({
+      name, phone, email, password,
+      address, city, state, pincode, aadhaar,
+      profilePhoto: profileUpload.secure_url,
+      aadhaarPhoto: aadhaarUpload.secure_url,
+    });
 
     res.status(201).json({
       _id: worker._id,
       name: worker.name,
       email: worker.email,
-      token,
+      token: generateToken(worker._id),
     });
   } catch (err) {
     console.error(err);
