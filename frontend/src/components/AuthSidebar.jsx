@@ -11,18 +11,21 @@ const AuthSidebar = ({ mode, onClose, switchMode }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false); // Toggle visibility
+const handleLogin = async (e) => {
+  e.preventDefault();
+  try {
+    const res = await API.post('/auth/login', { email, password });
+    login({
+      ...res.data.user,
+      token: res.data.token,
+    });
+    navigate(`/home/${res.data.user.name}`);
+    onClose();
+  } catch (err) {
+    alert(err.response?.data?.msg || 'Login failed');
+  }
+};
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    try {
-      const res = await API.post('/auth/login', { email, password });
-      login(res.data.user);
-      navigate(`/home/${res.data.user.name}`);
-      onClose();
-    } catch (err) {
-      alert(err.response?.data?.msg || 'Login failed');
-    }
-  };
 
   const redirectToSignupPage = () => {
     onClose();

@@ -5,9 +5,11 @@ import Profile from '../pages/Profile';
 import ResetPassword from "../pages/ResetPassword";
 import WorkerHome from '../pages/WorkerHome';
 import WorkerSignup from '../pages/WorkerSignup';
+import ServiceBookingPage from '../pages/servicebookingpage';
 import { WorkerAuthProvider, useWorkerAuth } from '../context/WorkerAuthContext';
 import { useAuth } from '../context/AuthContext';
 import WorkerResetPassword from '../pages/WorkerResetPassword';
+
 
 const WorkerProtectedRoute = ({ element }) => {
   const { worker } = useWorkerAuth();
@@ -26,6 +28,9 @@ const AppRoutes = () => {
         <Route path="/signup" element={user ? <Navigate to={`/home/${user.name}`} /> : <Signup />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/profile" element={user ? <Profile /> : <Navigate to="/login" />} />
+         <Route path="/services/:serviceName" element={<ServiceBookingPage />} />
+
+        
 
         {/* Worker routes */}
         <Route path="/worker" element={<WorkerHome />} />
