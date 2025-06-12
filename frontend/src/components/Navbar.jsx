@@ -51,9 +51,10 @@ const Navbar = () => {
 
       {/* Center Navigation Links */}
       <div className="space-x-6 text-center hidden sm:flex">
-        <button onClick={() => scrollToSection('about')} className="text-gray-700 hover:text-blue-600 font-medium">About Us</button>
-        <button onClick={() => scrollToSection('services')} className="text-gray-700 hover:text-blue-600 font-medium">Avail a Service</button>
-        <button onClick={() => scrollToSection('contact')} className="text-gray-700 hover:text-blue-600 font-medium">Contact Us</button>
+        <button onClick={() => navigate('/about')} className="text-gray-700 hover:text-blue-600 font-medium">About Us</button>
+        <button onClick={() => navigate('/services')} className="text-gray-700 hover:text-blue-600 font-medium">Avail a Service</button>
+        <button onClick={() => navigate('/contact')} className="text-gray-700 hover:text-blue-600 font-medium">Contact Us</button>
+
       </div>
 
       {/* Right Side: City Selector + Auth */}
