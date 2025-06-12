@@ -58,28 +58,67 @@ const workerSignup = async (req, res) => {
 };
 
 // @desc    Login worker
+// controller: workerAuthController.js
 const workerLogin = async (req, res) => {
   const { email, password } = req.body;
+  try {
+    const worker = await Worker.findOne({ email });
+    if (!worker || !(await bcrypt.compare(password, worker.password))) {
+      return res.status(401).json({ msg: 'Invalid credentials' });
+    }
 
-  const worker = await Worker.findOne({ email });
-  if (worker && (await bcrypt.compare(password, worker.password))) {
-    res.json({
-      worker: {
-        _id: worker._id,
-        name: worker.name,
-        email: worker.email,
-      },
-      token: generateToken(worker._id),
+    const token = generateToken(worker._id); // <- your JWT function
+
+    return res.json({
+      _id: worker._id,
+      name: worker.name,
+      email: worker.email,
+      token, // ✅ include this
     });
-  } else {
-    res.status(401).json({ msg: 'Invalid email or password' });
+  } catch (err) {
+    console.error('Login error:', err);
+    return res.status(500).json({ msg: 'Server error during login' });
   }
 };
 
+
 // @desc    Get logged-in worker profile
 const getWorkerProfile = async (req, res) => {
-  const worker = await Worker.findById(req.user.id).select('-password');
-  res.json(worker);
+  console.log('👤 getWorkerProfile controller reached');
+  try {
+    const worker = await Worker.findById(req.user.id).select('-password');
+    if (!worker) return res.status(404).json({ msg: 'Worker not found' });
+
+    res.json(worker);
+  } catch (err) {
+    console.error("❌ Error in getWorkerProfile:", err);
+    res.status(500).json({ msg: 'Server error' });
+  }
+};
+const updateWorkerProfile = async (req, res) => {
+  try {
+    const worker = await Worker.findById(req.user.id);
+
+    if (!worker) return res.status(404).json({ msg: 'Worker not found' });
+
+    worker.name = req.body.name || worker.name;
+    worker.email = req.body.email || worker.email;
+
+    if (req.body.password) {
+      const salt = await bcrypt.genSalt(10);
+      worker.password = await bcrypt.hash(req.body.password, salt);
+    }
+
+    const updatedWorker = await worker.save();
+    res.json({
+      _id: updatedWorker._id,
+      name: updatedWorker.name,
+      email: updatedWorker.email,
+    });
+  } catch (error) {
+    console.error('Error updating profile:', error);
+    res.status(500).json({ msg: 'Server error' });
+  }
 };
 
 // @desc    Reset worker password
@@ -108,4 +147,5 @@ module.exports = {
   workerLogin,
   getWorkerProfile,
   resetWorkerPassword,
+  updateWorkerProfile
 };

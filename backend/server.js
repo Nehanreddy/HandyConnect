@@ -29,7 +29,7 @@ app.use(express.urlencoded({ extended: true })); // ✅ necessary for multer
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/worker', workerAuthRoutes);
-app.use('/api/auth', require('./routes/authRoutes'));
+
 
 
 // Server start

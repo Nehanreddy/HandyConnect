@@ -18,8 +18,9 @@ const WorkerSidebar = ({ onClose }) => {
     try {
       const res = await API.post('/worker/login', { email, password });
       console.log(res);  // Log the full response to see what is returned
-      loginWorker(res.data.worker);
-      navigate(`/worker/home/${res.data.worker.name}`);
+    loginWorker(res.data); // res.data already includes name, email, token
+navigate(`/worker/home/${res.data.name}`);
+
       onClose();
     } catch (err) {
       console.error(err);  // Log the error

@@ -15,6 +15,11 @@ const WorkerNavbar = () => {
     navigate('/');
   };
 
+  const handleProfile = () => {
+    navigate('/worker/profile');
+    setDropdownOpen(false); // Close dropdown after navigation
+  };
+
   return (
     <nav className="bg-white shadow p-4 flex justify-between items-center fixed top-0 left-0 w-full z-50">
       <button onClick={() => navigate('/')} className="focus:outline-none cursor-pointer">
@@ -27,12 +32,27 @@ const WorkerNavbar = () => {
         </button>
       ) : (
         <div className="relative">
-          <button onClick={() => setDropdownOpen(!dropdownOpen)} className="text-blue-600 font-medium">
+          <button
+            onClick={() => setDropdownOpen(!dropdownOpen)}
+            className="text-blue-600 font-medium"
+          >
             Hi, {worker.name}
           </button>
+
           {dropdownOpen && (
-            <div className="absolute right-0 mt-2 bg-white border rounded shadow w-32">
-              <button onClick={handleLogout} className="block w-full text-left px-4 py-2 hover:bg-gray-100">Logout</button>
+            <div className="absolute right-0 mt-2 bg-white border rounded shadow w-36">
+              <button
+                onClick={handleProfile}
+                className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+              >
+                Profile
+              </button>
+              <button
+                onClick={handleLogout}
+                className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+              >
+                Logout
+              </button>
             </div>
           )}
         </div>
