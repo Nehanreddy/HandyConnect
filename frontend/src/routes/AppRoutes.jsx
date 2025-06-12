@@ -29,8 +29,7 @@ const AppRoutes = () => {
         <Route path="/signup" element={user ? <Navigate to={`/home/${user.name}`} /> : <Signup />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/profile" element={user ? <Profile /> : <Navigate to="/login" />} />
-        <Route path="/worker/profile" element={<WorkerProfile />} />
-         <Route path="/services/:serviceName" element={<ServiceBookingPage />} />
+        <Route path="/services/:serviceName" element={<ServiceBookingPage />} />
 
         
 
@@ -38,6 +37,7 @@ const AppRoutes = () => {
         <Route path="/worker" element={<WorkerHome />} />
         <Route path="/worker/signup" element={<WorkerSignup />} />
         <Route path="/worker/reset-password" element={<WorkerResetPassword />} />
+        <Route path="/worker/profile" element={<WorkerProfile />} />
         <Route path="/worker/home/:name" element={<WorkerProtectedRoute element={<WorkerHome />} />} />
       </Routes>
     </WorkerAuthProvider>

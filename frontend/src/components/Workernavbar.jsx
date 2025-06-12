@@ -12,7 +12,7 @@ const WorkerNavbar = () => {
 
   const handleLogout = () => {
     logoutWorker();
-    navigate('/');
+    navigate('/worker');
   };
 
   const handleProfile = () => {

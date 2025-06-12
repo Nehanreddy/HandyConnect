@@ -1,31 +1,33 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useWorkerAuth } from '../context/WorkerAuthContext'; // ✅ Added import
 import API from '../services/api';
-import { Eye, EyeOff } from 'lucide-react'; // 👁️ icons
+import { Eye, EyeOff } from 'lucide-react';
 
 const AuthSidebar = ({ mode, onClose, switchMode }) => {
   const navigate = useNavigate();
   const { login } = useAuth();
+  const { logoutWorker } = useWorkerAuth(); // ✅ Get logoutWorker function
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false); // Toggle visibility
-const handleLogin = async (e) => {
-  e.preventDefault();
-  try {
-    const res = await API.post('/auth/login', { email, password });
-    login({
-      ...res.data.user,
-      token: res.data.token,
-    });
-    navigate(`/home/${res.data.user.name}`);
-    onClose();
-  } catch (err) {
-    alert(err.response?.data?.msg || 'Login failed');
-  }
-};
+  const [showPassword, setShowPassword] = useState(false);
 
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await API.post('/auth/login', { email, password });
+      login({
+        ...res.data.user,
+        token: res.data.token,
+      });
+      navigate(`/home/${res.data.user.name}`);
+      onClose();
+    } catch (err) {
+      alert(err.response?.data?.msg || 'Login failed');
+    }
+  };
 
   const redirectToSignupPage = () => {
     onClose();
@@ -66,17 +68,16 @@ const handleLogin = async (e) => {
           </button>
         </div>
 
-       <button
-  type="button"
-  onClick={() => {
-    onClose();
-    navigate('/reset-password');
-  }}
-  className="text-sm text-blue-500 hover:underline block text-right"
->
-  Forgot password?
-</button>
-
+        <button
+          type="button"
+          onClick={() => {
+            onClose();
+            navigate('/reset-password');
+          }}
+          className="text-sm text-blue-500 hover:underline block text-right"
+        >
+          Forgot password?
+        </button>
 
         <button type="submit" className="bg-blue-600 text-white w-full py-2 rounded">
           Login
@@ -88,19 +89,20 @@ const handleLogin = async (e) => {
             Sign up
           </button>
         </p>
-        <p className="text-sm mt-4 text-center">or </p>
+
+        <p className="text-sm mt-4 text-center">or</p>
 
         <button
-  type="button"
-  onClick={() => {
-    onClose();
-    navigate('/worker'); // Navigate to worker section
-  }}
-  className="text-blue-700 border mt-4 w-full py-2 rounded hover:bg-blue-50"
->
-  Work with us?
-</button>
-
+          type="button"
+          onClick={() => {
+            logoutWorker(); // ✅ Clear previous worker login
+            onClose();
+            navigate('/worker'); // ✅ Go to worker page
+          }}
+          className="text-blue-700 border mt-4 w-full py-2 rounded hover:bg-blue-50"
+        >
+          Work with us?
+        </button>
       </form>
     </div>
   );
