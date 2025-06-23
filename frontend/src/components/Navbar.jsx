@@ -43,23 +43,41 @@ const Navbar = () => {
   );
 
   return (
-    <nav className="bg-white shadow p-4 flex justify-between items-center fixed top-0 left-0 w-full z-50">
+    <nav className="bg-blue-50 shadow-md p-4 flex justify-between items-center fixed top-0 left-0 w-full z-50">
+      {/* Logo */}
       <button onClick={handleLogoClick} className="focus:outline-none cursor-pointer">
         <img src={logo} alt="HandyConnect Logo" className="h-10 w-auto" />
       </button>
 
-      <div className="space-x-6 text-center hidden sm:flex">
-        <button onClick={() => scrollToSection('about')} className="text-gray-700 hover:text-blue-600 font-medium">About Us</button>
-        <button onClick={() => scrollToSection('services')} className="text-gray-700 hover:text-blue-600 font-medium">Avail a Service</button>
-        <button onClick={() => scrollToSection('contact')} className="text-gray-700 hover:text-blue-600 font-medium">Contact Us</button>
+      {/* Navigation Links */}
+      <div className="space-x-6 hidden sm:flex">
+        <button
+          onClick={() => navigate('/about')}
+          className="text-blue-900 hover:text-blue-600 font-semibold transition duration-200"
+        >
+          About Us
+        </button>
+        <button
+          onClick={() => scrollToSection('services')}
+          className="text-blue-900 hover:text-blue-600 font-semibold transition duration-200"
+        >
+          Avail a Service
+        </button>
+        <button
+          onClick={() => navigate('/contact')}
+          className="text-blue-900 hover:text-blue-600 font-semibold transition duration-200"
+        >
+          Contact Us
+        </button>
       </div>
 
+      {/* Right Section: City Selector + User */}
       <div className="relative flex items-center gap-4">
         {/* City Selector */}
         <div className="relative">
           <div
             onClick={() => setCityDropdownOpen(!cityDropdownOpen)}
-            className="flex items-center border rounded px-3 py-1 cursor-pointer text-sm hover:border-blue-500"
+            className="flex items-center border border-blue-200 rounded px-3 py-1 cursor-pointer text-sm hover:border-blue-500 bg-white"
           >
             <MapPin size={16} className="mr-1 text-blue-600" />
             {selectedCity || "Select City"}
@@ -107,7 +125,7 @@ const Navbar = () => {
           />
         ) : (
           <div className="relative flex items-center gap-2 cursor-pointer">
-            <span className="text-blue-600 font-medium">Hi, {user.name?.split(' ')[0]}</span>
+            <span className="text-blue-700 font-medium">Hi, {user.name?.split(' ')[0]}</span>
             <UserCircle
               onClick={() => setDropdownOpen(!dropdownOpen)}
               className="text-blue-600 w-8 h-8 hover:text-blue-800"
@@ -138,6 +156,7 @@ const Navbar = () => {
         )}
       </div>
 
+      {/* Auth Sidebar */}
       {showSidebar && (
         <AuthSidebar
           mode={authMode}

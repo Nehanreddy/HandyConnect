@@ -6,11 +6,11 @@ import WorkerProfile from '../pages/WorkerProfile'; //
 import ResetPassword from "../pages/ResetPassword";
 import WorkerHome from '../pages/WorkerHome';
 import WorkerSignup from '../pages/WorkerSignup';
-import ServiceBookingPage from '../pages/servicebookingpage';
 import { WorkerAuthProvider, useWorkerAuth } from '../context/WorkerAuthContext';
 import { useAuth } from '../context/AuthContext';
 import WorkerResetPassword from '../pages/WorkerResetPassword';
-
+import AboutUs from '../pages/AboutUs';
+import ContactUs from '../pages/ContactUs';
 
 const WorkerProtectedRoute = ({ element }) => {
   const { worker } = useWorkerAuth();
@@ -30,7 +30,8 @@ const AppRoutes = () => {
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/profile" element={user ? <Profile /> : <Navigate to="/login" />} />
         <Route path="/worker/profile" element={<WorkerProfile />} />
-         <Route path="/services/:serviceName" element={<ServiceBookingPage />} />
+        <Route path="/about" element={<AboutUs />} />
+        <Route path="/contact" element={<ContactUs />} />
 
         
 
