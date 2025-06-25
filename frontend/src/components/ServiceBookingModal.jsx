@@ -1,14 +1,7 @@
 import { Dialog, Transition } from '@headlessui/react';
-import { Fragment, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { X, Home, User } from 'lucide-react';
-
-const mockUser = {
-  name: 'John Doe',
-  phone: '1234567890',
-  email: 'john@example.com',
-  address: '123 Main St',
-  city: 'New York'
-};
+import axios from 'axios';
 
 const cities = [
   'New York', 'Los Angeles', 'Chicago', 'Houston', 'Phoenix',
@@ -19,21 +12,55 @@ const cities = [
 const ServiceBookingModal = ({ serviceType, onClose }) => {
   const [step, setStep] = useState(1);
   const [bookingFor, setBookingFor] = useState('self');
+  const [loadingProfile, setLoadingProfile] = useState(true);
   const [formData, setFormData] = useState({
     problem: '',
     urgency: 'Normal',
-    location: mockUser.address,
-    city: mockUser.city,
+    location: '',
+    city: '',
     otherName: '',
     otherPhone: '',
     otherAddress: '',
     otherCity: '',
+    otherEmail: '',
     date: '',
     time: '',
-    name: mockUser.name,
-    phone: mockUser.phone,
-    email: mockUser.email
+    name: '',
+    phone: '',
+    email: ''
   });
+
+  const stepTitles = ['Service Details', 'Booking For', 'Schedule', 'Contact Info'];
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) return;
+
+        const res = await axios.get('/api/auth/profile', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+
+        const { name, phone, email, address, city } = res.data;
+
+        setFormData((prev) => ({
+          ...prev,
+          name: name || '',
+          phone: phone || '',
+          email: email || '',
+          location: address || '',
+          city: city || ''
+        }));
+      } catch (err) {
+        console.error("Error fetching profile:", err);
+      } finally {
+        setLoadingProfile(false);
+      }
+    };
+
+    fetchProfile();
+  }, []);
 
   const handleChange = (e) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -42,22 +69,60 @@ const ServiceBookingModal = ({ serviceType, onClose }) => {
   const handleNext = () => setStep((prev) => Math.min(prev + 1, 4));
   const handleBack = () => setStep((prev) => Math.max(prev - 1, 1));
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert("You're not logged in.");
+      return;
+    }
+
     const serviceLocation = bookingFor === 'self'
       ? { address: formData.location, city: formData.city }
       : { address: formData.otherAddress, city: formData.otherCity };
 
-    console.log('Booking Data:', {
-      ...formData,
+    const bookingData = {
+      serviceType,
+      problem: formData.problem,
+      urgency: formData.urgency,
       bookingFor,
-      serviceLocation
-    });
+      serviceLocation,
+      date: formData.date,
+      time: formData.time,
+      contactName: bookingFor === 'self' ? formData.name : formData.otherName,
+      contactPhone: bookingFor === 'self' ? formData.phone : formData.otherPhone,
+      contactEmail: bookingFor === 'self' ? formData.email : formData.otherEmail,
+    };
 
-    alert(`Service request submitted for ${formData.name}!`);
-    onClose();
+
+    console.log('🚀 Booking Data:', bookingData); // ADD THIS
+
+    // Optional: Check for missing fields
+    const missingFields = Object.entries(bookingData).filter(
+      ([key, value]) =>
+        value === '' ||
+        value === null ||
+        (typeof value === 'object' &&
+          (value.address === '' || value.city === ''))
+    );
+
+    if (missingFields.length > 0) {
+      alert(`Missing required field: ${missingFields[0][0]}`);
+      return;
+    }
+
+    try {
+      const res = await axios.post('/api/bookings', bookingData, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      alert('✅ Booking submitted!');
+      onClose();
+    } catch (err) {
+      console.error('❌ Booking Error:', err);
+      alert('Failed to submit booking.');
+    }
   };
 
-  const stepTitles = ['Service Details', 'Booking For', 'Schedule', 'Contact Info'];
+
 
   return (
     <Transition appear show={true} as={Fragment}>
@@ -86,6 +151,7 @@ const ServiceBookingModal = ({ serviceType, onClose }) => {
               leaveTo="opacity-0 scale-95"
             >
               <Dialog.Panel className="w-full max-w-lg transform overflow-hidden rounded-2xl bg-white p-6 shadow-2xl transition-all">
+                {/* Header */}
                 <div className="flex justify-between items-start mb-6">
                   <div>
                     <Dialog.Title className="text-2xl font-bold text-gray-900">Request Service</Dialog.Title>
@@ -99,21 +165,7 @@ const ServiceBookingModal = ({ serviceType, onClose }) => {
                   </button>
                 </div>
 
-                {/* Step Progress */}
-                <div className="flex items-center mb-6">
-                  {[1, 2, 3, 4].map((n) => (
-                    <div key={n} className="flex items-center flex-1">
-                      <div className={`w-8 h-8 flex items-center justify-center rounded-full text-sm font-medium ${
-                        step >= n ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg' : 'bg-gray-200 text-gray-600'
-                      }`}>
-                        {n}
-                      </div>
-                      {n < 4 && <div className={`flex-1 h-1 mx-2 rounded-full ${step > n ? 'bg-gradient-to-r from-blue-600 to-blue-700' : 'bg-gray-200'}`} />}
-                    </div>
-                  ))}
-                </div>
-
-                {/* Form Steps */}
+                {/* Steps Form */}
                 <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
                   {step === 1 && (
                     <>
@@ -157,9 +209,7 @@ const ServiceBookingModal = ({ serviceType, onClose }) => {
 
                   {step === 2 && (
                     <>
-                      <label className="block text-sm font-medium text-gray-700 mb-3">
-                        Who is this booking for?
-                      </label>
+                      <label className="block text-sm font-medium mb-2">Who is this booking for?</label>
                       <div className="grid grid-cols-2 gap-4">
                         {[
                           { value: 'self', label: 'For Myself', icon: Home },
@@ -174,9 +224,8 @@ const ServiceBookingModal = ({ serviceType, onClose }) => {
                               onChange={(e) => setBookingFor(e.target.value)}
                               className="sr-only"
                             />
-                            <div className={`p-4 rounded-xl border-2 text-center ${
-                              bookingFor === value ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'
-                            }`}>
+                            <div className={`p-4 rounded-xl border-2 text-center ${bookingFor === value ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'
+                              }`}>
                               <Icon className="h-6 w-6 mx-auto mb-2 text-blue-600" />
                               <div className="font-medium text-gray-900">{label}</div>
                               <div className="text-xs text-gray-600">
@@ -190,8 +239,8 @@ const ServiceBookingModal = ({ serviceType, onClose }) => {
                       {bookingFor === 'self' ? (
                         <div className="bg-blue-50 p-4 rounded-xl mt-4">
                           <div className="font-medium text-blue-900 mb-1">Service Location</div>
-                          <p className="text-blue-800">{mockUser.address}</p>
-                          <p className="text-blue-700 text-sm">{mockUser.city}</p>
+                          <p className="text-blue-800">{formData.location}</p>
+                          <p className="text-blue-700 text-sm">{formData.city}</p>
                         </div>
                       ) : (
                         <div className="space-y-4 mt-4">
@@ -208,6 +257,15 @@ const ServiceBookingModal = ({ serviceType, onClose }) => {
                             value={formData.otherPhone}
                             onChange={handleChange}
                             placeholder="Phone number"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-xl"
+                            required
+                          />
+                          <input
+                            name="otherEmail"
+                            value={formData.otherEmail}
+                            onChange={handleChange}
+                            placeholder="Email address"
+                            type="email"
                             className="w-full px-4 py-3 border border-gray-300 rounded-xl"
                             required
                           />
@@ -232,6 +290,7 @@ const ServiceBookingModal = ({ serviceType, onClose }) => {
                             ))}
                           </select>
                         </div>
+
                       )}
                     </>
                   )}
@@ -295,7 +354,7 @@ const ServiceBookingModal = ({ serviceType, onClose }) => {
                     </>
                   )}
 
-                  {/* Footer Buttons */}
+                  {/* Buttons */}
                   <div className="flex justify-between items-center pt-6 border-t border-gray-200">
                     {step > 1 && (
                       <button

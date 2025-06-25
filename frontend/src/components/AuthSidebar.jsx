@@ -15,10 +15,16 @@ const handleLogin = async (e) => {
   e.preventDefault();
   try {
     const res = await API.post('/auth/login', { email, password });
+
+    // ✅ Save token to localStorage
+    localStorage.setItem('token', res.data.token);
+
+    // Update AuthContext state (if needed)
     login({
       ...res.data.user,
       token: res.data.token,
     });
+
     navigate(`/home/${res.data.user.name}`);
     onClose();
   } catch (err) {

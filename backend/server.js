@@ -9,6 +9,7 @@ dotenv.config();
 // Load routes
 const authRoutes = require('./routes/authRoutes');
 const workerAuthRoutes = require('./routes/workerAuthRoutes');
+const bookingRoutes = require('./routes/bookingRoutes'); // 👈 new
 
 // Initialize app
 const app = express();
@@ -19,18 +20,18 @@ connectDB();
 
 // Middleware
 app.use(cors());
+app.use(express.json()); // For parsing application/json
+app.use(express.urlencoded({ extended: true })); // For parsing application/x-www-form-urlencoded
 
-// JSON parser (for application/json)
-app.use(express.json());
-
-// Multipart/form-data parser (required for file uploads)
-app.use(express.urlencoded({ extended: true })); // ✅ necessary for multer
-
-// Routes
+// API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/worker', workerAuthRoutes);
+app.use('/api/bookings', bookingRoutes); // 👈 new
 
-
+// Default route (optional)
+app.get('/', (req, res) => {
+  res.send('HandyConnect API is running 🚀');
+});
 
 // Server start
 app.listen(PORT, () => {
