@@ -1,6 +1,6 @@
-// pages/ServiceBookingPage.jsx
 import { useParams } from 'react-router-dom';
 import { useState } from 'react';
+import API from '../services/api';
 
 const ServiceBookingPage = () => {
   const { serviceName } = useParams();
@@ -10,15 +10,31 @@ const ServiceBookingPage = () => {
     address: '',
     issue: ''
   });
+  const [submitting, setSubmitting] = useState(false);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Booking Submitted:', { service: serviceName, ...form });
-    alert('Service booked successfully!');
+    setSubmitting(true);
+
+    try {
+      const response = await API.post('/bookings', {
+        service: serviceName,
+        ...form
+      });
+
+      console.log('✅ Booking submitted:', response.data);
+      alert('✅ Service booked successfully!');
+      setForm({ name: '', contact: '', address: '', issue: '' });
+    } catch (error) {
+      console.error('❌ Booking failed:', error.response?.data || error.message);
+      alert('❌ Failed to book service. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -73,9 +89,10 @@ const ServiceBookingPage = () => {
 
         <button
           type="submit"
-          className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition"
+          disabled={submitting}
+          className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition disabled:opacity-50"
         >
-          Book Service
+          {submitting ? 'Booking...' : 'Book Service'}
         </button>
       </form>
     </div>
