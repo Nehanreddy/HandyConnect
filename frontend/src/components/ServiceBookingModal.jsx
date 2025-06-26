@@ -3,11 +3,18 @@ import { Fragment, useEffect, useState } from 'react';
 import { X, Home, User } from 'lucide-react';
 import axios from 'axios';
 
+// You can move this list to a separate file if it's too large
 const cities = [
-  'New York', 'Los Angeles', 'Chicago', 'Houston', 'Phoenix',
-  'Philadelphia', 'San Antonio', 'San Diego', 'Dallas', 'San Jose',
-  'Austin', 'Jacksonville', 'Fort Worth', 'Columbus', 'Charlotte'
+  "Mumbai", "Delhi", "Bengaluru", "Hyderabad", "Ahmedabad", "Chennai",
+  "Kolkata", "Pune", "Jaipur", "Lucknow", "Kanpur", "Nagpur", "Bhopal",
+  "Indore", "Patna", "Ranchi", "Raipur", "Surat", "Vadodara", "Varanasi",
+  "Thane", "Nashik", "Agra", "Amritsar", "Jalandhar", "Ludhiana", "Guwahati",
+  "Shillong", "Imphal", "Aizawl", "Kohima", "Itanagar", "Gangtok", "Panaji",
+  "Bhubaneswar", "Cuttack", "Jamshedpur", "Dhanbad", "Noida", "Gurgaon",
+  "Faridabad", "Chandigarh", "Mohali", "Trivandrum", "Kochi", "Coimbatore",
+  "Madurai", "Tiruchirappalli", "Salem", "Warangal", "Vijayawada", "Visakhapatnam"
 ];
+
 
 const ServiceBookingModal = ({ serviceType, onClose }) => {
   const [step, setStep] = useState(1);
@@ -66,7 +73,49 @@ const ServiceBookingModal = ({ serviceType, onClose }) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const handleNext = () => setStep((prev) => Math.min(prev + 1, 4));
+  const validateStep = () => {
+  if (step === 1) {
+    return formData.problem.trim() !== '' && formData.urgency.trim() !== '';
+  }
+
+  if (step === 2) {
+    if (bookingFor === 'self') {
+      return formData.location.trim() !== '' && formData.city.trim() !== '';
+    } else {
+      return (
+        formData.otherName.trim() !== '' &&
+        formData.otherPhone.trim() !== '' &&
+        formData.otherEmail.trim() !== '' &&
+        formData.otherAddress.trim() !== '' &&
+        formData.otherCity.trim() !== ''
+      );
+    }
+  }
+
+  if (step === 3) {
+    return formData.date.trim() !== '' && formData.time.trim() !== '';
+  }
+
+  if (step === 4) {
+    return (
+      formData.name.trim() !== '' &&
+      formData.phone.trim() !== '' &&
+      formData.email.trim() !== ''
+    );
+  }
+
+  return true;
+};
+
+
+  const handleNext = () => {
+  if (validateStep()) {
+    setStep((prev) => Math.min(prev + 1, 4));
+  } else {
+    alert("Please fill in all required fields before continuing.");
+  }
+};
+
   const handleBack = () => setStep((prev) => Math.max(prev - 1, 1));
 
   const handleSubmit = async () => {
