@@ -1,12 +1,10 @@
 import { useState, useEffect } from "react";
-
 import API from "../services/api";
-import { useWorkerAuth } from '../context/WorkerAuthContext';
-
+import { useWorkerAuth } from "../context/WorkerAuthContext";
 import { Pen } from "lucide-react";
 
 const WorkerProfile = () => {
-   const { worker } = useWorkerAuth(); // This should contain the worker token
+  const { worker } = useWorkerAuth();
   const [form, setForm] = useState({
     name: "",
     phone: "",
@@ -20,34 +18,32 @@ const WorkerProfile = () => {
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
   const [editingField, setEditingField] = useState(null);
-useEffect(() => {
-  const fetchProfile = async () => {
-    if (!worker?.token) {
-      console.warn("⚠️ No token available");
-      setLoading(false);
-      return;
-    }
 
-    console.log("📦 Sending token:", worker.token); // Check what’s being sent
+  useEffect(() => {
+    const fetchProfile = async () => {
+      if (!worker?.token) {
+        console.warn("⚠️ No token available");
+        setLoading(false);
+        return;
+      }
 
-    try {
-      const res = await API.get("/worker/profile", {
-        headers: {
-          Authorization: `Bearer ${worker.token}`,
-        },
-      });
-      setForm(res.data);
-    } catch (err) {
-      console.error("❌ Failed to load profile:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
+      try {
+        const res = await API.get("/worker/profile", {
+          headers: {
+            Authorization: `Bearer ${worker.token}`,
+          },
+        });
+        setForm(res.data);
+      } catch (err) {
+        console.error("❌ Failed to load profile:", err);
+        alert("Failed to load profile. Please try again.");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  fetchProfile();
-}, [worker]);
-
-
+    fetchProfile();
+  }, [worker]);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -56,16 +52,17 @@ useEffect(() => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setUpdating(true);
+
     try {
       await API.put("/worker/profile", form, {
         headers: {
-         Authorization: `Bearer ${worker?.token}`
-
-        }
+          Authorization: `Bearer ${worker?.token}`,
+        },
       });
-      alert("Worker profile updated successfully!");
+      alert("✅ Worker profile updated successfully!");
       setEditingField(null);
     } catch (err) {
+      console.error("Update error:", err);
       alert(err.response?.data?.msg || "Worker profile update failed.");
     } finally {
       setUpdating(false);
@@ -76,29 +73,34 @@ useEffect(() => {
     return <div className="text-center py-20">Loading profile...</div>;
   }
 
-  const renderField = (fieldName, label, fullWidth = false, type = "text") => {
+  const renderField = (fieldName, label, fullWidth = false, type = "text", editable = true) => {
     const isEditing = editingField === fieldName;
+
     return (
       <div className={`${fullWidth ? "col-span-2" : ""} flex items-center border rounded p-2`}>
-        {isEditing ? (
+        {isEditing && editable ? (
           <input
             type={type}
             name={fieldName}
             value={form[fieldName]}
             onChange={handleChange}
             className="flex-grow border-none outline-none"
+            aria-label={label}
             autoFocus
           />
         ) : (
-          <p className="flex-grow select-text">{form[fieldName] || <i className="text-gray-400">Not set</i>}</p>
+          <p className="flex-grow select-text text-gray-800">{form[fieldName] || <i className="text-gray-400">Not set</i>}</p>
         )}
-        <button
-          type="button"
-          onClick={() => setEditingField(isEditing ? null : fieldName)}
-          className="ml-2 text-blue-600 hover:text-blue-800"
-        >
-          <Pen size={16} />
-        </button>
+        {editable && (
+          <button
+            type="button"
+            onClick={() => setEditingField(isEditing ? null : fieldName)}
+            className="ml-2 text-blue-600 hover:text-blue-800"
+            aria-label={`Edit ${label}`}
+          >
+            <Pen size={16} />
+          </button>
+        )}
       </div>
     );
   };
@@ -115,7 +117,7 @@ useEffect(() => {
         {renderField("city", "City")}
         {renderField("state", "State")}
         {renderField("pincode", "Pincode")}
-        {renderField("aadhaar", "Aadhaar Number", true)}
+        {renderField("aadhaar", "Aadhaar Number", true, "text", false)}
 
         <button
           type="submit"

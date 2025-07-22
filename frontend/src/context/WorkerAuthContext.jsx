@@ -12,24 +12,22 @@ export const WorkerAuthProvider = ({ children }) => {
         setWorker(JSON.parse(stored));
       }
     } catch (e) {
-      console.error("Error reading worker from localStorage:", e);
+      console.error("❌ Error reading worker from localStorage:", e);
     }
   }, []);
 
- const loginWorker = (workerData) => {
-  if (workerData?.token) {
-    localStorage.setItem('worker', JSON.stringify(workerData));
-    setWorker(workerData);
-  } else {
-    console.warn("⚠️ Tried to login but no token was provided.");
-  }
-};
-
-
+  const loginWorker = (workerData) => {
+    if (workerData?.token) {
+      localStorage.setItem('worker', JSON.stringify(workerData));
+      setWorker(workerData);
+    } else {
+      console.warn("⚠️ Tried to login but no token was provided:", workerData);
+    }
+  };
 
   const logoutWorker = () => {
-    setWorker(null);
     localStorage.removeItem('worker');
+    setWorker(null);
   };
 
   return (

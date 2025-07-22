@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import WorkerNavbar from '../components/WorkerNavbar';
+import WorkerNavbar from '../components/Workernavbar';
 import { useWorkerAuth } from '../context/WorkerAuthContext';
 
 const WorkerHome = () => {

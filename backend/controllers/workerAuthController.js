@@ -2,16 +2,20 @@ const cloudinary = require('../config/cloudinary');
 const Worker = require('../models/Worker');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const fs = require('fs');
 
-// Generate JWT Token
+const JWT_SECRET = process.env.JWT_SECRET;
+
+if (!JWT_SECRET) {
+  console.error("❌ JWT_SECRET not set in environment variables.");
+  process.exit(1); // Stop server if secret is missing
+}
+
+// Utility: Generate JWT Token
 const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: '30d',
-  });
+  return jwt.sign({ id }, JWT_SECRET, { expiresIn: '1h' });
 };
 
-// @desc    Register new worker
+// Worker Signup
 const workerSignup = async (req, res) => {
   try {
     const {
@@ -23,21 +27,25 @@ const workerSignup = async (req, res) => {
       return res.status(400).json({ msg: 'Passwords do not match' });
     }
 
-    if (!req.files || !req.files.profile || !req.files.aadhaarCard) {
-      return res.status(400).json({ msg: 'Both profile and Aadhaar images are required' });
+    if (!req.files?.profile || !req.files?.aadhaarCard) {
+      return res.status(400).json({ msg: 'Profile and Aadhaar images are required' });
     }
 
     const existing = await Worker.findOne({ email });
     if (existing) return res.status(400).json({ msg: 'Email already registered' });
 
+    // Upload to Cloudinary
     const profileUpload = await cloudinary.uploader.upload(req.files.profile[0].path, {
       folder: 'handyconnect/workers',
     });
-
     const aadhaarUpload = await cloudinary.uploader.upload(req.files.aadhaarCard[0].path, {
       folder: 'handyconnect/workers',
     });
 
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Save worker
     const worker = await Worker.create({
       name, phone, email, password,
       address, city, state, pincode, aadhaar,
@@ -45,60 +53,58 @@ const workerSignup = async (req, res) => {
       aadhaarPhoto: aadhaarUpload.secure_url,
     });
 
+    const token = generateToken(worker._id);
     res.status(201).json({
       _id: worker._id,
       name: worker.name,
       email: worker.email,
-      token: generateToken(worker._id),
+      token,
     });
   } catch (err) {
-    console.error(err);
+    console.error('❌ Signup Error:', err);
     res.status(500).json({ msg: 'Server error during signup' });
   }
 };
 
-// @desc    Login worker
-// controller: workerAuthController.js
+// Worker Login
 const workerLogin = async (req, res) => {
   const { email, password } = req.body;
   try {
     const worker = await Worker.findOne({ email });
     if (!worker || !(await bcrypt.compare(password, worker.password))) {
-      return res.status(401).json({ msg: 'Invalid credentials' });
+      return res.status(401).json({ msg: 'Invalid email or password' });
     }
 
-    const token = generateToken(worker._id); // <- your JWT function
-
-    return res.json({
+    const token = generateToken(worker._id);
+    res.json({
       _id: worker._id,
       name: worker.name,
       email: worker.email,
-      token, // ✅ include this
+      token,
     });
   } catch (err) {
-    console.error('Login error:', err);
-    return res.status(500).json({ msg: 'Server error during login' });
+    console.error('❌ Login error:', err);
+    res.status(500).json({ msg: 'Server error during login' });
   }
 };
 
-
-// @desc    Get logged-in worker profile
+// Get Worker Profile
 const getWorkerProfile = async (req, res) => {
-  console.log('👤 getWorkerProfile controller reached');
   try {
     const worker = await Worker.findById(req.user.id).select('-password');
     if (!worker) return res.status(404).json({ msg: 'Worker not found' });
 
     res.json(worker);
   } catch (err) {
-    console.error("❌ Error in getWorkerProfile:", err);
+    console.error('❌ Error in getWorkerProfile:', err);
     res.status(500).json({ msg: 'Server error' });
   }
 };
+
+// Update Worker Profile
 const updateWorkerProfile = async (req, res) => {
   try {
     const worker = await Worker.findById(req.user.id);
-
     if (!worker) return res.status(404).json({ msg: 'Worker not found' });
 
     worker.name = req.body.name || worker.name;
@@ -115,37 +121,35 @@ const updateWorkerProfile = async (req, res) => {
       name: updatedWorker.name,
       email: updatedWorker.email,
     });
-  } catch (error) {
-    console.error('Error updating profile:', error);
+  } catch (err) {
+    console.error('❌ Error updating profile:', err);
     res.status(500).json({ msg: 'Server error' });
   }
 };
 
-// @desc    Reset worker password
+// Reset Password
 const resetWorkerPassword = async (req, res) => {
   const { email, newPassword } = req.body;
-
   try {
     const worker = await Worker.findOne({ email });
     if (!worker) {
       return res.status(404).json({ msg: 'Worker not found' });
     }
 
-    worker.password = newPassword; // Let Mongoose hash it
+    worker.password = await bcrypt.hash(newPassword, 10);
     await worker.save();
 
     res.json({ msg: 'Worker password reset successfully' });
   } catch (err) {
-    console.error(err);
+    console.error('❌ Error resetting password:', err);
     res.status(500).json({ msg: 'Server error while resetting password' });
   }
 };
-
 
 module.exports = {
   workerSignup,
   workerLogin,
   getWorkerProfile,
+  updateWorkerProfile,
   resetWorkerPassword,
-  updateWorkerProfile
 };

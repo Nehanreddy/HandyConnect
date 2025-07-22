@@ -31,7 +31,7 @@ const WorkerResetPassword = () => {
         newPassword: form.newPassword,
       });
       alert('Password reset successfully. Please login.');
-      navigate('/');
+      navigate('/worker');
     } catch (err) {
       alert(err.response?.data?.msg || 'Failed to reset password');
     }
