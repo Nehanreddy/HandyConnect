@@ -11,6 +11,7 @@ import { useAuth } from '../context/AuthContext';
 import WorkerResetPassword from '../pages/WorkerResetPassword';
 import AboutUs from '../pages/AboutUs';
 import ContactUs from '../pages/ContactUs';
+import Login from '../pages/Login'
 
 const WorkerProtectedRoute = ({ element }) => {
   const { worker } = useWorkerAuth();
@@ -32,6 +33,7 @@ const AppRoutes = () => {
         <Route path="/worker/profile" element={<WorkerProfile />} />
         <Route path="/about" element={<AboutUs />} />
         <Route path="/contact" element={<ContactUs />} />
+        <Route path="/login" element={<Login />} />
 
         
 

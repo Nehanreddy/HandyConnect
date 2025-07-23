@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import API from "../services/api";
-import { Pen } from "lucide-react"; // pen icon
+import { Pen } from "lucide-react";
 
 const Profile = () => {
   const { user } = useAuth();
@@ -16,8 +16,6 @@ const Profile = () => {
   });
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
-
-  // Track which field is being edited, null means none
   const [editingField, setEditingField] = useState(null);
 
   useEffect(() => {
@@ -62,7 +60,7 @@ const Profile = () => {
         }
       });
       alert("Profile updated successfully!");
-      setEditingField(null); // close edit after update
+      setEditingField(null);
     } catch (err) {
       alert(err.response?.data?.msg || "Profile update failed.");
     } finally {
@@ -78,22 +76,23 @@ const Profile = () => {
     );
   }
 
-  // Helper to render each field with editable toggle
   const renderField = (fieldName, label, fullWidth = false, type = "text") => {
     const isEditing = editingField === fieldName;
     return (
-      <div className={`${fullWidth ? "col-span-2" : ""} flex items-center border rounded p-2`}>
+      <div className={`${fullWidth ? "col-span-2" : ""} flex items-center border border-gray-300 rounded-lg px-3 py-2 shadow-sm`}>
         {isEditing ? (
           <input
             type={type}
             name={fieldName}
             value={form[fieldName]}
             onChange={handleChange}
-            className="flex-grow border-none outline-none"
+            className="flex-grow border-none outline-none bg-transparent text-gray-800"
             autoFocus
           />
         ) : (
-          <p className="flex-grow select-text">{form[fieldName] || <i className="text-gray-400">Not set</i>}</p>
+          <p className="flex-grow text-gray-700">
+            {form[fieldName] || <i className="text-gray-400">Not set</i>}
+          </p>
         )}
         <button
           type="button"
@@ -108,10 +107,10 @@ const Profile = () => {
   };
 
   return (
-    <div className="max-w-xl mx-auto mt-10 p-6 border rounded shadow bg-white">
-      <h2 className="text-2xl font-bold mb-4 text-center">Edit Profile</h2>
+    <div className="max-w-2xl mx-auto mt-24 p-8 border rounded-2xl shadow-lg bg-white">
+      <h2 className="text-3xl font-semibold mb-8 text-center text-gray-800">Edit Profile</h2>
 
-      <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4">
+      <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-6">
         {renderField("name", "Full Name", true)}
         {renderField("phone", "Phone", true, "tel")}
         {renderField("email", "Email", true, "email")}
@@ -119,17 +118,17 @@ const Profile = () => {
         {renderField("city", "City")}
         {renderField("state", "State")}
         {renderField("pincode", "Pincode", true)}
-        
+
         <button
           type="submit"
           disabled={updating || editingField === null}
-          className={`col-span-2 py-2 rounded text-white ${
+          className={`col-span-2 py-3 text-lg font-medium rounded-xl transition ${
             updating || editingField === null
-              ? "bg-gray-400 cursor-not-allowed"
-              : "bg-blue-600 hover:bg-blue-700"
-          } transition`}
+              ? "bg-gray-400 cursor-not-allowed text-white"
+              : "bg-blue-600 hover:bg-blue-700 text-white"
+          }`}
         >
-          {updating ? "Updating..." : "Update"}
+          {updating ? "Updating..." : "Update Profile"}
         </button>
       </form>
     </div>

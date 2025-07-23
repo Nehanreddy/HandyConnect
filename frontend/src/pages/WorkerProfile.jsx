@@ -70,26 +70,28 @@ const WorkerProfile = () => {
   };
 
   if (loading) {
-    return <div className="text-center py-20">Loading profile...</div>;
+    return <div className="text-center py-20 text-gray-700">Loading profile...</div>;
   }
 
   const renderField = (fieldName, label, fullWidth = false, type = "text", editable = true) => {
     const isEditing = editingField === fieldName;
 
     return (
-      <div className={`${fullWidth ? "col-span-2" : ""} flex items-center border rounded p-2`}>
+      <div className={`${fullWidth ? "col-span-2" : ""} flex items-center border border-gray-300 rounded-lg px-3 py-2 shadow-sm`}>
         {isEditing && editable ? (
           <input
             type={type}
             name={fieldName}
             value={form[fieldName]}
             onChange={handleChange}
-            className="flex-grow border-none outline-none"
+            className="flex-grow border-none outline-none bg-transparent text-gray-800"
             aria-label={label}
             autoFocus
           />
         ) : (
-          <p className="flex-grow select-text text-gray-800">{form[fieldName] || <i className="text-gray-400">Not set</i>}</p>
+          <p className="flex-grow text-gray-700">
+            {form[fieldName] || <i className="text-gray-400">Not set</i>}
+          </p>
         )}
         {editable && (
           <button
@@ -106,10 +108,10 @@ const WorkerProfile = () => {
   };
 
   return (
-    <div className="max-w-xl mx-auto mt-10 p-6 border rounded shadow bg-white">
-      <h2 className="text-2xl font-bold mb-4 text-center">Worker Profile</h2>
+    <div className="max-w-2xl mx-auto mt-24 p-8 border rounded-2xl shadow-lg bg-white">
+      <h2 className="text-3xl font-semibold mb-8 text-center text-gray-800">Worker Profile</h2>
 
-      <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4">
+      <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-6">
         {renderField("name", "Full Name", true)}
         {renderField("phone", "Phone", true, "tel")}
         {renderField("email", "Email", true, "email")}
@@ -122,11 +124,11 @@ const WorkerProfile = () => {
         <button
           type="submit"
           disabled={updating || editingField === null}
-          className={`col-span-2 py-2 rounded text-white ${
+          className={`col-span-2 py-3 text-lg font-medium rounded-xl transition ${
             updating || editingField === null
-              ? "bg-gray-400 cursor-not-allowed"
-              : "bg-blue-600 hover:bg-blue-700"
-          } transition`}
+              ? "bg-gray-400 cursor-not-allowed text-white"
+              : "bg-blue-600 hover:bg-blue-700 text-white"
+          }`}
         >
           {updating ? "Updating..." : "Update Profile"}
         </button>

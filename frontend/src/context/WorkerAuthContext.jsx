@@ -3,7 +3,8 @@ import { createContext, useContext, useState, useEffect } from 'react';
 const WorkerAuthContext = createContext();
 
 export const WorkerAuthProvider = ({ children }) => {
-  const [worker, setWorker] = useState(JSON.parse(localStorage.getItem('worker')) || null);
+  const [worker, setWorker] = useState(null);
+  const [loading, setLoading] = useState(true); // ✅ add loading state
 
   useEffect(() => {
     try {
@@ -13,6 +14,8 @@ export const WorkerAuthProvider = ({ children }) => {
       }
     } catch (e) {
       console.error("❌ Error reading worker from localStorage:", e);
+    } finally {
+      setLoading(false); // ✅ render only after localStorage is checked
     }
   }, []);
 
@@ -29,6 +32,9 @@ export const WorkerAuthProvider = ({ children }) => {
     localStorage.removeItem('worker');
     setWorker(null);
   };
+
+  // ✅ Prevent rendering children until worker state is ready
+  if (loading) return null;
 
   return (
     <WorkerAuthContext.Provider value={{ worker, loginWorker, logoutWorker }}>
