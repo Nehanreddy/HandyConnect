@@ -1,27 +1,15 @@
 import { useAuth } from '../context/AuthContext';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { UserCircle, MapPin } from 'lucide-react';
+import { UserCircle } from 'lucide-react';
 import logo from '../assets/logo.png';
 import AuthSidebar from './AuthSidebar';
-
-const indianCities = [
-  "Mumbai", "Delhi", "Bengaluru", "Hyderabad", "Ahmedabad", "Chennai",
-  "Kolkata", "Pune", "Jaipur", "Lucknow", "Kanpur", "Nagpur", "Indore",
-  "Thane", "Bhopal", "Visakhapatnam", "Patna", "Vadodara", "Ghaziabad",
-  "Ludhiana", "Agra", "Nashik", "Faridabad", "Meerut", "Rajkot", "Kalyan",
-  "Vasai", "Varanasi", "Srinagar", "Aurangabad", "Dhanbad", "Amritsar",
-  "Allahabad", "Ranchi", "Howrah", "Coimbatore", "Jabalpur", "Gwalior"
-];
 
 const Navbar = () => {
   const { user, logout } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false);
   const [authMode, setAuthMode] = useState('login');
-  const [selectedCity, setSelectedCity] = useState('');
-  const [citySearch, setCitySearch] = useState('');
-  const [cityDropdownOpen, setCityDropdownOpen] = useState(false);
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -37,10 +25,6 @@ const Navbar = () => {
     const el = document.getElementById(id);
     if (el) el.scrollIntoView({ behavior: 'smooth' });
   };
-
-  const filteredCities = indianCities.filter(city =>
-    city.toLowerCase().includes(citySearch.toLowerCase())
-  );
 
   return (
     <nav className="bg-blue-50 shadow-md p-4 flex justify-between items-center fixed top-0 left-0 w-full z-50">
@@ -71,58 +55,18 @@ const Navbar = () => {
         </button>
       </div>
 
-      {/* Right Section: City Selector + User */}
+      {/* Right Section: User Auth */}
       <div className="relative flex items-center gap-4">
-        {/* City Selector */}
-        <div className="relative">
-          <div
-            onClick={() => setCityDropdownOpen(!cityDropdownOpen)}
-            className="flex items-center border border-blue-200 rounded px-3 py-1 cursor-pointer text-sm hover:border-blue-500 bg-white"
-          >
-            <MapPin size={16} className="mr-1 text-blue-600" />
-            {selectedCity || "Select City"}
-          </div>
-
-          {cityDropdownOpen && (
-            <div className="absolute right-0 mt-2 w-64 bg-white border rounded shadow z-50">
-              <input
-                type="text"
-                value={citySearch}
-                onChange={(e) => setCitySearch(e.target.value)}
-                placeholder="Search city..."
-                className="w-full px-3 py-2 border-b text-sm focus:outline-none"
-              />
-              <div className="max-h-60 overflow-y-auto">
-                {filteredCities.map((city, idx) => (
-                  <div
-                    key={idx}
-                    onClick={() => {
-                      setSelectedCity(city);
-                      setCityDropdownOpen(false);
-                      setCitySearch('');
-                    }}
-                    className="px-3 py-2 hover:bg-blue-100 cursor-pointer text-sm"
-                  >
-                    {city}
-                  </div>
-                ))}
-                {filteredCities.length === 0 && (
-                  <div className="px-3 py-2 text-sm text-gray-500">No results</div>
-                )}
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* User Auth */}
         {!user ? (
-          <UserCircle
+          <button
             onClick={() => {
               setShowSidebar(true);
               setAuthMode('login');
             }}
-            className="text-blue-600 w-8 h-8 cursor-pointer hover:text-blue-800"
-          />
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-semibold transition duration-200"
+          >
+            Get Started
+          </button>
         ) : (
           <div className="relative flex items-center gap-2 cursor-pointer">
             <span className="text-blue-700 font-medium">Hi, {user.name?.split(' ')[0]}</span>

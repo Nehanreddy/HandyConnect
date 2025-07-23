@@ -62,7 +62,8 @@ exports.login = async (req, res) => {
         address: user.address,
         city: user.city,
         state: user.state,
-        pincode: user.pincode
+        pincode: user.pincode,
+    
       }
     });
   } catch (err) {

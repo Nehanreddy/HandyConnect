@@ -3,7 +3,7 @@ import { createContext, useContext, useState, useEffect } from 'react';
 const WorkerAuthContext = createContext();
 
 export const WorkerAuthProvider = ({ children }) => {
-  const [worker, setWorker] = useState(null);
+  const [worker, setWorker] = useState(JSON.parse(localStorage.getItem('worker')) || null);
 
   useEffect(() => {
     try {
