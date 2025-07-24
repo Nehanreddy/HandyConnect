@@ -10,10 +10,12 @@ const WorkerNavbar = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false);
 
-  const handleLogout = () => {
-    logoutWorker();
-    navigate('/worker');
-  };
+ const handleLogout = () => {
+  logoutWorker();
+  navigate('/worker');
+  window.location.reload(); 
+};
+
 
   const handleProfile = () => {
     navigate('/worker/profile');

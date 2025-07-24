@@ -26,6 +26,8 @@ export const WorkerAuthProvider = ({ children }) => {
     } else {
       console.warn("⚠️ Tried to login but no token was provided:", workerData);
     }
+    window.location.reload();
+
   };
 
   const logoutWorker = () => {
