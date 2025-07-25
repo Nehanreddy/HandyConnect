@@ -80,6 +80,7 @@ const workerLogin = async (req, res) => {
       _id: worker._id,
       name: worker.name,
       email: worker.email,
+      city: worker.city,
       token,
     });
   } catch (err) {

@@ -7,52 +7,26 @@ const WorkerHome = () => {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchRequests = () => {
-    setLoading(true);
-    setTimeout(() => {
-      const dummyRequests = [
-        {
-          _id: '1',
-          serviceType: 'Plumber',
-          problem: 'Leaking bathroom pipe',
-          urgency: 'Urgent',
-          serviceLocation: { address: '123 MG Road', city: worker?.city || 'Hyderabad' },
-          date: '2025-06-28',
-          time: 'morning',
-          contactName: 'Ravi Kumar',
-          contactPhone: '9876543210',
-          status: 'pending',
-        },
-        {
-          _id: '2',
-          serviceType: 'Electrician',
-          problem: 'Power outage in living room',
-          urgency: 'Emergency',
-          serviceLocation: { address: '45 Jubilee Hills', city: worker?.city || 'Hyderabad' },
-          date: '2025-06-29',
-          time: 'evening',
-          contactName: 'Anjali Singh',
-          contactPhone: '9123456789',
-          status: 'pending',
-        },
-        {
-          _id: '3',
-          serviceType: 'Painter',
-          problem: 'Need a room painted before Sunday',
-          urgency: 'Normal',
-          serviceLocation: { address: '7 Banjara Hills', city: worker?.city || 'Hyderabad' },
-          date: '2025-06-30',
-          time: 'afternoon',
-          contactName: 'Mahesh Rao',
-          contactPhone: '9988776655',
-          status: 'pending',
-        },
-      ];
+  const fetchRequests = async () => {
+  if (!worker?.city) return;
 
-      setRequests(dummyRequests);
-      setLoading(false);
-    }, 1000);
-  };
+  setLoading(true);
+  try {
+    const res = await fetch(`/api/bookings/by-city?city=${encodeURIComponent(worker.city)}`);
+
+    if (!res.ok) throw new Error('Failed to fetch');
+    const data = await res.json();
+    setRequests(data);
+  } catch (err) {
+    console.error('Error fetching bookings:', err);
+    setRequests([]); // fallback empty
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+
 
   const handleAction = (bookingId, action) => {
     const updatedRequests = requests.map((req) =>
