@@ -75,6 +75,44 @@ const WorkerHome = () => {
     }
   };
 
+  // 🆕 NEW: Handle Mark Complete function
+  const handleMarkComplete = async (bookingId) => {
+    if (!worker?.token) {
+      alert('Authentication required. Please login again.');
+      return;
+    }
+
+    if (!confirm('Are you sure you want to mark this job as completed?')) {
+      return;
+    }
+
+    try {
+      const res = await fetch(`/api/bookings/${bookingId}/complete`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${worker.token}`,
+        },
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.msg || 'Failed to mark as completed');
+      }
+
+      // Update local state
+      const updatedRequests = requests.map((req) =>
+        req._id === bookingId ? { ...req, status: 'completed' } : req
+      );
+      setRequests(updatedRequests);
+
+      alert('✅ Job marked as completed! The user can now rate your service.');
+    } catch (err) {
+      console.error('Error marking job complete:', err);
+      alert(`Failed to mark job as completed: ${err.message}`);
+    }
+  };
+
   useEffect(() => {
     fetchRequests();
   }, [worker]);
@@ -142,6 +180,7 @@ const WorkerHome = () => {
                   <strong>Contact:</strong> {req.contactName} ({req.contactPhone})
                 </p>
 
+                {/* 🔄 UPDATED: Enhanced status rendering with Mark Complete functionality */}
                 {req.status === 'pending' ? (
                   <div className="flex gap-4 mt-4">
                     <button
@@ -157,22 +196,43 @@ const WorkerHome = () => {
                       Reject
                     </button>
                   </div>
+                ) : req.status === 'accepted' ? (
+                  // 🆕 NEW: Mark Complete button for accepted jobs
+                  <div className="mt-4">
+                    <button
+                      onClick={() => handleMarkComplete(req._id)}
+                      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition mr-4"
+                    >
+                      ✅ Mark as Completed
+                    </button>
+                    <div className="text-sm text-green-600 mt-2">
+                      ✅ You accepted this request. Complete the work and mark it as done.
+                    </div>
+                  </div>
                 ) : (
                   <div className="mt-4 text-sm font-medium text-gray-700">
                     Status:{' '}
                     <span
                       className={`inline-block px-3 py-1 rounded-full ${
-                        req.status === 'accepted'
-                          ? 'bg-green-100 text-green-700'
-                          : 'bg-red-100 text-red-700'
+                        req.status === 'completed'
+                          ? 'bg-blue-100 text-blue-700'
+                          : req.status === 'rated'
+                          ? 'bg-purple-100 text-purple-700'
+                          : req.status === 'rejected'
+                          ? 'bg-red-100 text-red-700'
+                          : 'bg-gray-100 text-gray-700'
                       }`}
                     >
                       {req.status}
                     </span>
-                    {/* 🆕 ADD: Show acceptance info if worker accepted */}
-                    {req.status === 'accepted' && (
-                      <p className="text-xs text-green-600 mt-1">
-                        ✅ You accepted this request. The user has been notified with your contact details.
+                    {req.status === 'completed' && (
+                      <p className="text-xs text-blue-600 mt-1">
+                        ✅ Work completed! Waiting for user rating.
+                      </p>
+                    )}
+                    {req.status === 'rated' && (
+                      <p className="text-xs text-purple-600 mt-1">
+                        ⭐ User has rated your service! Check your dashboard.
                       </p>
                     )}
                   </div>

@@ -6,7 +6,8 @@ import WorkerProfile from '../pages/WorkerProfile';
 import ResetPassword from "../pages/ResetPassword";
 import WorkerHome from '../pages/WorkerHome';
 import WorkerSignup from '../pages/WorkerSignup';
-import MyServices from '../pages/MyServices'; // 🆕 ADD THIS IMPORT
+import MyServices from '../pages/MyServices';
+import WorkerDashboard from '../pages/WorkerDashboard'; // 🆕 ADD: Import WorkerDashboard
 import { WorkerAuthProvider, useWorkerAuth } from '../context/WorkerAuthContext';
 import { useAuth } from '../context/AuthContext';
 import WorkerResetPassword from '../pages/WorkerResetPassword';
@@ -31,10 +32,7 @@ const AppRoutes = () => {
         <Route path="/signup" element={user ? <Navigate to={`/home/${user.name}`} /> : <Signup />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/profile" element={user ? <Profile /> : <Navigate to="/login" />} />
-        
-        {/* 🆕 ADD: My Services Route */}
         <Route path="/my-services" element={user ? <MyServices /> : <Navigate to="/login" />} />
-        
         <Route path="/worker/profile" element={<WorkerProfile />} />
         <Route path="/about" element={<AboutUs />} />
         <Route path="/contact" element={<ContactUs />} />
@@ -45,6 +43,9 @@ const AppRoutes = () => {
         <Route path="/worker/signup" element={<WorkerSignup />} />
         <Route path="/worker/reset-password" element={<WorkerResetPassword />} />
         <Route path="/worker/home/:name" element={<WorkerProtectedRoute element={<WorkerHome />} />} />
+        
+        {/* 🆕 ADD: Worker Dashboard Route */}
+        <Route path="/worker/dashboard" element={<WorkerProtectedRoute element={<WorkerDashboard />} />} />
       </Routes>
     </WorkerAuthProvider>
   );

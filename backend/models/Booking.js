@@ -21,16 +21,22 @@ const bookingSchema = new mongoose.Schema({
   contactEmail: { type: String, required: true },
   status: {
     type: String,
-    enum: ['pending', 'accepted', 'rejected', 'completed'],
+    enum: ['pending', 'accepted', 'rejected', 'completed', 'rated'], // 🆕 Added 'completed' and 'rated'
     default: 'pending',
   },
-  // 🆕 ADD THIS FIELD
   acceptedBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Worker',
     default: null,
   },
-  acceptedAt: { type: Date, default: null }, // 🆕 ADD THIS TOO
+  acceptedAt: { type: Date, default: null },
+  
+  // 🆕 NEW FIELDS FOR COMPLETION AND RATING
+  completedAt: { type: Date, default: null },
+  rating: { type: Number, min: 1, max: 5, default: null },
+  review: { type: String, default: null },
+  ratedAt: { type: Date, default: null },
+  
   createdAt: { type: Date, default: Date.now }
 });
 
