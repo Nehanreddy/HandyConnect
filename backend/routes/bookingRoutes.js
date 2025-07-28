@@ -4,7 +4,7 @@ const authMiddleware = require('../middleware/authMiddleware');
 const {
   createBooking,
   getMyBookings,
-  getBookingsByCity,
+  getBookingsByCityAndService,
   updateBookingStatus,
 } = require('../controllers/bookingController');
 
@@ -15,7 +15,7 @@ router.post('/', authMiddleware, createBooking);
 router.get('/my', authMiddleware, getMyBookings);
 
 // Get bookings by city (for workers)
-router.get('/by-city', getBookingsByCity); // optionally add worker auth
+router.get('/by-city', getBookingsByCityAndService); // optionally add worker auth
 
 // Update booking status (accepted/rejected)
 router.put('/:id/status', updateBookingStatus); // optionally add worker auth

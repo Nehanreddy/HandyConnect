@@ -8,31 +8,49 @@ const WorkerHome = () => {
   const [loading, setLoading] = useState(true);
 
   const fetchRequests = async () => {
-  if (!worker?.city) return;
+    // Check if both city and serviceType are available
+    if (!worker?.city || !worker?.serviceType) return;
 
-  setLoading(true);
-  try {
-    const res = await fetch(`/api/bookings/by-city?city=${encodeURIComponent(worker.city)}`);
+    setLoading(true);
+    try {
+      // Updated API call with both city and serviceType parameters
+      const res = await fetch(
+        `/api/bookings/by-city?city=${encodeURIComponent(worker.city)}&serviceType=${encodeURIComponent(worker.serviceType)}`
+      );
 
-    if (!res.ok) throw new Error('Failed to fetch');
-    const data = await res.json();
-    setRequests(data);
-  } catch (err) {
-    console.error('Error fetching bookings:', err);
-    setRequests([]); // fallback empty
-  } finally {
-    setLoading(false);
-  }
-};
+      if (!res.ok) throw new Error('Failed to fetch');
+      const data = await res.json();
+      setRequests(data);
+    } catch (err) {
+      console.error('Error fetching bookings:', err);
+      setRequests([]); // fallback empty
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  const handleAction = async (bookingId, action) => {
+    try {
+      // Make API call to update booking status
+      const res = await fetch(`/api/bookings/${bookingId}/status`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status: action }),
+      });
 
+      if (!res.ok) throw new Error('Failed to update status');
 
-
-  const handleAction = (bookingId, action) => {
-    const updatedRequests = requests.map((req) =>
-      req._id === bookingId ? { ...req, status: action } : req
-    );
-    setRequests(updatedRequests);
+      // Update local state only if API call succeeds
+      const updatedRequests = requests.map((req) =>
+        req._id === bookingId ? { ...req, status: action } : req
+      );
+      setRequests(updatedRequests);
+    } catch (err) {
+      console.error('Error updating booking status:', err);
+      // Optionally show error message to user
+    }
   };
 
   useEffect(() => {
@@ -44,14 +62,25 @@ const WorkerHome = () => {
       <WorkerNavbar />
       <div className="max-w-5xl mx-auto p-6 pt-24">
         <h1 className="text-3xl font-bold mb-4 text-center">
-          Service Requests in {worker?.city || 'your city'}
+          {worker?.serviceType} Requests in {worker?.city || 'your city'}
         </h1>
+        
+        {/* Display worker info */}
+        {worker && (
+          <div className="text-center mb-6 p-4 bg-blue-50 rounded-lg">
+            <p className="text-blue-700">
+              Showing <strong>{worker.serviceType}</strong> requests for <strong>{worker.city}</strong>
+            </p>
+          </div>
+        )}
+
         {loading ? (
           <p className="text-center text-gray-600">Loading...</p>
         ) : requests.length === 0 ? (
-          <p className="text-center text-gray-500">
-            No service requests in your city right now.
-          </p>
+          <div className="text-center text-gray-500">
+            <p>No {worker?.serviceType} requests in {worker?.city} right now.</p>
+            <p className="text-sm mt-2">Check back later for new service requests!</p>
+          </div>
         ) : (
           <div className="grid gap-6">
             {requests.map((req) => (

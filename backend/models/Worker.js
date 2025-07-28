@@ -13,7 +13,9 @@ const WorkerSchema = new mongoose.Schema({
   aadhaar: { type: String, required: true },
   profilePhoto: String,
   aadhaarPhoto: String,
+  serviceType: { type: String, required: true }, // 🔹 Added
 }, { timestamps: true });
+
 
 WorkerSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();

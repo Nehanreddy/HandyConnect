@@ -64,25 +64,36 @@ exports.getMyBookings = async (req, res) => {
 };
 
 
-exports.getBookingsByCity = async (req, res) => {
-  const { city } = req.query;
+exports.getBookingsByCityAndService = async (req, res) => {
+  const { city, serviceType } = req.query;
 
-  if (!city) {
-    return res.status(400).json({ msg: 'City is required' });
+  // Build filter object dynamically
+  const filter = {
+    status: 'pending',
+  };
+
+  if (city) {
+    filter['serviceLocation.city'] = { $regex: new RegExp(`^${city.trim()}$`, 'i') };
+  }
+
+  if (serviceType) {
+    filter.serviceType = { $regex: new RegExp(`^${serviceType.trim()}$`, 'i') };
+  }
+
+  if (!city || !serviceType) {
+    return res.status(400).json({ msg: 'Both city and service type are required' });
   }
 
   try {
-    const bookings = await Booking.find({
-      'serviceLocation.city': { $regex: new RegExp(`^${city.trim()}$`, 'i') },
-      status: 'pending',
-    }).sort({ createdAt: -1 });
+    const bookings = await Booking.find(filter).sort({ createdAt: -1 });
 
     res.status(200).json(bookings);
   } catch (err) {
-    console.error('❌ Error fetching city bookings:', err);
+    console.error('❌ Error fetching filtered bookings:', err);
     res.status(500).json({ msg: 'Failed to fetch bookings' });
   }
 };
+
 
 
 // @desc   Update booking status

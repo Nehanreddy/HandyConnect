@@ -26,10 +26,10 @@ const HomePage = () => {
   }, []);
 
   const services = [
-    { label: 'Plumbing', description: 'Fix leaks and pipe issues', icon: <WrenchIcon className="h-8 w-8 text-cyan-400" /> },
+    { label: 'Plumber', description: 'Fix leaks and pipe issues', icon: <WrenchIcon className="h-8 w-8 text-cyan-400" /> },
     { label: 'Electrical', description: 'Safe and efficient fixes', icon: <BoltIcon className="h-8 w-8 text-yellow-400" /> },
-    { label: 'Carpentry', description: 'Furniture & fittings', icon: <WrenchScrewdriverIcon className="h-8 w-8 text-orange-400" /> },
-    { label: 'Painting', description: 'Interior & exterior painting', icon: <PaintBrushIcon className="h-8 w-8 text-green-400" /> },
+    { label: 'Carpenter', description: 'Furniture & fittings', icon: <WrenchScrewdriverIcon className="h-8 w-8 text-orange-400" /> },
+    { label: 'Painter', description: 'Interior & exterior painting', icon: <PaintBrushIcon className="h-8 w-8 text-green-400" /> },
     { label: 'Appliance Repair', description: 'Microwaves, fridges, more', icon: <Cog6ToothIcon className="h-8 w-8 text-purple-400" /> },
     { label: 'Handyman', description: 'All-around fixes & installs', icon: <SparklesIcon className="h-8 w-8 text-pink-400" /> },
     { label: 'Verified Pros', description: 'Trusted professionals', icon: <ShieldCheckIcon className="h-8 w-8 text-emerald-400" /> },

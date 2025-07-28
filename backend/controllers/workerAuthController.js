@@ -20,7 +20,7 @@ const workerSignup = async (req, res) => {
   try {
     const {
       name, phone, email, password, confirmPassword,
-      address, city, state, pincode, aadhaar
+      address, city, state, pincode, aadhaar,serviceType
     } = req.body;
 
     if (password !== confirmPassword) {
@@ -51,6 +51,7 @@ const workerSignup = async (req, res) => {
       address, city, state, pincode, aadhaar,
       profilePhoto: profileUpload.secure_url,
       aadhaarPhoto: aadhaarUpload.secure_url,
+      serviceType,
     });
 
     const token = generateToken(worker._id);
@@ -81,6 +82,7 @@ const workerLogin = async (req, res) => {
       name: worker.name,
       email: worker.email,
       city: worker.city,
+      serviceType: worker.serviceType,
       token,
     });
   } catch (err) {

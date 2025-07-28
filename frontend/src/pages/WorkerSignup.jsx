@@ -6,7 +6,7 @@ import { Eye, EyeOff } from 'lucide-react';
 const WorkerSignup = () => {
   const [form, setForm] = useState({
     name: '', phone: '', email: '', password: '', confirmPassword: '',
-    address: '', city: '', state: '', pincode: '', aadhaar: ''
+    address: '', city: '', state: '', pincode: '', aadhaar: '', serviceType: ''
   });
 
   const [profilePhoto, setProfilePhoto] = useState(null);
@@ -24,6 +24,11 @@ const WorkerSignup = () => {
 
     if (!profilePhoto || !aadhaarCard) {
       alert('Please upload both profile photo and Aadhaar card');
+      return;
+    }
+
+    if (!form.serviceType) {
+      alert('Please select your service type');
       return;
     }
 
@@ -91,6 +96,21 @@ const WorkerSignup = () => {
         <input name="city" placeholder="City" value={form.city} onChange={handleChange} className="border p-2 rounded" />
         <input name="state" placeholder="State" value={form.state} onChange={handleChange} className="border p-2 rounded" />
         <input name="pincode" placeholder="Pincode" value={form.pincode} onChange={handleChange} className="col-span-2 border p-2 rounded" />
+
+        <select
+          name="serviceType"
+          value={form.serviceType}
+          onChange={handleChange}
+          className="col-span-2 border p-2 rounded"
+          required
+        >
+          <option value="">Select Service Type</option>
+          <option value="Electrician">Electrician</option>
+          <option value="Plumber">Plumber</option>
+          <option value="Carpenter">Carpenter</option>
+          <option value="Cleaning">Painter</option>
+          <option value="AC Repair">AC Repair</option>
+        </select>
 
         <div className="col-span-2">
           <label className="block mb-1 text-sm font-medium">Profile Photo</label>
