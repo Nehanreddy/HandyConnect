@@ -18,6 +18,15 @@ const Navbar = () => {
     navigate('/');
   };
 
+  const handleAvailService = () => {
+  if (window.location.pathname === '/') {
+    scrollToSection('services');
+  } else {
+    navigate('/', { state: { scrollTo: 'services' } });
+  }
+};
+
+
   const scrollToSection = (id) => {
     const el = document.getElementById(id);
     if (el) el.scrollIntoView({ behavior: 'smooth' });
@@ -39,11 +48,12 @@ const Navbar = () => {
           About Us
         </button>
         <button
-          onClick={() => scrollToSection('services')}
-          className="text-gray-200 hover:text-indigo-400 font-semibold transition duration-200"
-        >
-          Avail a Service
-        </button>
+  onClick={handleAvailService}
+  className="text-gray-200 hover:text-indigo-400 font-semibold transition duration-200"
+>
+  Avail a Service
+</button>
+
         <button
           onClick={() => navigate('/contact')}
           className="text-gray-200 hover:text-indigo-400 font-semibold transition duration-200"

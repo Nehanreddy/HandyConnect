@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
@@ -18,12 +18,28 @@ import ServiceBookingModal from '../components/ServiceBookingModal';
 
 const HomePage = () => {
   const navigate = useNavigate();
+  const location = useLocation(); // <-- get location to read navigation state
   const [selectedService, setSelectedService] = useState(null);
   const [showModal, setShowModal] = useState(false);
 
+  // Initialize AOS animation
   useEffect(() => {
     AOS.init({ duration: 800, once: true });
   }, []);
+
+  // Check if we need to scroll to a section due to navigation (e.g., from Navbar)
+  useEffect(() => {
+    if (location.state?.scrollTo) {
+      // Slight delay allows section to be present/rendered in DOM
+      setTimeout(() => {
+        const el = document.getElementById(location.state.scrollTo);
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+
+      // Reset the state so it doesn't try to scroll again on reload
+      window.history.replaceState({}, document.title);
+    }
+  }, [location]);
 
   const services = [
     { label: 'Plumber', description: 'Fix leaks and pipe issues', icon: <WrenchIcon className="h-8 w-8 text-cyan-400" /> },
@@ -31,9 +47,7 @@ const HomePage = () => {
     { label: 'Carpenter', description: 'Furniture & fittings', icon: <WrenchScrewdriverIcon className="h-8 w-8 text-orange-400" /> },
     { label: 'Painter', description: 'Interior & exterior painting', icon: <PaintBrushIcon className="h-8 w-8 text-green-400" /> },
     { label: 'Appliance Repair', description: 'Microwaves, fridges, more', icon: <Cog6ToothIcon className="h-8 w-8 text-purple-400" /> },
-    { label: 'Handyman', description: 'All-around fixes & installs', icon: <SparklesIcon className="h-8 w-8 text-pink-400" /> },
-    { label: 'Verified Pros', description: 'Trusted professionals', icon: <ShieldCheckIcon className="h-8 w-8 text-emerald-400" /> },
-    { label: 'Quick Delivery', description: 'Fast and on-time service', icon: <TruckIcon className="h-8 w-8 text-indigo-400" /> },
+    
   ];
 
   const reviews = [
@@ -84,30 +98,31 @@ const HomePage = () => {
           />
         </div>
       </section>
+<section id="services" className="py-20 px-6">
+  <h2 className="text-4xl font-bold text-center text-cyan-400 mb-16" data-aos="fade-up">
+    Choose Your Service
+  </h2>
+  <div
+    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12 max-w-5xl mx-auto justify-items-center"
+  >
+    {services.map(({ label, description, icon }, idx) => (
+      <div
+        key={label}
+        data-aos={idx % 2 === 0 ? 'fade-right' : 'fade-left'}
+        className="bg-gray-800 rounded-2xl p-6 text-center shadow-lg hover:shadow-xl hover:scale-105 transition cursor-pointer w-full max-w-xs"
+        onClick={() => {
+          setSelectedService(label);
+          setShowModal(true);
+        }}
+      >
+        <div className="flex justify-center mb-4">{icon}</div>
+        <h3 className="text-xl font-bold text-cyan-300 mb-2">{label}</h3>
+        <p className="text-gray-400">{description}</p>
+      </div>
+    ))}
+  </div>
+</section>
 
-      {/* Services Section */}
-      <section id="services" className="py-20 px-6">
-        <h2 className="text-4xl font-bold text-center text-cyan-400 mb-16" data-aos="fade-up">
-          Choose Your Service
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 max-w-7xl mx-auto">
-          {services.map(({ label, description, icon }, idx) => (
-            <div
-              key={label}
-              data-aos={idx % 2 === 0 ? 'fade-right' : 'fade-left'}
-              className="bg-gray-800 rounded-2xl p-6 text-center shadow-lg hover:shadow-xl hover:scale-105 transition cursor-pointer"
-              onClick={() => {
-                setSelectedService(label);
-                setShowModal(true);
-              }}
-            >
-              <div className="flex justify-center mb-4">{icon}</div>
-              <h3 className="text-xl font-bold text-cyan-300 mb-2">{label}</h3>
-              <p className="text-gray-400">{description}</p>
-            </div>
-          ))}
-        </div>
-      </section>
 
       {/* Review Section */}
       <section className="bg-gray-900 py-20 px-6">
