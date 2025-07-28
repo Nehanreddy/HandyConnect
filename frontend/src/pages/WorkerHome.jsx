@@ -30,26 +30,48 @@ const WorkerHome = () => {
   };
 
   const handleAction = async (bookingId, action) => {
+    // 🆕 CHECK: Make sure worker has token
+    if (!worker?.token) {
+      console.error('No worker token found');
+      alert('Authentication required. Please login again.');
+      return;
+    }
+
     try {
-      // Make API call to update booking status
+      // 🔄 UPDATED: Add Authorization header for worker authentication
       const res = await fetch(`/api/bookings/${bookingId}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${worker.token}`, // 🆕 ADD: Worker token
         },
         body: JSON.stringify({ status: action }),
       });
 
-      if (!res.ok) throw new Error('Failed to update status');
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || 'Failed to update status');
+      }
 
-      // Update local state only if API call succeeds
+      const responseData = await res.json();
+      console.log('✅ Booking status updated:', responseData);
+
+      // 🔄 UPDATED: Update local state and show success message
       const updatedRequests = requests.map((req) =>
         req._id === bookingId ? { ...req, status: action } : req
       );
       setRequests(updatedRequests);
+
+      // 🆕 ADD: Success feedback
+      if (action === 'accepted') {
+        alert('✅ Service request accepted! The user will be notified.');
+      } else {
+        alert('❌ Service request rejected.');
+      }
+
     } catch (err) {
       console.error('Error updating booking status:', err);
-      // Optionally show error message to user
+      alert(`Failed to ${action} the request: ${err.message}`);
     }
   };
 
@@ -70,6 +92,10 @@ const WorkerHome = () => {
           <div className="text-center mb-6 p-4 bg-blue-50 rounded-lg">
             <p className="text-blue-700">
               Showing <strong>{worker.serviceType}</strong> requests for <strong>{worker.city}</strong>
+            </p>
+            {/* 🆕 ADD: Worker authentication status */}
+            <p className="text-xs text-blue-600 mt-1">
+              Logged in as: <strong>{worker.name}</strong>
             </p>
           </div>
         )}
@@ -143,6 +169,12 @@ const WorkerHome = () => {
                     >
                       {req.status}
                     </span>
+                    {/* 🆕 ADD: Show acceptance info if worker accepted */}
+                    {req.status === 'accepted' && (
+                      <p className="text-xs text-green-600 mt-1">
+                        ✅ You accepted this request. The user has been notified with your contact details.
+                      </p>
+                    )}
                   </div>
                 )}
               </div>

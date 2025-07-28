@@ -24,7 +24,11 @@ const protectWorker = async (req, res, next) => {
       return res.status(401).json({ message: 'Invalid token, user not found' });
     }
 
-    req.user = worker;
+    // 🆕 SET BOTH: This ensures compatibility with all controllers
+    req.worker = worker;  // For booking controller (accept/reject)
+    req.user = worker;    // For worker controller (profile)
+    
+    console.log('✅ Worker authenticated:', worker.name);
     next();
   } catch (error) {
     console.error('❌ Token verification error:', error.message);

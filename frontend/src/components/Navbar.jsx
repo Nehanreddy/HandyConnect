@@ -19,13 +19,12 @@ const Navbar = () => {
   };
 
   const handleAvailService = () => {
-  if (window.location.pathname === '/') {
-    scrollToSection('services');
-  } else {
-    navigate('/', { state: { scrollTo: 'services' } });
-  }
-};
-
+    if (window.location.pathname === '/') {
+      scrollToSection('services');
+    } else {
+      navigate('/', { state: { scrollTo: 'services' } });
+    }
+  };
 
   const scrollToSection = (id) => {
     const el = document.getElementById(id);
@@ -48,11 +47,21 @@ const Navbar = () => {
           About Us
         </button>
         <button
-  onClick={handleAvailService}
-  className="text-gray-200 hover:text-indigo-400 font-semibold transition duration-200"
->
-  Avail a Service
-</button>
+          onClick={handleAvailService}
+          className="text-gray-200 hover:text-indigo-400 font-semibold transition duration-200"
+        >
+          Avail a Service
+        </button>
+        
+        {/* 🆕 ADD: My Services Link (only show when user is logged in) */}
+        {user && (
+          <button
+            onClick={() => navigate('/my-services')}
+            className="text-gray-200 hover:text-indigo-400 font-semibold transition duration-200"
+          >
+            My Services
+          </button>
+        )}
 
         <button
           onClick={() => navigate('/contact')}
@@ -79,7 +88,7 @@ const Navbar = () => {
               className="text-indigo-400 w-8 h-8 hover:text-indigo-300"
             />
             {dropdownOpen && (
-              <div className="absolute right-0 mt-10 bg-white text-gray-800 border rounded shadow w-32 z-50">
+              <div className="absolute right-0 mt-10 bg-white text-gray-800 border rounded shadow w-40 z-50">
                 <button
                   onClick={() => {
                     setDropdownOpen(false);
@@ -88,6 +97,16 @@ const Navbar = () => {
                   className="block w-full text-left px-4 py-2 hover:bg-gray-100"
                 >
                   Profile
+                </button>
+                {/* 🆕 ADD: My Services in dropdown too */}
+                <button
+                  onClick={() => {
+                    setDropdownOpen(false);
+                    navigate('/my-services');
+                  }}
+                  className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                >
+                  My Services
                 </button>
                 <button
                   onClick={() => {

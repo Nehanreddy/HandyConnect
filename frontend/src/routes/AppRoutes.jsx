@@ -2,10 +2,11 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import Home from '../pages/Home';
 import Signup from '../services/Signup';
 import Profile from '../pages/Profile';
-import WorkerProfile from '../pages/WorkerProfile'; // 
+import WorkerProfile from '../pages/WorkerProfile';
 import ResetPassword from "../pages/ResetPassword";
 import WorkerHome from '../pages/WorkerHome';
 import WorkerSignup from '../pages/WorkerSignup';
+import MyServices from '../pages/MyServices'; // 🆕 ADD THIS IMPORT
 import { WorkerAuthProvider, useWorkerAuth } from '../context/WorkerAuthContext';
 import { useAuth } from '../context/AuthContext';
 import WorkerResetPassword from '../pages/WorkerResetPassword';
@@ -30,12 +31,14 @@ const AppRoutes = () => {
         <Route path="/signup" element={user ? <Navigate to={`/home/${user.name}`} /> : <Signup />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/profile" element={user ? <Profile /> : <Navigate to="/login" />} />
+        
+        {/* 🆕 ADD: My Services Route */}
+        <Route path="/my-services" element={user ? <MyServices /> : <Navigate to="/login" />} />
+        
         <Route path="/worker/profile" element={<WorkerProfile />} />
         <Route path="/about" element={<AboutUs />} />
         <Route path="/contact" element={<ContactUs />} />
         <Route path="/login" element={<Login />} />
-
-        
 
         {/* Worker routes */}
         <Route path="/worker" element={<WorkerHome />} />

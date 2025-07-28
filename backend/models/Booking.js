@@ -21,11 +21,17 @@ const bookingSchema = new mongoose.Schema({
   contactEmail: { type: String, required: true },
   status: {
     type: String,
-    enum: ['pending', 'accepted', 'rejected'],
+    enum: ['pending', 'accepted', 'rejected', 'completed'],
     default: 'pending',
   },
+  // 🆕 ADD THIS FIELD
+  acceptedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Worker',
+    default: null,
+  },
+  acceptedAt: { type: Date, default: null }, // 🆕 ADD THIS TOO
   createdAt: { type: Date, default: Date.now }
 });
-
 
 module.exports = mongoose.model('Booking', bookingSchema);
