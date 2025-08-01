@@ -1,6 +1,6 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Home from '../pages/Home';
-import Signup from '../services/Signup';
+import Signup from '../pages/Signup';
 import Profile from '../pages/Profile';
 import WorkerProfile from '../pages/WorkerProfile';
 import ResetPassword from "../pages/ResetPassword";

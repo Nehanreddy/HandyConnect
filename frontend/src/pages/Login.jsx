@@ -1,22 +1,25 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import API from '../services/api';
-import { Eye, EyeOff } from 'lucide-react';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import API from "../services/api";
+import { Eye, EyeOff } from "lucide-react";
 
 const Login = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
-      const res = await API.post('/auth/login', { email, password });
+      const res = await API.post("/auth/login", { email, password });
 
-      localStorage.setItem('token', res.data.token);
+      localStorage.setItem("token", res.data.token);
 
       login({
         ...res.data.user,
@@ -25,71 +28,104 @@ const Login = () => {
 
       navigate(`/home/${res.data.user.name}`);
     } catch (err) {
-      alert(err.response?.data?.msg || 'Login failed');
+      alert(err.response?.data?.msg || "Login failed");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-blue-50 px-4">
-      <div className="bg-white shadow-lg p-8 rounded-lg w-full max-w-md">
-        <h2 className="text-3xl font-bold text-blue-600 mb-6 text-center">Login</h2>
-        <form onSubmit={handleLogin} className="space-y-4">
-          <input
-            className="w-full border p-2 rounded"
-            placeholder="Email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center px-4 py-16">
+      <div className="bg-gray-800 max-w-md w-full rounded-3xl shadow-xl p-10">
+        <h2 className="text-4xl font-extrabold text-cyan-400 mb-8 text-center tracking-wide">
+          Login
+        </h2>
+
+        <form onSubmit={handleLogin} className="space-y-6" noValidate>
+          <div>
+            <label
+              htmlFor="email"
+              className="block mb-2 text-sm font-semibold text-gray-300"
+            >
+              Email
+            </label>
+            <input
+              id="email"
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full rounded-md border border-gray-600 bg-gray-900 px-4 py-3 text-gray-200 placeholder-gray-400 focus:border-cyan-400 focus:outline-none focus:ring-1 focus:ring-cyan-400 transition"
+              placeholder="you@example.com"
+            />
+          </div>
 
           <div className="relative">
+            <label
+              htmlFor="password"
+              className="block mb-2 text-sm font-semibold text-gray-300"
+            >
+              Password
+            </label>
             <input
-              className="w-full border p-2 rounded pr-10"
-              placeholder="Password"
-              type={showPassword ? 'text' : 'password'}
+              id="password"
+              type={showPassword ? "text" : "password"}
+              required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              required
+              className="w-full rounded-md border border-gray-600 bg-gray-900 px-4 py-3 pr-12 text-gray-200 placeholder-gray-400 focus:border-cyan-400 focus:outline-none focus:ring-1 focus:ring-cyan-400 transition"
+              placeholder="Enter your password"
+              aria-describedby="togglePassword"
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-600"
+              className="absolute right-3 top-[2.65rem] text-gray-400 hover:text-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 rounded"
+              aria-label={showPassword ? "Hide password" : "Show password"}
+              id="togglePassword"
             >
-              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              {showPassword ? <EyeOff size={22} /> : <Eye size={22} />}
+            </button>
+          </div>
+
+          <div className="text-right">
+            <button
+              type="button"
+              onClick={() => navigate("/reset-password")}
+              className="text-sm font-medium text-cyan-400 hover:text-cyan-500 focus:outline-none focus:underline"
+            >
+              Forgot password?
             </button>
           </div>
 
           <button
-            type="button"
-            onClick={() => navigate('/reset-password')}
-            className="text-sm text-blue-500 hover:underline block text-right"
+            type="submit"
+            className={`w-full bg-cyan-600 text-white py-3 rounded-xl font-semibold shadow-md hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 transition ${
+              loading ? "opacity-70 cursor-not-allowed" : ""
+            }`}
+            disabled={loading}
+            aria-busy={loading}
           >
-            Forgot password?
+            {loading ? "Logging in..." : "Login"}
           </button>
 
-          <button type="submit" className="bg-blue-600 text-white w-full py-2 rounded">
-            Login
-          </button>
-
-          <p className="text-sm mt-4 text-center">
-            Don't have an account?{' '}
+          <p className="text-center text-gray-400 mt-6">
+            Don&apos;t have an account?{" "}
             <button
               type="button"
-              onClick={() => navigate('/signup')}
-              className="text-blue-600 underline"
+              onClick={() => navigate("/signup")}
+              className="text-cyan-400 hover:text-cyan-500 font-semibold focus:outline-none focus:underline"
             >
               Sign up
             </button>
           </p>
 
-          <p className="text-sm mt-4 text-center">or</p>
+          <p className="text-center text-gray-500 my-4">or</p>
 
           <button
             type="button"
-            onClick={() => navigate('/worker')}
-            className="text-blue-700 border mt-4 w-full py-2 rounded hover:bg-blue-50"
+            onClick={() => navigate("/worker")}
+            className="w-full border border-cyan-600 text-cyan-600 py-3 rounded-xl font-semibold hover:bg-cyan-700 hover:text-white transition focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2"
           >
             Work with us?
           </button>
