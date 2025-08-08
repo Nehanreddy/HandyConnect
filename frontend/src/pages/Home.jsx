@@ -92,7 +92,7 @@ const HomePage = () => {
       img: plumberImg,
     },
     {
-      label: 'Electrical',
+      label: 'Electrician',
       description: 'Safe and efficient fixes',
       icon: <BoltIcon className="h-8 w-8 text-yellow-400" />,
       img: electricianImg,

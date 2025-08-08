@@ -4,14 +4,16 @@ import App from './App';
 import './index.css';
 import { AuthProvider } from './context/AuthContext';
 import { WorkerAuthProvider } from './context/WorkerAuthContext';
+import { AdminAuthProvider } from './context/AdminAuthContext'; // 🆕 ADD
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <AuthProvider>
-         <WorkerAuthProvider>
-      <App />
-    </WorkerAuthProvider>
+      <AdminAuthProvider> 
+        <WorkerAuthProvider>
+          <App />
+        </WorkerAuthProvider>
+      </AdminAuthProvider>
     </AuthProvider>
-
   </React.StrictMode>
 );

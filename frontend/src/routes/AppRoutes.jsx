@@ -7,17 +7,25 @@ import ResetPassword from "../pages/ResetPassword";
 import WorkerHome from '../pages/WorkerHome';
 import WorkerSignup from '../pages/WorkerSignup';
 import MyServices from '../pages/MyServices';
-import WorkerDashboard from '../pages/WorkerDashboard'; // 🆕 ADD: Import WorkerDashboard
+import WorkerDashboard from '../pages/WorkerDashboard';
+import AdminDashboard from '../components/Admindashboard'; // 🆕 ADD: Import AdminDashboard
 import { WorkerAuthProvider, useWorkerAuth } from '../context/WorkerAuthContext';
+import { useAdminAuth } from '../context/AdminAuthContext'; // 🆕 ADD: Import useAdminAuth
 import { useAuth } from '../context/AuthContext';
 import WorkerResetPassword from '../pages/WorkerResetPassword';
 import AboutUs from '../pages/AboutUs';
 import ContactUs from '../pages/ContactUs';
-import Login from '../pages/Login'
+import Login from '../pages/Login';
 
 const WorkerProtectedRoute = ({ element }) => {
   const { worker } = useWorkerAuth();
   return worker ? element : <Navigate to="/worker" />;
+};
+
+// 🆕 ADD: Admin Protected Route
+const AdminProtectedRoute = ({ element }) => {
+  const { admin } = useAdminAuth();
+  return admin ? element : <Navigate to="/worker" />;
 };
 
 const AppRoutes = () => {
@@ -43,9 +51,10 @@ const AppRoutes = () => {
         <Route path="/worker/signup" element={<WorkerSignup />} />
         <Route path="/worker/reset-password" element={<WorkerResetPassword />} />
         <Route path="/worker/home/:name" element={<WorkerProtectedRoute element={<WorkerHome />} />} />
-        
-        {/* 🆕 ADD: Worker Dashboard Route */}
         <Route path="/worker/dashboard" element={<WorkerProtectedRoute element={<WorkerDashboard />} />} />
+        
+        {/* 🆕 ADD: Admin routes */}
+        <Route path="/admin/dashboard" element={<AdminProtectedRoute element={<AdminDashboard />} />} />
       </Routes>
     </WorkerAuthProvider>
   );

@@ -13,9 +13,22 @@ const WorkerSchema = new mongoose.Schema({
   aadhaar: { type: String, required: true },
   profilePhoto: String,
   aadhaarPhoto: String,
-  serviceType: { type: String, required: true }, // 🔹 Added
+  serviceType: { type: String, required: true },
+  
+  // 🔹 NEW APPROVAL FIELDS
+  status: { 
+    type: String, 
+    enum: ['pending', 'approved', 'rejected'], 
+    default: 'pending' 
+  },
+  approvedBy: { 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'Admin', 
+    default: null 
+  },
+  approvedAt: { type: Date, default: null },
+  rejectionReason: { type: String, default: null },
 }, { timestamps: true });
-
 
 WorkerSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();

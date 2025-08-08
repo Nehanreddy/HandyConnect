@@ -7,20 +7,19 @@ const JWT_SECRET = process.env.JWT_SECRET;
 
 if (!JWT_SECRET) {
   console.error("❌ JWT_SECRET not set in environment variables.");
-  process.exit(1); // Stop server if secret is missing
+  process.exit(1);
 }
 
-// Utility: Generate JWT Token
 const generateToken = (id) => {
-  return jwt.sign({ id }, JWT_SECRET, { expiresIn: '1h' });
+  return jwt.sign({ id }, JWT_SECRET, { expiresIn: '24h' });
 };
 
-// Worker Signup
+// Worker Signup (unchanged, but will set status to 'pending' by default)
 const workerSignup = async (req, res) => {
   try {
     const {
       name, phone, email, password, confirmPassword,
-      address, city, state, pincode, aadhaar,serviceType
+      address, city, state, pincode, aadhaar, serviceType
     } = req.body;
 
     if (password !== confirmPassword) {
@@ -34,7 +33,6 @@ const workerSignup = async (req, res) => {
     const existing = await Worker.findOne({ email });
     if (existing) return res.status(400).json({ msg: 'Email already registered' });
 
-    // Upload to Cloudinary
     const profileUpload = await cloudinary.uploader.upload(req.files.profile[0].path, {
       folder: 'handyconnect/workers',
     });
@@ -42,10 +40,9 @@ const workerSignup = async (req, res) => {
       folder: 'handyconnect/workers',
     });
 
-    // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Save worker
+    // Save worker with 'pending' status (default from schema)
     const worker = await Worker.create({
       name, phone, email, password,
       address, city, state, pincode, aadhaar,
@@ -54,12 +51,13 @@ const workerSignup = async (req, res) => {
       serviceType,
     });
 
-    const token = generateToken(worker._id);
+    // 🔹 Don't generate token immediately - worker needs approval first
     res.status(201).json({
       _id: worker._id,
       name: worker.name,
       email: worker.email,
-      token,
+      status: worker.status,
+      message: 'Registration successful! Please wait for admin approval before logging in.'
     });
   } catch (err) {
     console.error('❌ Signup Error:', err);
@@ -67,7 +65,7 @@ const workerSignup = async (req, res) => {
   }
 };
 
-// Worker Login
+// 🔹 UPDATED Worker Login - Check Approval Status
 const workerLogin = async (req, res) => {
   const { email, password } = req.body;
   try {
@@ -76,6 +74,22 @@ const workerLogin = async (req, res) => {
       return res.status(401).json({ msg: 'Invalid email or password' });
     }
 
+    // 🔹 Check approval status
+    if (worker.status === 'pending') {
+      return res.status(403).json({ 
+        msg: 'Your account is pending admin approval. Please wait for approval before logging in.',
+        status: 'pending'
+      });
+    }
+
+    if (worker.status === 'rejected') {
+      return res.status(403).json({ 
+        msg: 'Your account has been rejected. Reason: ' + (worker.rejectionReason || 'Not specified'),
+        status: 'rejected'
+      });
+    }
+
+    // Only approved workers can login
     const token = generateToken(worker._id);
     res.json({
       _id: worker._id,
@@ -83,6 +97,7 @@ const workerLogin = async (req, res) => {
       email: worker.email,
       city: worker.city,
       serviceType: worker.serviceType,
+      status: worker.status,
       token,
     });
   } catch (err) {
@@ -91,7 +106,7 @@ const workerLogin = async (req, res) => {
   }
 };
 
-// Get Worker Profile
+// Rest of your existing functions remain the same...
 const getWorkerProfile = async (req, res) => {
   try {
     const worker = await Worker.findById(req.user.id).select('-password');
@@ -104,7 +119,6 @@ const getWorkerProfile = async (req, res) => {
   }
 };
 
-// Update Worker Profile
 const updateWorkerProfile = async (req, res) => {
   try {
     const worker = await Worker.findById(req.user.id);
@@ -130,7 +144,6 @@ const updateWorkerProfile = async (req, res) => {
   }
 };
 
-// Reset Password
 const resetWorkerPassword = async (req, res) => {
   const { email, newPassword } = req.body;
   try {
