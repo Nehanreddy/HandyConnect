@@ -8,9 +8,10 @@ const {
   getBookingsByCityAndService,
   updateBookingStatus,
   getUserBookingsWithWorkers,
-  markBookingCompleted,     // 🆕 ADD: Missing import
-  rateBooking,             // 🆕 ADD: Missing import
-  getWorkerCompletedJobs   // 🆕 ADD: Missing import
+  markBookingCompleted,
+  rateBooking,
+  getWorkerCompletedJobs,
+  getWorkerAcceptedJobs  // 🆕 ADD: Import the new function
 } = require('../controllers/bookingController');
 
 // Create a new booking (authenticated user)
@@ -28,9 +29,14 @@ router.get('/by-city', getBookingsByCityAndService);
 // Add worker authentication to status update
 router.put('/:id/status', protectWorker, updateBookingStatus);
 
-// 🆕 NEW ROUTES - Add these missing routes:
+// Worker routes
 router.put('/:id/complete', protectWorker, markBookingCompleted);
-router.put('/:id/rate', authMiddleware, rateBooking);
 router.get('/worker/completed', protectWorker, getWorkerCompletedJobs);
+
+// 🆕 NEW: Add the missing route for worker accepted jobs
+router.get('/worker-accepted', getWorkerAcceptedJobs);
+
+// User routes
+router.put('/:id/rate', authMiddleware, rateBooking);
 
 module.exports = router;

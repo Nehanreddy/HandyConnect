@@ -9,21 +9,40 @@ const WorkerHome = () => {
 
   const fetchRequests = async () => {
     // Check if both city and serviceType are available
-    if (!worker?.city || !worker?.serviceType) return;
+    if (!worker?.city || !worker?.serviceType || !worker?._id) return;
 
     setLoading(true);
     try {
-      // 🔄 FIXED: Added missing backticks for template literal
-      const res = await fetch(
-        `/api/bookings/by-city?city=${encodeURIComponent(worker.city)}&serviceType=${encodeURIComponent(worker.serviceType)}`
-      );
+      // 🔄 SOLUTION: Fetch BOTH pending requests AND accepted jobs by this worker
+      const [pendingRes, acceptedRes] = await Promise.all([
+        // Get pending requests in this city/serviceType (available to all workers)
+        fetch(`/api/bookings/by-city?city=${encodeURIComponent(worker.city)}&serviceType=${encodeURIComponent(worker.serviceType)}`),
+        // Get accepted jobs by this worker (your ongoing work)
+        fetch(`/api/bookings/worker-accepted?workerId=${worker._id}`)
+      ]);
 
-      if (!res.ok) throw new Error('Failed to fetch');
-      const data = await res.json();
-      setRequests(data);
+      let allRequests = [];
+
+      // Handle pending requests
+      if (pendingRes.ok) {
+        const pendingData = await pendingRes.json();
+        allRequests = [...pendingData];
+      }
+
+      // Handle accepted requests by this worker  
+      if (acceptedRes.ok) {
+        const acceptedData = await acceptedRes.json();
+        // Add accepted jobs, avoiding duplicates
+        const acceptedJobs = acceptedData.filter(job => 
+          !allRequests.some(req => req._id === job._id)
+        );
+        allRequests = [...allRequests, ...acceptedJobs];
+      }
+
+      setRequests(allRequests);
     } catch (err) {
       console.error('Error fetching bookings:', err);
-      setRequests([]); // fallback empty
+      setRequests([]);
     } finally {
       setLoading(false);
     }
@@ -38,12 +57,11 @@ const WorkerHome = () => {
     }
 
     try {
-      // 🔄 FIXED: Added missing backticks for template literal
       const res = await fetch(`/api/bookings/${bookingId}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${worker.token}`, // 🔄 FIXED: Added missing backticks
+          'Authorization': `Bearer ${worker.token}`,
         },
         body: JSON.stringify({ status: action }),
       });
@@ -56,22 +74,25 @@ const WorkerHome = () => {
       const responseData = await res.json();
       console.log('✅ Booking status updated:', responseData);
 
-      // Update local state and show success message
-      const updatedRequests = requests.map((req) =>
-        req._id === bookingId ? { ...req, status: action } : req
-      );
-      setRequests(updatedRequests);
-
-      // Success feedback
+      // 🔄 UPDATED: Different handling for accepted vs rejected
       if (action === 'accepted') {
-        alert('✅ Service request accepted! The user will be notified.');
-      } else {
+        // Keep accepted jobs in the list with updated status and worker info
+        const updatedRequests = requests.map((req) =>
+          req._id === bookingId 
+            ? { ...req, status: action, acceptedBy: worker._id, acceptedAt: new Date() } 
+            : req
+        );
+        setRequests(updatedRequests);
+        alert('✅ Service request accepted! Complete the work and mark it as done.');
+      } else if (action === 'rejected') {
+        // Remove rejected jobs from the list
+        setRequests(prev => prev.filter(req => req._id !== bookingId));
         alert('❌ Service request rejected.');
       }
 
     } catch (err) {
       console.error('Error updating booking status:', err);
-      alert(`Failed to ${action} the request: ${err.message}`); // 🔄 FIXED: Added missing backticks
+      alert(`Failed to ${action} the request: ${err.message}`);
     }
   };
 
@@ -87,7 +108,6 @@ const WorkerHome = () => {
     }
 
     try {
-      // 🔄 FIXED: Added missing backticks for template literal
       const res = await fetch(`/api/bookings/${bookingId}/complete`, {
         method: 'PUT',
         headers: {
@@ -101,16 +121,12 @@ const WorkerHome = () => {
         throw new Error(errorData.msg || 'Failed to mark as completed');
       }
 
-      // Update local state
-      const updatedRequests = requests.map((req) =>
-        req._id === bookingId ? { ...req, status: 'completed' } : req
-      );
-      setRequests(updatedRequests);
-
+      // 🔄 UPDATED: Remove completed jobs from worker's view (now user can rate)
+      setRequests(prev => prev.filter(req => req._id !== bookingId));
       alert('✅ Job marked as completed! The user can now rate your service.');
     } catch (err) {
       console.error('Error marking job complete:', err);
-      alert(`Failed to mark job as completed: ${err.message}`); // 🔄 FIXED: Added missing backticks
+      alert(`Failed to mark job as completed: ${err.message}`);
     }
   };
 
@@ -133,7 +149,7 @@ const WorkerHome = () => {
               Showing <strong>{worker.serviceType}</strong> requests for <strong>{worker.city}</strong>
             </p>
             <p className="text-xs text-blue-600 mt-1">
-              Logged in as: <strong>{worker.name}</strong>
+              Logged in as: <strong>{worker.name}</strong> (ID: {worker._id})
             </p>
           </div>
         )}
@@ -150,21 +166,33 @@ const WorkerHome = () => {
             {requests.map((req) => (
               <div
                 key={req._id}
-                className="p-6 bg-white rounded-xl shadow-md border border-gray-200"
+                className={`p-6 rounded-xl shadow-md border ${
+                  req.acceptedBy?.toString() === worker._id 
+                    ? 'bg-green-50 border-green-200' 
+                    : 'bg-white border-gray-200'
+                }`}
               >
                 <div className="flex justify-between items-start mb-2">
                   <h2 className="text-xl font-semibold text-blue-700">{req.serviceType}</h2>
-                  <span
-                    className={`text-sm px-3 py-1 rounded-full ${
-                      req.urgency === 'Emergency'
-                        ? 'bg-red-100 text-red-700'
-                        : req.urgency === 'Urgent'
-                        ? 'bg-yellow-100 text-yellow-800'
-                        : 'bg-green-100 text-green-700'
-                    }`}
-                  >
-                    {req.urgency}
-                  </span>
+                  <div className="flex gap-2">
+                    <span
+                      className={`text-sm px-3 py-1 rounded-full ${
+                        req.urgency === 'Emergency'
+                          ? 'bg-red-100 text-red-700'
+                          : req.urgency === 'Urgent'
+                          ? 'bg-yellow-100 text-yellow-800'
+                          : 'bg-green-100 text-green-700'
+                      }`}
+                    >
+                      {req.urgency}
+                    </span>
+                    {/* Show if this job is accepted by current worker */}
+                    {req.acceptedBy?.toString() === worker._id && (
+                      <span className="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded-full font-medium">
+                        YOUR JOB
+                      </span>
+                    )}
+                  </div>
                 </div>
                 <p className="text-gray-700 mb-2">
                   <strong>Problem:</strong> {req.problem}
@@ -180,7 +208,7 @@ const WorkerHome = () => {
                   <strong>Contact:</strong> {req.contactName} ({req.contactPhone})
                 </p>
 
-                {/* Enhanced status rendering with Mark Complete functionality */}
+                {/* Enhanced status rendering with proper worker check */}
                 {req.status === 'pending' ? (
                   <div className="flex gap-4 mt-4">
                     <button
@@ -196,7 +224,7 @@ const WorkerHome = () => {
                       Reject
                     </button>
                   </div>
-                ) : req.status === 'accepted' ? (
+                ) : req.status === 'accepted' && req.acceptedBy?.toString() === worker._id ? (
                   <div className="mt-4">
                     <button
                       onClick={() => handleMarkComplete(req._id)}
@@ -204,9 +232,13 @@ const WorkerHome = () => {
                     >
                       ✅ Mark as Completed
                     </button>
-                    <div className="text-sm text-green-600 mt-2">
+                    <div className="text-sm text-green-600 mt-2 font-medium">
                       ✅ You accepted this request. Complete the work and mark it as done.
                     </div>
+                  </div>
+                ) : req.status === 'accepted' ? (
+                  <div className="mt-4 text-sm font-medium text-orange-600">
+                    ⚠️ This request has been accepted by another worker.
                   </div>
                 ) : (
                   <div className="mt-4 text-sm font-medium text-gray-700">
@@ -245,4 +277,4 @@ const WorkerHome = () => {
   );
 };
 
-export default WorkerHome; 
+export default WorkerHome;

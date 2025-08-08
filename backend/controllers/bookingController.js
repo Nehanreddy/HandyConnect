@@ -200,6 +200,33 @@ exports.rateBooking = async (req, res) => {
   }
 };
 
+// 🆕 NEW: Get accepted jobs by specific worker (for WorkerHome persistence)
+exports.getWorkerAcceptedJobs = async (req, res) => {
+  try {
+    const { workerId } = req.query;
+
+    if (!workerId) {
+      return res.status(400).json({ msg: 'Worker ID is required' });
+    }
+
+    // Find all bookings accepted by this worker that are not yet completed
+    const acceptedBookings = await Booking.find({
+      acceptedBy: workerId,
+      status: { $in: ['accepted', 'in-progress'] } // Only get active jobs
+    })
+    .populate('user', 'name email phone')
+    .sort({ acceptedAt: -1 });
+
+    res.status(200).json(acceptedBookings);
+  } catch (error) {
+    console.error('❌ Error fetching worker accepted bookings:', error);
+    res.status(500).json({ 
+      msg: 'Server error fetching accepted bookings',
+      error: error.message 
+    });
+  }
+};
+
 // 🆕 NEW: Get worker's completed bookings with ratings (Worker Dashboard)
 exports.getWorkerCompletedJobs = async (req, res) => {
   try {
