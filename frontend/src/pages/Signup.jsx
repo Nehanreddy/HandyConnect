@@ -46,9 +46,9 @@ const Signup = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center px-4 py-16">
-      <div className="bg-gray-800 max-w-xl w-full rounded-3xl shadow-xl p-10">
-        <h2 className="text-4xl font-extrabold text-cyan-400 mb-8 text-center tracking-wide">
+    <div className="min-h-screen bg-gradient-to-br from-black via-black to-black flex items-center justify-center px-4 py-16">
+      <div className="bg-gray-900 max-w-xl w-full rounded-2xl shadow-xl p-10 border border-purple-700">
+        <h2 className="text-4xl font-extrabold text-purple-400 mb-8 text-center tracking-wide">
           Create Account
         </h2>
 
@@ -69,7 +69,7 @@ const Signup = () => {
               onChange={handleChange}
               placeholder="John Doe"
               required
-              className="w-full rounded-md border border-gray-600 bg-gray-900 px-4 py-3 text-gray-200 placeholder-gray-400 focus:border-cyan-400 focus:outline-none focus:ring-1 focus:ring-cyan-400 transition"
+              className="w-full rounded-md border border-gray-600 bg-gray-800 px-4 py-3 text-gray-200 placeholder-gray-400 focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400 transition"
             />
           </div>
 
@@ -89,7 +89,7 @@ const Signup = () => {
               onChange={handleChange}
               placeholder="+91 9876543210"
               required
-              className="w-full rounded-md border border-gray-600 bg-gray-900 px-4 py-3 text-gray-200 placeholder-gray-400 focus:border-cyan-400 focus:outline-none focus:ring-1 focus:ring-cyan-400 transition"
+              className="w-full rounded-md border border-gray-600 bg-gray-800 px-4 py-3 text-gray-200 placeholder-gray-400 focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400 transition"
               pattern="^[0-9+\-\s]{7,15}$"
               title="Enter a valid phone number"
             />
@@ -111,7 +111,7 @@ const Signup = () => {
               onChange={handleChange}
               placeholder="email@example.com"
               required
-              className="w-full rounded-md border border-gray-600 bg-gray-900 px-4 py-3 text-gray-200 placeholder-gray-400 focus:border-cyan-400 focus:outline-none focus:ring-1 focus:ring-cyan-400 transition"
+              className="w-full rounded-md border border-gray-600 bg-gray-800 px-4 py-3 text-gray-200 placeholder-gray-400 focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400 transition"
             />
           </div>
 
@@ -132,12 +132,12 @@ const Signup = () => {
               placeholder="Enter password"
               required
               minLength={6}
-              className="w-full rounded-md border border-gray-600 bg-gray-900 px-4 py-3 pr-10 text-gray-200 placeholder-gray-400 focus:border-cyan-400 focus:outline-none focus:ring-1 focus:ring-cyan-400 transition"
+              className="w-full rounded-md border border-gray-600 bg-gray-800 px-4 py-3 pr-10 text-gray-200 placeholder-gray-400 focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400 transition"
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-[2.65rem] text-gray-400 hover:text-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 rounded"
+              className="absolute right-3 top-[2.65rem] text-gray-400 hover:text-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400 rounded"
               aria-label={showPassword ? "Hide password" : "Show password"}
             >
               {showPassword ? <EyeOff size={22} /> : <Eye size={22} />}
@@ -161,12 +161,12 @@ const Signup = () => {
               placeholder="Confirm your password"
               required
               minLength={6}
-              className="w-full rounded-md border border-gray-600 bg-gray-900 px-4 py-3 pr-10 text-gray-200 placeholder-gray-400 focus:border-cyan-400 focus:outline-none focus:ring-1 focus:ring-cyan-400 transition"
+              className="w-full rounded-md border border-gray-600 bg-gray-800 px-4 py-3 pr-10 text-gray-200 placeholder-gray-400 focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400 transition"
             />
             <button
               type="button"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              className="absolute right-3 top-[2.65rem] text-gray-400 hover:text-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 rounded"
+              className="absolute right-3 top-[2.65rem] text-gray-400 hover:text-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400 rounded"
               aria-label={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
             >
               {showConfirmPassword ? <EyeOff size={22} /> : <Eye size={22} />}
@@ -187,7 +187,7 @@ const Signup = () => {
               value={form.address}
               onChange={handleChange}
               placeholder="123 Main St"
-              className="w-full rounded-md border border-gray-600 bg-gray-900 px-4 py-3 text-gray-200 placeholder-gray-400 focus:border-cyan-400 focus:outline-none focus:ring-1 focus:ring-cyan-400 transition"
+              className="w-full rounded-md border border-gray-600 bg-gray-800 px-4 py-3 text-gray-200 placeholder-gray-400 focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400 transition"
             />
           </div>
 
@@ -205,7 +205,7 @@ const Signup = () => {
               value={form.city}
               onChange={handleChange}
               placeholder="City"
-              className="w-full rounded-md border border-gray-600 bg-gray-900 px-4 py-3 text-gray-200 placeholder-gray-400 focus:border-cyan-400 focus:outline-none focus:ring-1 focus:ring-cyan-400 transition"
+              className="w-full rounded-md border border-gray-600 bg-gray-800 px-4 py-3 text-gray-200 placeholder-gray-400 focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400 transition"
             />
           </div>
 
@@ -223,7 +223,7 @@ const Signup = () => {
               value={form.state}
               onChange={handleChange}
               placeholder="State"
-              className="w-full rounded-md border border-gray-600 bg-gray-900 px-4 py-3 text-gray-200 placeholder-gray-400 focus:border-cyan-400 focus:outline-none focus:ring-1 focus:ring-cyan-400 transition"
+              className="w-full rounded-md border border-gray-600 bg-gray-800 px-4 py-3 text-gray-200 placeholder-gray-400 focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400 transition"
             />
           </div>
 
@@ -241,7 +241,7 @@ const Signup = () => {
               value={form.pincode}
               onChange={handleChange}
               placeholder="Pincode"
-              className="w-full rounded-md border border-gray-600 bg-gray-900 px-4 py-3 text-gray-200 placeholder-gray-400 focus:border-cyan-400 focus:outline-none focus:ring-1 focus:ring-cyan-400 transition"
+              className="w-full rounded-md border border-gray-600 bg-gray-800 px-4 py-3 text-gray-200 placeholder-gray-400 focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400 transition"
             />
           </div>
 
@@ -251,12 +251,26 @@ const Signup = () => {
             disabled={loading}
             className={`col-span-2 py-3 rounded-xl font-semibold text-white shadow-md transition ${
               loading
-                ? "bg-cyan-400 cursor-not-allowed"
-                : "bg-cyan-600 hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2"
+                ? "bg-purple-400 cursor-not-allowed"
+                : "bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
             }`}
           >
             {loading ? "Creating Account..." : "Submit"}
           </button>
+
+          {/* Login Link */}
+          <div className="col-span-2 text-center mt-4">
+            <p className="text-gray-400">
+              Already have an account?{' '}
+              <button
+                type="button"
+                onClick={() => navigate('/login')}
+                className="text-purple-400 hover:text-purple-300 font-semibold focus:outline-none focus:underline"
+              >
+                Login here
+              </button>
+            </p>
+          </div>
         </form>
       </div>
     </div>

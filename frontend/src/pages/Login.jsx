@@ -35,9 +35,9 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center px-4 py-16">
-      <div className="bg-gray-800 max-w-md w-full rounded-3xl shadow-xl p-10">
-        <h2 className="text-4xl font-extrabold text-cyan-400 mb-8 text-center tracking-wide">
+    <div className="min-h-screen bg-gradient-to-br from-black via-black to-black flex items-center justify-center px-4 py-16">
+      <div className="bg-gray-900 max-w-md w-full rounded-2xl shadow-xl p-10 border border-purple-700">
+        <h2 className="text-4xl font-extrabold text-purple-400 mb-8 text-center tracking-wide">
           Login
         </h2>
 
@@ -55,7 +55,7 @@ const Login = () => {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-md border border-gray-600 bg-gray-900 px-4 py-3 text-gray-200 placeholder-gray-400 focus:border-cyan-400 focus:outline-none focus:ring-1 focus:ring-cyan-400 transition"
+              className="w-full rounded-md border border-gray-600 bg-gray-800 px-4 py-3 text-gray-200 placeholder-gray-400 focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400 transition"
               placeholder="you@example.com"
             />
           </div>
@@ -73,14 +73,14 @@ const Login = () => {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-md border border-gray-600 bg-gray-900 px-4 py-3 pr-12 text-gray-200 placeholder-gray-400 focus:border-cyan-400 focus:outline-none focus:ring-1 focus:ring-cyan-400 transition"
+              className="w-full rounded-md border border-gray-600 bg-gray-800 px-4 py-3 pr-12 text-gray-200 placeholder-gray-400 focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400 transition"
               placeholder="Enter your password"
               aria-describedby="togglePassword"
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-[2.65rem] text-gray-400 hover:text-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 rounded"
+              className="absolute right-3 top-[2.65rem] text-gray-400 hover:text-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400 rounded"
               aria-label={showPassword ? "Hide password" : "Show password"}
               id="togglePassword"
             >
@@ -92,7 +92,7 @@ const Login = () => {
             <button
               type="button"
               onClick={() => navigate("/reset-password")}
-              className="text-sm font-medium text-cyan-400 hover:text-cyan-500 focus:outline-none focus:underline"
+              className="text-sm font-medium text-purple-400 hover:text-purple-300 focus:outline-none focus:underline"
             >
               Forgot password?
             </button>
@@ -100,7 +100,7 @@ const Login = () => {
 
           <button
             type="submit"
-            className={`w-full bg-cyan-600 text-white py-3 rounded-xl font-semibold shadow-md hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 transition ${
+            className={`w-full bg-purple-600 text-white py-3 rounded-xl font-semibold shadow-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition ${
               loading ? "opacity-70 cursor-not-allowed" : ""
             }`}
             disabled={loading}
@@ -114,7 +114,7 @@ const Login = () => {
             <button
               type="button"
               onClick={() => navigate("/signup")}
-              className="text-cyan-400 hover:text-cyan-500 font-semibold focus:outline-none focus:underline"
+              className="text-purple-400 hover:text-purple-300 font-semibold focus:outline-none focus:underline"
             >
               Sign up
             </button>
@@ -125,7 +125,7 @@ const Login = () => {
           <button
             type="button"
             onClick={() => navigate("/worker")}
-            className="w-full border border-cyan-600 text-cyan-600 py-3 rounded-xl font-semibold hover:bg-cyan-700 hover:text-white transition focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2"
+            className="w-full border border-purple-600 text-purple-600 py-3 rounded-xl font-semibold hover:bg-purple-700 hover:text-white transition focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
           >
             Work with us?
           </button>

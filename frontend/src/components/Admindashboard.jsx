@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAdminAuth } from '../context/AdminAuthContext';
 import { useNavigate } from 'react-router-dom';
+import logo from '../assets/logo.png';
 
 const AdminDashboard = () => {
   const { admin, logoutAdmin } = useAdminAuth();
@@ -103,11 +104,15 @@ const AdminDashboard = () => {
     navigate('/worker');
   };
 
+  const handleLogoClick = () => {
+    navigate('/worker');
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
           <p className="mt-4 text-gray-600">Loading dashboard...</p>
         </div>
       </div>
@@ -115,152 +120,190 @@ const AdminDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-20">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b">
+    <div className="min-h-screen bg-gray-50">
+      {/* Admin Navbar */}
+      <nav className="bg-gradient-to-r from-purple-900 via-purple-800 to-indigo-900 shadow-xl fixed top-0 left-0 w-full z-50 backdrop-blur-sm border-b border-purple-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
-            <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
+            <div className="flex items-center">
+              {/* Logo */}
+              <button 
+                onClick={handleLogoClick} 
+                className="focus:outline-none cursor-pointer transform hover:scale-105 transition-transform duration-200 mr-6"
+              >
+                <img src={logo} alt="HandyConnect Logo" className="h-10 w-auto" />
+              </button>
+              
+              {/* Admin Panel Title */}
+              <div className="flex items-center">
+                <h1 className="text-2xl font-bold text-white">Admin Panel</h1>
+                <span className="ml-4 px-3 py-1 bg-purple-600 text-white text-xs rounded-full">
+                  Dashboard
+                </span>
+              </div>
+            </div>
+            
             <div className="flex items-center space-x-4">
-              <span className="text-gray-600">Welcome, {admin.name}</span>
+              <div className="flex items-center space-x-2">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-r from-purple-400 to-purple-600 flex items-center justify-center text-white font-bold text-sm">
+                  {admin?.name?.charAt(0).toUpperCase()}
+                </div>
+                <span className="text-white font-medium">Welcome, {admin?.name}</span>
+              </div>
               <button
                 onClick={handleLogout}
-                className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition"
+                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors duration-200 font-medium"
               >
                 Logout
               </button>
             </div>
           </div>
         </div>
-      </div>
+      </nav>
 
-      {/* Stats Cards */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white p-6 rounded-lg shadow-sm">
-            <h3 className="text-sm font-medium text-gray-500">Pending Approval</h3>
-            <p className="text-3xl font-bold text-yellow-600">{stats.pending}</p>
-          </div>
-          <div className="bg-white p-6 rounded-lg shadow-sm">
-            <h3 className="text-sm font-medium text-gray-500">Approved Workers</h3>
-            <p className="text-3xl font-bold text-green-600">{stats.approved}</p>
-          </div>
-          <div className="bg-white p-6 rounded-lg shadow-sm">
-            <h3 className="text-sm font-medium text-gray-500">Rejected</h3>
-            <p className="text-3xl font-bold text-red-600">{stats.rejected}</p>
-          </div>
-          <div className="bg-white p-6 rounded-lg shadow-sm">
-            <h3 className="text-sm font-medium text-gray-500">Total Workers</h3>
-            <p className="text-3xl font-bold text-blue-600">{stats.total}</p>
-          </div>
-        </div>
-
-        {/* Pending Workers */}
-        <div className="bg-white rounded-lg shadow-sm">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-xl font-semibold text-gray-800">
-              Pending Worker Approvals ({pendingWorkers.length})
-            </h2>
-          </div>
-          
-          {pendingWorkers.length === 0 ? (
-            <div className="p-8 text-center">
-              <p className="text-gray-500">No pending worker approvals</p>
+      {/* Main Content */}
+      <div className="pt-20">
+        {/* Stats Cards */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div className="bg-white p-6 rounded-lg shadow-sm border-l-4 border-yellow-500">
+              <h3 className="text-sm font-medium text-gray-500">Pending Approval</h3>
+              <p className="text-3xl font-bold text-yellow-600">{stats.pending}</p>
             </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Worker Details
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Contact
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Service Type
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Applied On
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {pendingWorkers.map((worker) => (
-                    <tr key={worker._id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center">
-                          <div className="flex-shrink-0 h-12 w-12">
-                            <img
-                              className="h-12 w-12 rounded-full object-cover"
-                              src={worker.profilePhoto}
-                              alt={worker.name}
-                              onError={(e) => {
-                                e.target.src = 'https://via.placeholder.com/48/4F46E5/FFFFFF?text=W';
-                              }}
-                            />
-                          </div>
-                          <div className="ml-4">
-                            <div className="text-sm font-medium text-gray-900">{worker.name}</div>
-                            <div className="text-sm text-gray-500">{worker.city}, {worker.state}</div>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">{worker.email}</div>
-                        <div className="text-sm text-gray-500">{worker.phone}</div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                          {worker.serviceType}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {new Date(worker.createdAt).toLocaleDateString()}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                        <button
-                          onClick={() => handleApprove(worker._id)}
-                          className="bg-green-600 text-white px-3 py-1 rounded-md hover:bg-green-700 transition text-sm"
-                        >
-                          Approve
-                        </button>
-                        <button
-                          onClick={() => {
-                            setSelectedWorker(worker);
-                            setShowRejectModal(true);
-                          }}
-                          className="bg-red-600 text-white px-3 py-1 rounded-md hover:bg-red-700 transition text-sm"
-                        >
-                          Reject
-                        </button>
-                      </td>
+            <div className="bg-white p-6 rounded-lg shadow-sm border-l-4 border-green-500">
+              <h3 className="text-sm font-medium text-gray-500">Approved Workers</h3>
+              <p className="text-3xl font-bold text-green-600">{stats.approved}</p>
+            </div>
+            <div className="bg-white p-6 rounded-lg shadow-sm border-l-4 border-red-500">
+              <h3 className="text-sm font-medium text-gray-500">Rejected</h3>
+              <p className="text-3xl font-bold text-red-600">{stats.rejected}</p>
+            </div>
+            <div className="bg-white p-6 rounded-lg shadow-sm border-l-4 border-purple-500">
+              <h3 className="text-sm font-medium text-gray-500">Total Workers</h3>
+              <p className="text-3xl font-bold text-purple-600">{stats.total}</p>
+            </div>
+          </div>
+
+          {/* Pending Workers */}
+          <div className="bg-white rounded-lg shadow-sm">
+            <div className="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-purple-50 to-indigo-50">
+              <h2 className="text-xl font-semibold text-purple-800">
+                Pending Worker Approvals ({pendingWorkers.length})
+              </h2>
+            </div>
+            
+            {pendingWorkers.length === 0 ? (
+              <div className="p-8 text-center">
+                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
+                  <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                </div>
+                <p className="text-gray-500 text-lg">No pending worker approvals</p>
+                <p className="text-gray-400 text-sm mt-1">All worker applications have been processed</p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Worker Details
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Contact
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Service Type
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Applied On
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Actions
+                      </th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {pendingWorkers.map((worker) => (
+                      <tr key={worker._id} className="hover:bg-gray-50 transition-colors">
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex items-center">
+                            <div className="flex-shrink-0 h-12 w-12">
+                              <img
+                                className="h-12 w-12 rounded-full object-cover border-2 border-purple-200"
+                                src={worker.profilePhoto}
+                                alt={worker.name}
+                                onError={(e) => {
+                                  e.target.src = 'https://via.placeholder.com/48/8B5CF6/FFFFFF?text=W';
+                                }}
+                              />
+                            </div>
+                            <div className="ml-4">
+                              <div className="text-sm font-medium text-gray-900">{worker.name}</div>
+                              <div className="text-sm text-gray-500">{worker.city}, {worker.state}</div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm text-gray-900">{worker.email}</div>
+                          <div className="text-sm text-gray-500">{worker.phone}</div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
+                            {worker.serviceType}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {new Date(worker.createdAt).toLocaleDateString()}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                          <button
+                            onClick={() => handleApprove(worker._id)}
+                            className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors duration-200 font-medium"
+                          >
+                            ✓ Approve
+                          </button>
+                          <button
+                            onClick={() => {
+                              setSelectedWorker(worker);
+                              setShowRejectModal(true);
+                            }}
+                            className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors duration-200 font-medium"
+                          >
+                            ✗ Reject
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
       {/* Reject Modal */}
       {showRejectModal && selectedWorker && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-96 max-w-md mx-4">
-            <h3 className="text-lg font-semibold mb-4">Reject Worker Application</h3>
+          <div className="bg-white rounded-xl p-6 w-96 max-w-md mx-4 shadow-2xl">
+            <div className="flex items-center mb-4">
+              <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center mr-3">
+                <svg className="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 15.5c-.77.833.192 2.5 1.732 2.5z" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900">Reject Worker Application</h3>
+            </div>
             <p className="text-gray-600 mb-4">
-              Are you sure you want to reject <strong>{selectedWorker.name}</strong>'s application?
+              Are you sure you want to reject <strong className="text-gray-900">{selectedWorker.name}</strong>'s application?
             </p>
             <textarea
               placeholder="Please provide a reason for rejection..."
               value={rejectionReason}
               onChange={(e) => setRejectionReason(e.target.value)}
-              className="w-full p-3 border border-gray-300 rounded-md mb-4 h-24 resize-none"
+              className="w-full p-3 border border-gray-300 rounded-lg mb-4 h-24 resize-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
             />
             <div className="flex justify-end space-x-3">
               <button
@@ -269,14 +312,14 @@ const AdminDashboard = () => {
                   setRejectionReason('');
                   setSelectedWorker(null);
                 }}
-                className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50"
+                className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-medium"
               >
                 Cancel
               </button>
               <button
                 onClick={handleReject}
                 disabled={!rejectionReason.trim()}
-                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
               >
                 Confirm Rejection
               </button>

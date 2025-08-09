@@ -11,7 +11,7 @@ import {
   StarIcon,
 } from '@heroicons/react/24/outline';
 
-import heroImage from '../assets/hero2.png'; // your current image
+import hero3 from '../assets/hero3.jpg'; // your background image
 import ServiceBookingModal from '../components/ServiceBookingModal';
 
 import electricianImg from '../assets/electrician.jpg';
@@ -88,7 +88,7 @@ const HomePage = () => {
     {
       label: 'Plumber',
       description: 'Fix leaks and pipe issues',
-      icon: <WrenchIcon className="h-8 w-8 text-pink-400" />,
+      icon: <WrenchIcon className="h-8 w-8 text-purple-400" />,
       img: plumberImg,
     },
     {
@@ -137,56 +137,49 @@ const HomePage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-black to-black text-gray-200 pt-20">
-      {/* Hero Section */}
-      <section className="flex flex-col lg:flex-row items-center justify-between gap-10 px-4 py-12 lg:py-20 min-h-[80vh] max-w-7xl mx-auto">
-        {/* TEXT */}
-        <div className="lg:w-1/2 w-full text-center lg:text-left space-y-5 flex flex-col justify-center" data-aos="fade-right">
-          <h1 className="text-4xl md:text-5xl font-extrabold leading-tight tracking-tight bg-white bg-clip-text text-transparent">
+      {/* Hero Section with Full Background Image */}
+      <section 
+        className="relative flex flex-col items-center justify-center px-4 py-12 lg:py-20 min-h-[80vh] w-full"
+        style={{
+          backgroundImage: `url(${hero3})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          backgroundAttachment: 'fixed',
+        }}
+      >
+        {/* Dark overlay for better text readability */}
+        <div className="absolute inset-0 bg-black/50"></div>
+        
+        {/* Content - centered text only */}
+        <div className="relative z-10 w-full max-w-7xl mx-auto text-center space-y-6" data-aos="fade-up">
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold leading-tight tracking-tight text-white drop-shadow-2xl">
             Welcome to{' '}
-            <span className="bg-gradient-to-r from-[#f4f3f3] via-white to-[#4F3F3D] bg-clip-text text-transparent font-extrabold">
+            <span className="bg-gradient-to-r from-purple-300 via-white to-purple-400 bg-clip-text text-transparent font-extrabold">
               {typedText}
               <span className="animate-pulse">|</span>
             </span>
           </h1>
-          <h2 className="text-lg md:text-2xl font-semibold bg-gradient-to-r from-white via-[#f9cfdc] to-white bg-clip-text text-transparent">
+          <h2 className="text-xl md:text-3xl lg:text-4xl font-semibold text-white drop-shadow-lg">
             Your Home. Our Experts. Hassle-Free Services, Anytime.
           </h2>
-          <p className="text-sm md:text-lg max-w-md mx-auto lg:mx-0 bg-gradient-to-r from-white to-[#4F3F3D] bg-clip-text text-transparent">
+          <p className="text-lg md:text-xl lg:text-2xl max-w-3xl mx-auto text-gray-100 drop-shadow-lg">
             A one-stop platform to book trusted plumbing, painting, electrical, carpentry, and appliance repair professionals instantly.
           </p>
           <button
-  onClick={() => document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' })}
-  className="mt-6 inline-flex items-center gap-1 px-3 py-2 bg-pink-600 text-white rounded-md hover:bg-pink-700 transition-shadow shadow-md focus:outline-none focus:ring-2 focus:ring-pink-400 focus:ring-offset-1 text-sm font-medium whitespace-nowrap w-fit"
-  aria-label="Explore our services"
->
-  Explore Services <span className="text-base">→</span>
-</button>
-
-
-        </div>
-        {/* IMAGE */}
-        <div className="lg:w-1/2 w-full flex justify-center items-center lg:items-center" data-aos="fade-left">
-          <div className="relative w-full flex justify-center">
-            <img
-              src={heroImage}
-              alt="Professional handyman at work with modern tools"
-              className="w-full max-w-[600px] md:max-w-[650px] lg:max-w-[700px] xl:max-w-[750px] object-contain rounded-2xl shadow-2xl"
-              style={{
-                minHeight: '350px',
-                maxHeight: '480px',
-                background: '#28282b',
-                objectFit: 'cover',
-              }}
-              loading="lazy"
-            />
-          </div>
+            onClick={() => document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' })}
+            className="mt-8 inline-flex items-center gap-2 px-8 py-4 bg-purple-600 text-white text-lg font-semibold rounded-xl hover:bg-purple-700 transition-all shadow-2xl focus:outline-none focus:ring-4 focus:ring-purple-300 focus:ring-offset-2"
+            aria-label="Explore our services"
+          >
+            Explore Services <span className="text-xl">→</span>
+          </button>
         </div>
       </section>
 
       {/* Services Section */}
       <section id="services" className="py-16 px-6 max-w-7xl mx-auto">
         <h2
-          className="text-4xl font-bold text-center text-pink-400 mb-12 tracking-wide"
+          className="text-4xl font-bold text-center text-purple-400 mb-12 tracking-wide"
           data-aos="fade-up"
         >
           Choose Your Service
@@ -196,7 +189,7 @@ const HomePage = () => {
             <div
               key={label}
               data-aos={idx % 2 === 0 ? 'fade-right' : 'fade-left'}
-              className="bg-gray-900 rounded-2xl p-6 text-center shadow-lg hover:shadow-xl hover:scale-105 transition-transform cursor-pointer flex flex-col items-center"
+              className="bg-gray-900 rounded-2xl overflow-hidden shadow-lg hover:shadow-xl hover:scale-105 transition-transform cursor-pointer flex flex-col"
               onClick={() => {
                 if (isLoggedIn) {
                   setSelectedService(label);
@@ -220,17 +213,20 @@ const HomePage = () => {
               aria-label={`Select ${label} service`}
             >
               {img && (
-                <img
-                  src={img}
-                  alt={`${label} illustration`}
-                  className="w-full max-w-[140px] h-[90px] object-cover rounded-lg mb-4 shadow-md"
-                  style={{ background: '#111' }}
-                  loading="lazy"
-                />
+                <div className="w-full h-40 overflow-hidden">
+                  <img
+                    src={img}
+                    alt={`${label} illustration`}
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                  />
+                </div>
               )}
-              <div className="mb-5">{icon}</div>
-              <h3 className="text-lg font-semibold text-pink-400 mb-1">{label}</h3>
-              <p className="text-gray-400 text-sm">{description}</p>
+              <div className="p-6 text-center flex flex-col items-center flex-grow">
+                <div className="mb-4">{icon}</div>
+                <h3 className="text-lg font-semibold text-purple-400 mb-2">{label}</h3>
+                <p className="text-gray-400 text-sm">{description}</p>
+              </div>
             </div>
           ))}
         </div>
@@ -239,7 +235,7 @@ const HomePage = () => {
       {/* Reviews Section */}
       <section id="reviews" className="bg-gray-900 py-16 px-6 max-w-7xl mx-auto rounded-2xl shadow-lg">
         <h2
-          className="text-4xl font-bold text-center text-pink-400 mb-10 tracking-wide"
+          className="text-4xl font-bold text-center text-purple-400 mb-10 tracking-wide"
           data-aos="fade-up"
         >
           What Our Customers Say
@@ -253,7 +249,7 @@ const HomePage = () => {
               data-aos-delay={index * 200}
             >
               <div className="flex items-center gap-4 mb-3">
-                <div className="w-12 h-12 rounded-full bg-pink-500 text-white flex items-center justify-center font-bold text-lg select-none">
+                <div className="w-12 h-12 rounded-full bg-purple-500 text-white flex items-center justify-center font-bold text-lg select-none">
                   {review.name.charAt(0)}
                 </div>
                 <div>
@@ -265,7 +261,7 @@ const HomePage = () => {
                   </div>
                 </div>
               </div>
-              <p className="text-gray-300 italic text-sm">“{review.comment}”</p>
+              <p className="text-gray-300 italic text-sm">"{review.comment}"</p>
             </article>
           ))}
         </div>
@@ -275,31 +271,31 @@ const HomePage = () => {
       <footer className="bg-gray-950 text-gray-400 py-10 px-6 mt-16 max-w-7xl mx-auto rounded-t-xl shadow-inner">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
           <div>
-            <h4 className="font-bold text-xl text-pink-400 mb-2">Handy Connect</h4>
+            <h4 className="font-bold text-xl text-purple-400 mb-2">Handy Connect</h4>
             <p>Bringing trusted home services right to your doorstep.</p>
           </div>
           <nav aria-label="Quick links">
-            <h4 className="font-bold text-xl text-pink-400 mb-2">Quick Links</h4>
+            <h4 className="font-bold text-xl text-purple-400 mb-2">Quick Links</h4>
             <ul className="space-y-2">
               <li>
-                <a href="#services" className="hover:underline text-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-400 rounded">
+                <a href="#services" className="hover:underline text-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-400 rounded">
                   Services
                 </a>
               </li>
               <li>
-                <a href="#reviews" className="hover:underline text-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-400 rounded">
+                <a href="#reviews" className="hover:underline text-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-400 rounded">
                   Reviews
                 </a>
               </li>
               <li>
-                <a href="/contact" className="hover:underline text-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-400 rounded">
+                <a href="/contact" className="hover:underline text-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-400 rounded">
                   Contact
                 </a>
               </li>
             </ul>
           </nav>
           <address>
-            <h4 className="font-bold text-xl text-pink-400 mb-2">Contact</h4>
+            <h4 className="font-bold text-xl text-purple-400 mb-2">Contact</h4>
             <p>
               Email:{' '}
               <a href="mailto:support@handyconnect.com" className="text-gray-300 hover:underline">

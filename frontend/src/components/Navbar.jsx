@@ -62,7 +62,7 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="bg-white shadow-xl p-4 fixed top-0 left-0 w-full z-50 backdrop-blur-sm border-b border-gray-200">
+    <nav className="bg-transparent backdrop-blur-lg shadow-lg p-4 fixed top-0 left-0 w-full z-50 border-b border-white/20">
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center">
           {/* Logo */}
@@ -79,10 +79,10 @@ const Navbar = () => {
               <button
                 key={index}
                 onClick={item.action}
-                className="text-black hover:text-pink-500 font-semibold transition-all duration-300 relative group px-2 py-1"
+                className="text-white hover:text-purple-200 font-semibold transition-all duration-300 relative group px-2 py-1 drop-shadow-lg"
               >
                 {item.label}
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-pink-400 group-hover:w-full transition-all duration-300"></span>
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-purple-300 group-hover:w-full transition-all duration-300"></span>
               </button>
             ))}
           </div>
@@ -92,7 +92,7 @@ const Navbar = () => {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden text-black hover:text-pink-500 transition-colors"
+              className="lg:hidden text-white hover:text-purple-200 transition-colors drop-shadow-lg"
             >
               {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
@@ -101,7 +101,7 @@ const Navbar = () => {
             {!user ? (
               <button
                 onClick={() => navigate('/login')}
-                className="bg-gradient-to-r from-pink-500 to-pink-400 hover:from-pink-600 hover:to-pink-500 text-white px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                className="bg-purple-600/70 backdrop-blur-sm hover:bg-purple-700/80 text-white px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl border border-purple-400/30"
               >
                 Get Started
               </button>
@@ -109,10 +109,10 @@ const Navbar = () => {
               <div className="relative" ref={dropdownRef}>
                 <button
                   onClick={() => setDropdownOpen(!dropdownOpen)}
-                  className="flex items-center gap-3 text-black hover:text-pink-500 transition-colors duration-300 bg-gray-100 hover:bg-pink-50 px-4 py-2 rounded-lg border border-gray-300 hover:border-pink-300"
+                  className="flex items-center gap-3 text-white hover:text-purple-200 transition-colors duration-300 bg-purple-700/30 backdrop-blur-sm hover:bg-purple-600/40 px-4 py-2 rounded-lg border border-purple-400/30 hover:border-purple-300/50"
                 >
                   <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-r from-pink-400 to-pink-600 flex items-center justify-center text-white font-bold text-sm">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-r from-purple-400 to-purple-600 flex items-center justify-center text-white font-bold text-sm">
                       {user.name?.charAt(0).toUpperCase()}
                     </div>
                     <span className="font-medium hidden sm:block">
@@ -127,11 +127,11 @@ const Navbar = () => {
 
                 {/* Dropdown Menu */}
                 {dropdownOpen && (
-                  <div className="absolute right-0 mt-3 w-64 bg-white backdrop-blur-md border border-gray-200 rounded-xl shadow-2xl z-50 overflow-hidden">
+                  <div className="absolute right-0 mt-3 w-64 bg-white/95 backdrop-blur-md border border-gray-200/50 rounded-xl shadow-2xl z-50 overflow-hidden">
                     {/* User Info Header */}
-                    <div className="px-4 py-3 bg-gray-50 border-b border-gray-200">
+                    <div className="px-4 py-3 bg-purple-50/80 backdrop-blur-sm border-b border-purple-200/50">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-r from-pink-400 to-pink-600 flex items-center justify-center text-white font-bold">
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-400 to-purple-600 flex items-center justify-center text-white font-bold">
                           {user.name?.charAt(0).toUpperCase()}
                         </div>
                         <div>
@@ -148,7 +148,7 @@ const Navbar = () => {
                           setDropdownOpen(false);
                           navigate('/profile');
                         }}
-                        className="flex items-center gap-3 w-full px-4 py-3 text-gray-700 hover:bg-pink-50 hover:text-pink-600 transition-all duration-200"
+                        className="flex items-center gap-3 w-full px-4 py-3 text-gray-700 hover:bg-purple-50/70 hover:text-purple-600 transition-all duration-200"
                       >
                         <User size={18} className="text-gray-500" />
                         <span className="font-medium">My Profile</span>
@@ -159,17 +159,17 @@ const Navbar = () => {
                           setDropdownOpen(false);
                           navigate('/my-services');
                         }}
-                        className="flex items-center gap-3 w-full px-4 py-3 text-gray-700 hover:bg-pink-50 hover:text-pink-600 transition-all duration-200"
+                        className="flex items-center gap-3 w-full px-4 py-3 text-gray-700 hover:bg-purple-50/70 hover:text-purple-600 transition-all duration-200"
                       >
                         <Wrench size={18} className="text-gray-500" />
                         <span className="font-medium">My Services</span>
                       </button>
 
-                      <hr className="my-2 border-gray-200" />
+                      <hr className="my-2 border-gray-200/50" />
 
                       <button
                         onClick={handleLogout}
-                        className="flex items-center gap-3 w-full px-4 py-3 text-red-600 hover:bg-red-50 hover:text-red-700 transition-all duration-200"
+                        className="flex items-center gap-3 w-full px-4 py-3 text-red-600 hover:bg-red-50/70 hover:text-red-700 transition-all duration-200"
                       >
                         <LogOut size={18} />
                         <span className="font-medium">Sign Out</span>
@@ -184,7 +184,7 @@ const Navbar = () => {
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="lg:hidden mt-4 py-4 border-t border-gray-200 bg-white">
+          <div className="lg:hidden mt-4 py-4 border-t border-white/20 bg-purple-800/30 backdrop-blur-sm rounded-lg">
             <div className="flex flex-col space-y-3">
               {navigationItems.map((item, index) => (
                 <button
@@ -193,7 +193,7 @@ const Navbar = () => {
                     item.action();
                     setMobileMenuOpen(false);
                   }}
-                  className="text-black hover:text-pink-500 font-semibold transition-colors duration-300 text-left px-2 py-2 rounded-lg hover:bg-pink-50"
+                  className="text-white hover:text-purple-200 font-semibold transition-colors duration-300 text-left px-2 py-2 rounded-lg hover:bg-purple-700/30 drop-shadow-lg"
                 >
                   {item.label}
                 </button>

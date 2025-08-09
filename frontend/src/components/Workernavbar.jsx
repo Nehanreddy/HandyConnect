@@ -33,10 +33,18 @@ const WorkerNavbar = () => {
     setShowAdminLogin(true);
   };
 
+  // 🔄 UPDATED: Handle logo click to redirect to main home page
+  const handleLogoClick = () => {
+    navigate('/');
+  };
+
   return (
     <>
       <nav className="bg-white shadow p-4 flex justify-between items-center fixed top-0 left-0 w-full z-50">
-        <button onClick={() => navigate('/worker')} className="focus:outline-none cursor-pointer">
+        <button 
+          onClick={handleLogoClick} 
+          className="focus:outline-none cursor-pointer transform hover:scale-105 transition-transform duration-200"
+        >
           <img src={logo} alt="HandyConnect Logo" className="h-10 w-auto" />
         </button>
 

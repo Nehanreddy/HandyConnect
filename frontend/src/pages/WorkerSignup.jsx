@@ -74,9 +74,9 @@ const WorkerSignup = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center px-4 py-16">
-      <div className="bg-gray-800 max-w-xl w-full rounded-3xl shadow-xl p-10">
-        <h2 className="text-4xl font-extrabold text-cyan-400 mb-8 text-center tracking-wide">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-16">
+      <div className="bg-white max-w-xl w-full rounded-lg shadow-lg p-10 border border-gray-200">
+        <h2 className="text-4xl font-bold text-blue-600 mb-8 text-center">
           Join as a Worker
         </h2>
         <form
@@ -89,7 +89,7 @@ const WorkerSignup = () => {
           <div className="col-span-2">
             <label
               htmlFor="name"
-              className="block mb-2 text-sm font-semibold text-gray-300"
+              className="block mb-2 text-sm font-semibold text-gray-700"
             >
               Full Name<span className="text-red-500">*</span>
             </label>
@@ -101,7 +101,7 @@ const WorkerSignup = () => {
               onChange={handleChange}
               placeholder="John Doe"
               required
-              className="w-full rounded-md border border-gray-600 bg-gray-900 px-4 py-3 text-gray-200 placeholder-gray-400 focus:border-cyan-400 focus:outline-none focus:ring-1 focus:ring-cyan-400 transition"
+              className="w-full rounded-md border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
               autoComplete="name"
             />
           </div>
@@ -110,7 +110,7 @@ const WorkerSignup = () => {
           <div className="col-span-2">
             <label
               htmlFor="aadhaar"
-              className="block mb-2 text-sm font-semibold text-gray-300"
+              className="block mb-2 text-sm font-semibold text-gray-700"
             >
               Aadhaar Number<span className="text-red-500">*</span>
             </label>
@@ -122,7 +122,7 @@ const WorkerSignup = () => {
               onChange={handleChange}
               placeholder="1234 5678 9012"
               required
-              className="w-full rounded-md border border-gray-600 bg-gray-900 px-4 py-3 text-gray-200 placeholder-gray-400 focus:border-cyan-400 focus:outline-none focus:ring-1 focus:ring-cyan-400 transition"
+              className="w-full rounded-md border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
               inputMode="numeric"
               pattern="\d{12}"
               title="Enter 12 digit Aadhaar number"
@@ -133,7 +133,7 @@ const WorkerSignup = () => {
           <div className="col-span-2">
             <label
               htmlFor="phone"
-              className="block mb-2 text-sm font-semibold text-gray-300"
+              className="block mb-2 text-sm font-semibold text-gray-700"
             >
               Phone Number<span className="text-red-500">*</span>
             </label>
@@ -145,7 +145,7 @@ const WorkerSignup = () => {
               onChange={handleChange}
               placeholder="+91 9876543210"
               required
-              className="w-full rounded-md border border-gray-600 bg-gray-900 px-4 py-3 text-gray-200 placeholder-gray-400 focus:border-cyan-400 focus:outline-none focus:ring-1 focus:ring-cyan-400 transition"
+              className="w-full rounded-md border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
               pattern="^[0-9+\-\s]{7,15}$"
               title="Enter a valid phone number"
               autoComplete="tel"
@@ -156,7 +156,7 @@ const WorkerSignup = () => {
           <div className="col-span-2">
             <label
               htmlFor="email"
-              className="block mb-2 text-sm font-semibold text-gray-300"
+              className="block mb-2 text-sm font-semibold text-gray-700"
             >
               Email<span className="text-red-500">*</span>
             </label>
@@ -168,7 +168,7 @@ const WorkerSignup = () => {
               onChange={handleChange}
               placeholder="email@example.com"
               required
-              className="w-full rounded-md border border-gray-600 bg-gray-900 px-4 py-3 text-gray-200 placeholder-gray-400 focus:border-cyan-400 focus:outline-none focus:ring-1 focus:ring-cyan-400 transition"
+              className="w-full rounded-md border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
               autoComplete="email"
             />
           </div>
@@ -177,7 +177,7 @@ const WorkerSignup = () => {
           <div className="relative">
             <label
               htmlFor="password"
-              className="block mb-2 text-sm font-semibold text-gray-300"
+              className="block mb-2 text-sm font-semibold text-gray-700"
             >
               Password<span className="text-red-500">*</span>
             </label>
@@ -190,13 +190,13 @@ const WorkerSignup = () => {
               placeholder="Enter password"
               required
               minLength={6}
-              className="w-full rounded-md border border-gray-600 bg-gray-900 px-4 py-3 pr-10 text-gray-200 placeholder-gray-400 focus:border-cyan-400 focus:outline-none focus:ring-1 focus:ring-cyan-400 transition"
+              className="w-full rounded-md border border-gray-300 bg-white px-4 py-3 pr-10 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
               autoComplete="new-password"
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-[2.65rem] text-gray-400 hover:text-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 rounded"
+              className="absolute right-3 top-[2.65rem] text-gray-500 hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
               aria-label={showPassword ? "Hide password" : "Show password"}
             >
               {showPassword ? <EyeOff size={22} /> : <Eye size={22} />}
@@ -207,7 +207,7 @@ const WorkerSignup = () => {
           <div className="relative">
             <label
               htmlFor="confirmPassword"
-              className="block mb-2 text-sm font-semibold text-gray-300"
+              className="block mb-2 text-sm font-semibold text-gray-700"
             >
               Confirm Password<span className="text-red-500">*</span>
             </label>
@@ -220,13 +220,13 @@ const WorkerSignup = () => {
               placeholder="Confirm your password"
               required
               minLength={6}
-              className="w-full rounded-md border border-gray-600 bg-gray-900 px-4 py-3 pr-10 text-gray-200 placeholder-gray-400 focus:border-cyan-400 focus:outline-none focus:ring-1 focus:ring-cyan-400 transition"
+              className="w-full rounded-md border border-gray-300 bg-white px-4 py-3 pr-10 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
               autoComplete="new-password"
             />
             <button
               type="button"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              className="absolute right-3 top-[2.65rem] text-gray-400 hover:text-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 rounded"
+              className="absolute right-3 top-[2.65rem] text-gray-500 hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
               aria-label={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
             >
               {showConfirmPassword ? <EyeOff size={22} /> : <Eye size={22} />}
@@ -237,7 +237,7 @@ const WorkerSignup = () => {
           <div className="col-span-2">
             <label
               htmlFor="address"
-              className="block mb-2 text-sm font-semibold text-gray-300"
+              className="block mb-2 text-sm font-semibold text-gray-700"
             >
               Address
             </label>
@@ -247,7 +247,7 @@ const WorkerSignup = () => {
               value={form.address}
               onChange={handleChange}
               placeholder="123 Main St"
-              className="w-full rounded-md border border-gray-600 bg-gray-900 px-4 py-3 text-gray-200 placeholder-gray-400 focus:border-cyan-400 focus:outline-none focus:ring-1 focus:ring-cyan-400 transition"
+              className="w-full rounded-md border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
               autoComplete="street-address"
             />
           </div>
@@ -256,7 +256,7 @@ const WorkerSignup = () => {
           <div>
             <label
               htmlFor="city"
-              className="block mb-2 text-sm font-semibold text-gray-300"
+              className="block mb-2 text-sm font-semibold text-gray-700"
             >
               City
             </label>
@@ -266,7 +266,7 @@ const WorkerSignup = () => {
               value={form.city}
               onChange={handleChange}
               placeholder="City"
-              className="w-full rounded-md border border-gray-600 bg-gray-900 px-4 py-3 text-gray-200 placeholder-gray-400 focus:border-cyan-400 focus:outline-none focus:ring-1 focus:ring-cyan-400 transition"
+              className="w-full rounded-md border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
               autoComplete="address-level2"
             />
           </div>
@@ -275,7 +275,7 @@ const WorkerSignup = () => {
           <div>
             <label
               htmlFor="state"
-              className="block mb-2 text-sm font-semibold text-gray-300"
+              className="block mb-2 text-sm font-semibold text-gray-700"
             >
               State
             </label>
@@ -285,7 +285,7 @@ const WorkerSignup = () => {
               value={form.state}
               onChange={handleChange}
               placeholder="State"
-              className="w-full rounded-md border border-gray-600 bg-gray-900 px-4 py-3 text-gray-200 placeholder-gray-400 focus:border-cyan-400 focus:outline-none focus:ring-1 focus:ring-cyan-400 transition"
+              className="w-full rounded-md border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
               autoComplete="address-level1"
             />
           </div>
@@ -294,7 +294,7 @@ const WorkerSignup = () => {
           <div className="col-span-2">
             <label
               htmlFor="pincode"
-              className="block mb-2 text-sm font-semibold text-gray-300"
+              className="block mb-2 text-sm font-semibold text-gray-700"
             >
               Pincode
             </label>
@@ -304,7 +304,7 @@ const WorkerSignup = () => {
               value={form.pincode}
               onChange={handleChange}
               placeholder="Pincode"
-              className="w-full rounded-md border border-gray-600 bg-gray-900 px-4 py-3 text-gray-200 placeholder-gray-400 focus:border-cyan-400 focus:outline-none focus:ring-1 focus:ring-cyan-400 transition"
+              className="w-full rounded-md border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
               autoComplete="postal-code"
             />
           </div>
@@ -313,7 +313,7 @@ const WorkerSignup = () => {
           <div className="col-span-2">
             <label
               htmlFor="serviceType"
-              className="block mb-2 text-sm font-semibold text-gray-300"
+              className="block mb-2 text-sm font-semibold text-gray-700"
             >
               Service Type<span className="text-red-500">*</span>
             </label>
@@ -323,7 +323,7 @@ const WorkerSignup = () => {
               value={form.serviceType}
               onChange={handleChange}
               required
-              className="w-full rounded-md border border-gray-600 bg-gray-900 px-4 py-3 text-gray-200 focus:border-cyan-400 focus:outline-none focus:ring-1 focus:ring-cyan-400 transition"
+              className="w-full rounded-md border border-gray-300 bg-white px-4 py-3 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
             >
               <option value="" disabled>
                 Select Service Type
@@ -332,7 +332,7 @@ const WorkerSignup = () => {
               <option value="Plumber">Plumber</option>
               <option value="Carpenter">Carpenter</option>
               <option value="Painter">Painter</option>
-              <option value="AC Repair">AC Repair</option>
+              <option value="Appliance Repair">Appliance Repair</option>
             </select>
           </div>
 
@@ -340,7 +340,7 @@ const WorkerSignup = () => {
           <div className="col-span-2">
             <label
               htmlFor="profilePhoto"
-              className="block mb-2 text-sm font-semibold text-gray-300"
+              className="block mb-2 text-sm font-semibold text-gray-700"
             >
               Profile Photo<span className="text-red-500">*</span>
             </label>
@@ -349,11 +349,11 @@ const WorkerSignup = () => {
               type="file"
               accept="image/*"
               onChange={(e) => setProfilePhoto(e.target.files[0])}
-              className="w-full rounded-md border border-gray-600 bg-gray-900 px-3 py-2 text-gray-200 focus:outline-none focus:ring-1 focus:ring-cyan-400 transition cursor-pointer"
+              className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 transition cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-600 hover:file:bg-blue-100"
               required
               aria-describedby="profilePhotoHelp"
             />
-            <small id="profilePhotoHelp" className="text-gray-400">
+            <small id="profilePhotoHelp" className="text-gray-500">
               Upload a clear profile photo.
             </small>
           </div>
@@ -362,7 +362,7 @@ const WorkerSignup = () => {
           <div className="col-span-2">
             <label
               htmlFor="aadhaarCard"
-              className="block mb-2 text-sm font-semibold text-gray-300"
+              className="block mb-2 text-sm font-semibold text-gray-700"
             >
               Aadhaar Card<span className="text-red-500">*</span>
             </label>
@@ -371,11 +371,11 @@ const WorkerSignup = () => {
               type="file"
               accept="image/*"
               onChange={(e) => setAadhaarCard(e.target.files[0])}
-              className="w-full rounded-md border border-gray-600 bg-gray-900 px-3 py-2 text-gray-200 focus:outline-none focus:ring-1 focus:ring-cyan-400 transition cursor-pointer"
+              className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 transition cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-600 hover:file:bg-blue-100"
               required
               aria-describedby="aadhaarCardHelp"
             />
-            <small id="aadhaarCardHelp" className="text-gray-400">
+            <small id="aadhaarCardHelp" className="text-gray-500">
               Upload scanned copy of your Aadhaar card.
             </small>
           </div>
@@ -384,14 +384,28 @@ const WorkerSignup = () => {
           <button
             type="submit"
             disabled={loading}
-            className={`col-span-2 py-3 rounded-xl font-semibold text-white shadow-md transition ${
+            className={`col-span-2 py-3 rounded-lg font-semibold text-white shadow-md transition ${
               loading
-                ? "bg-cyan-400 cursor-not-allowed"
-                : "bg-cyan-600 hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2"
+                ? "bg-blue-400 cursor-not-allowed"
+                : "bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
             }`}
           >
             {loading ? "Registering..." : "Register"}
           </button>
+
+          {/* Login Link */}
+          <div className="col-span-2 text-center mt-4">
+            <p className="text-gray-600">
+              Already have an account?{' '}
+              <button
+                type="button"
+                onClick={() => navigate('/worker-login')}
+                className="text-blue-600 hover:text-blue-700 font-medium underline focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
+              >
+                Login here
+              </button>
+            </p>
+          </div>
         </form>
       </div>
     </div>
