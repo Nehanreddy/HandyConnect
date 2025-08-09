@@ -9,7 +9,7 @@ import {
   Menu,
   X 
 } from 'lucide-react';
-import logo from '../assets/logo.png';
+import logo from '../assets/image.png';
 
 const Navbar = () => {
   const { user, logout } = useAuth();

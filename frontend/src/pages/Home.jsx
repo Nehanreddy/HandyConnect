@@ -11,7 +11,7 @@ import {
   StarIcon,
 } from '@heroicons/react/24/outline';
 
-import hero3 from '../assets/hero3.jpg'; // your background image
+import hero3 from '../assets/hero3.avif';
 import ServiceBookingModal from '../components/ServiceBookingModal';
 
 import electricianImg from '../assets/electrician.jpg';

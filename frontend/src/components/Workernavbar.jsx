@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useWorkerAuth } from '../context/WorkerAuthContext';
 import { useState } from 'react';
-import logo from '../assets/logo.png';
+import logo from '../assets/image.png';
 import WorkerSidebar from './WorkerSidebar';
 import AdminLoginModal from './AdminLoginModal'; // 🆕 NEW
 
@@ -35,7 +35,7 @@ const WorkerNavbar = () => {
 
   // 🔄 UPDATED: Handle logo click to redirect to main home page
   const handleLogoClick = () => {
-    navigate('/');
+    navigate('/worker')
   };
 
   return (
