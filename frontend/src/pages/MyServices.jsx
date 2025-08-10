@@ -89,34 +89,34 @@ const MyServices = () => {
   const getStatusIcon = (status) => {
     switch (status) {
       case 'pending':
-        return <ClockIcon className="w-5 h-5 text-yellow-500" />;
+        return <ClockIcon className="w-5 h-5 text-yellow-400" />;
       case 'accepted':
-        return <CheckCircleIcon className="w-5 h-5 text-green-500" />;
+        return <CheckCircleIcon className="w-5 h-5 text-green-400" />;
       case 'rejected':
-        return <XCircleIcon className="w-5 h-5 text-red-500" />;
+        return <XCircleIcon className="w-5 h-5 text-red-400" />;
       case 'completed':
-        return <CheckCircleIcon className="w-5 h-5 text-blue-500" />;
+        return <CheckCircleIcon className="w-5 h-5 text-blue-400" />;
       case 'rated': // 🆕 Add rated status
-        return <StarIconSolid className="w-5 h-5 text-purple-500" />;
+        return <StarIconSolid className="w-5 h-5 text-purple-400" />;
       default:
-        return <ClockIcon className="w-5 h-5 text-gray-500" />;
+        return <ClockIcon className="w-5 h-5 text-gray-400" />;
     }
   };
 
   const getStatusColor = (status) => {
     switch (status) {
       case 'pending':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-yellow-900/30 text-yellow-400 border border-yellow-700';
       case 'accepted':
-        return 'bg-green-100 text-green-800';
+        return 'bg-green-900/30 text-green-400 border border-green-700';
       case 'rejected':
-        return 'bg-red-100 text-red-800';
+        return 'bg-red-900/30 text-red-400 border border-red-700';
       case 'completed':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-blue-900/30 text-blue-400 border border-blue-700';
       case 'rated': // 🆕 Add rated status color
-        return 'bg-purple-100 text-purple-800';
+        return 'bg-purple-900/30 text-purple-400 border border-purple-700';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-gray-900/30 text-gray-400 border border-gray-700';
     }
   };
 
@@ -143,10 +143,10 @@ const MyServices = () => {
           star <= rating ? (
             <StarIconSolid key={star} className="w-4 h-4 text-yellow-400" />
           ) : (
-            <StarIcon key={star} className="w-4 h-4 text-gray-300" />
+            <StarIcon key={star} className="w-4 h-4 text-gray-400" />
           )
         ))}
-        <span className="ml-2 text-sm text-gray-600">{rating}/5</span>
+        <span className="ml-2 text-sm text-gray-300">{rating}/5</span>
       </div>
     );
   };
@@ -154,27 +154,27 @@ const MyServices = () => {
   const renderWorkerDetails = (booking) => {
     if ((booking.status === 'accepted' || booking.status === 'completed' || booking.status === 'rated') && booking.acceptedBy) {
       return (
-        <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
-          <h4 className="font-semibold text-green-800 mb-2 flex items-center">
+        <div className="mt-4 p-4 bg-green-900/30 border border-green-700 rounded-lg">
+          <h4 className="font-semibold text-green-300 mb-2 flex items-center">
             <UserIcon className="w-4 h-4 mr-2" />
             Worker Details
           </h4>
           <div className="space-y-2 text-sm">
-            <p><strong>Name:</strong> {booking.acceptedBy.name}</p>
-            <p className="flex items-center">
+            <p className="text-gray-300"><strong>Name:</strong> {booking.acceptedBy.name}</p>
+            <p className="flex items-center text-gray-300">
               <PhoneIcon className="w-4 h-4 mr-1" />
               <strong>Phone:</strong> 
-              <a href={`tel:${booking.acceptedBy.phone}`} className="ml-1 text-blue-600 hover:underline">
+              <a href={`tel:${booking.acceptedBy.phone}`} className="ml-1 text-blue-400 hover:underline">
                 {booking.acceptedBy.phone}
               </a>
             </p>
-            <p><strong>Service Type:</strong> {booking.acceptedBy.serviceType}</p>
-            <p><strong>City:</strong> {booking.acceptedBy.city}</p>
-            <p className="text-xs text-green-600">
+            <p className="text-gray-300"><strong>Service Type:</strong> {booking.acceptedBy.serviceType}</p>
+            <p className="text-gray-300"><strong>City:</strong> {booking.acceptedBy.city}</p>
+            <p className="text-xs text-green-400">
               <strong>Accepted:</strong> {new Date(booking.acceptedAt).toLocaleString()}
             </p>
             {booking.completedAt && (
-              <p className="text-xs text-blue-600">
+              <p className="text-xs text-blue-400">
                 <strong>Completed:</strong> {new Date(booking.completedAt).toLocaleString()}
               </p>
             )}
@@ -189,11 +189,11 @@ const MyServices = () => {
   const renderRatingSection = (booking) => {
     if (booking.status === 'completed') {
       return (
-        <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+        <div className="mt-4 p-4 bg-blue-900/30 border border-blue-700 rounded-lg">
           <div className="flex justify-between items-center">
             <div>
-              <h4 className="font-semibold text-blue-800 mb-1">Service Completed!</h4>
-              <p className="text-sm text-blue-700">How was your experience? Rate this service.</p>
+              <h4 className="font-semibold text-blue-300 mb-1">Service Completed!</h4>
+              <p className="text-sm text-blue-200">How was your experience? Rate this service.</p>
             </div>
             <button
               onClick={() => openRatingModal(booking)}
@@ -208,17 +208,17 @@ const MyServices = () => {
 
     if (booking.status === 'rated' && booking.rating) {
       return (
-        <div className="mt-4 p-4 bg-purple-50 border border-purple-200 rounded-lg">
-          <h4 className="font-semibold text-purple-800 mb-2">Your Rating</h4>
+        <div className="mt-4 p-4 bg-purple-900/30 border border-purple-700 rounded-lg">
+          <h4 className="font-semibold text-purple-300 mb-2">Your Rating</h4>
           <div className="space-y-2">
             {renderStars(booking.rating)}
             {booking.review && (
               <div>
-                <p className="text-sm text-purple-700 font-medium">Your Review:</p>
-                <p className="text-sm text-purple-600 italic">"{booking.review}"</p>
+                <p className="text-sm text-purple-300 font-medium">Your Review:</p>
+                <p className="text-sm text-purple-200 italic">"{booking.review}"</p>
               </div>
             )}
-            <p className="text-xs text-purple-500">
+            <p className="text-xs text-purple-400">
               Rated on {new Date(booking.ratedAt).toLocaleDateString()}
             </p>
           </div>
@@ -233,10 +233,10 @@ const MyServices = () => {
     return (
       <div>
         <Navbar />
-        <div className="min-h-screen bg-gray-50 pt-24 flex justify-center items-center">
+        <div className="min-h-screen bg-gradient-to-br from-black via-black to-black pt-24 flex justify-center items-center">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
-            <p className="mt-4 text-gray-600">Loading your services...</p>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
+            <p className="mt-4 text-gray-300">Loading your services...</p>
           </div>
         </div>
       </div>
@@ -246,55 +246,55 @@ const MyServices = () => {
   return (
     <div>
       <Navbar />
-      <div className="min-h-screen bg-gray-50 pt-24">
-        <div className="max-w-6xl mx-auto p-6">
-          <h1 className="text-3xl font-bold text-gray-900 mb-6">My Services</h1>
+      <div className="min-h-screen bg-gradient-to-br from-black via-black to-black text-gray-200 pt-20">
+        <div className="pt-8 px-6 max-w-6xl mx-auto space-y-8">
+          <h1 className="text-4xl font-bold text-purple-400 mb-6 tracking-wide">My Services</h1>
 
           {/* Status Summary Cards - 🔄 Updated to include rated */}
           <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
-            <div className="bg-white p-4 rounded-lg shadow border-l-4 border-yellow-500">
+            <div className="bg-gray-900 p-4 rounded-2xl shadow-lg border border-purple-700 border-l-4 border-l-yellow-500">
               <div className="flex items-center">
-                <ClockIcon className="w-8 h-8 text-yellow-500 mr-3" />
+                <ClockIcon className="w-8 h-8 text-yellow-400 mr-3" />
                 <div>
-                  <p className="text-sm text-gray-600">Pending</p>
-                  <p className="text-2xl font-bold text-gray-900">{bookings.pending.length}</p>
+                  <p className="text-sm text-gray-400">Pending</p>
+                  <p className="text-2xl font-bold text-white">{bookings.pending.length}</p>
                 </div>
               </div>
             </div>
-            <div className="bg-white p-4 rounded-lg shadow border-l-4 border-green-500">
+            <div className="bg-gray-900 p-4 rounded-2xl shadow-lg border border-purple-700 border-l-4 border-l-green-500">
               <div className="flex items-center">
-                <CheckCircleIcon className="w-8 h-8 text-green-500 mr-3" />
+                <CheckCircleIcon className="w-8 h-8 text-green-400 mr-3" />
                 <div>
-                  <p className="text-sm text-gray-600">Accepted</p>
-                  <p className="text-2xl font-bold text-gray-900">{bookings.accepted.length}</p>
+                  <p className="text-sm text-gray-400">Accepted</p>
+                  <p className="text-2xl font-bold text-white">{bookings.accepted.length}</p>
                 </div>
               </div>
             </div>
-            <div className="bg-white p-4 rounded-lg shadow border-l-4 border-red-500">
+            <div className="bg-gray-900 p-4 rounded-2xl shadow-lg border border-purple-700 border-l-4 border-l-red-500">
               <div className="flex items-center">
-                <XCircleIcon className="w-8 h-8 text-red-500 mr-3" />
+                <XCircleIcon className="w-8 h-8 text-red-400 mr-3" />
                 <div>
-                  <p className="text-sm text-gray-600">Rejected</p>
-                  <p className="text-2xl font-bold text-gray-900">{bookings.rejected.length}</p>
+                  <p className="text-sm text-gray-400">Rejected</p>
+                  <p className="text-2xl font-bold text-white">{bookings.rejected.length}</p>
                 </div>
               </div>
             </div>
-            <div className="bg-white p-4 rounded-lg shadow border-l-4 border-blue-500">
+            <div className="bg-gray-900 p-4 rounded-2xl shadow-lg border border-purple-700 border-l-4 border-l-blue-500">
               <div className="flex items-center">
-                <CheckCircleIcon className="w-8 h-8 text-blue-500 mr-3" />
+                <CheckCircleIcon className="w-8 h-8 text-blue-400 mr-3" />
                 <div>
-                  <p className="text-sm text-gray-600">Completed</p>
-                  <p className="text-2xl font-bold text-gray-900">{bookings.completed.length}</p>
+                  <p className="text-sm text-gray-400">Completed</p>
+                  <p className="text-2xl font-bold text-white">{bookings.completed.length}</p>
                 </div>
               </div>
             </div>
             {/* 🆕 NEW: Rated card */}
-            <div className="bg-white p-4 rounded-lg shadow border-l-4 border-purple-500">
+            <div className="bg-gray-900 p-4 rounded-2xl shadow-lg border border-purple-700 border-l-4 border-l-purple-500">
               <div className="flex items-center">
-                <StarIconSolid className="w-8 h-8 text-purple-500 mr-3" />
+                <StarIconSolid className="w-8 h-8 text-purple-400 mr-3" />
                 <div>
-                  <p className="text-sm text-gray-600">Rated</p>
-                  <p className="text-2xl font-bold text-gray-900">{bookings.rated.length}</p>
+                  <p className="text-sm text-gray-400">Rated</p>
+                  <p className="text-2xl font-bold text-white">{bookings.rated.length}</p>
                 </div>
               </div>
             </div>
@@ -302,16 +302,16 @@ const MyServices = () => {
 
           {/* Filter Tabs - 🔄 Updated to include rated */}
           <div className="mb-6">
-            <div className="border-b border-gray-200">
+            <div className="border-b border-gray-700">
               <nav className="-mb-px flex space-x-8">
                 {['all', 'pending', 'accepted', 'rejected', 'completed', 'rated'].map((tab) => (
                   <button
                     key={tab}
                     onClick={() => setActiveTab(tab)}
-                    className={`py-2 px-1 border-b-2 font-medium text-sm capitalize ${
+                    className={`py-2 px-1 border-b-2 font-medium text-sm capitalize transition-colors ${
                       activeTab === tab
-                        ? 'border-indigo-500 text-indigo-600'
-                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                        ? 'border-purple-500 text-purple-400'
+                        : 'border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-600'
                     }`}
                   >
                     {tab} ({tab === 'all' ? getAllBookings().length : bookings[tab]?.length || 0})
@@ -324,10 +324,10 @@ const MyServices = () => {
           {/* Bookings List */}
           <div className="space-y-6">
             {getFilteredBookings().length === 0 ? (
-              <div className="text-center py-12">
-                <WrenchScrewdriverIcon className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No services found</h3>
-                <p className="text-gray-500">
+              <div className="text-center py-12 bg-gray-900 rounded-2xl border border-purple-700">
+                <WrenchScrewdriverIcon className="w-16 h-16 text-gray-500 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-purple-400 mb-2">No services found</h3>
+                <p className="text-gray-400">
                   {activeTab === 'all' 
                     ? "You haven't booked any services yet." 
                     : `No ${activeTab} services at the moment.`}
@@ -335,15 +335,15 @@ const MyServices = () => {
               </div>
             ) : (
               getFilteredBookings().map((booking) => (
-                <div key={booking._id} className="bg-white rounded-lg shadow p-6 border border-gray-200">
+                <div key={booking._id} className="bg-gray-900 rounded-2xl shadow-lg p-6 border border-purple-700">
                   <div className="flex justify-between items-start mb-4">
                     <div className="flex items-center space-x-3">
-                      <div className="p-2 bg-indigo-100 rounded-lg">
-                        <WrenchScrewdriverIcon className="w-6 h-6 text-indigo-600" />
+                      <div className="p-2 bg-purple-700 rounded-lg">
+                        <WrenchScrewdriverIcon className="w-6 h-6 text-purple-200" />
                       </div>
                       <div>
-                        <h3 className="text-xl font-semibold text-gray-900">{booking.serviceType}</h3>
-                        <p className="text-sm text-gray-500">
+                        <h3 className="text-xl font-semibold text-purple-400">{booking.serviceType}</h3>
+                        <p className="text-sm text-gray-400">
                           Booked on {new Date(booking.createdAt).toLocaleDateString()}
                         </p>
                       </div>
@@ -358,29 +358,29 @@ const MyServices = () => {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div>
-                      <p className="text-sm text-gray-600 mb-2"><strong>Problem:</strong></p>
-                      <p className="text-gray-800">{booking.problem}</p>
+                      <p className="text-sm text-gray-400 mb-2"><strong>Problem:</strong></p>
+                      <p className="text-gray-200">{booking.problem}</p>
                     </div>
                     <div>
-                      <p className="text-sm text-gray-600 mb-2 flex items-center">
+                      <p className="text-sm text-gray-400 mb-2 flex items-center">
                         <MapPinIcon className="w-4 h-4 mr-1" />
                         <strong>Location:</strong>
                       </p>
-                      <p className="text-gray-800">{booking.serviceLocation.address}, {booking.serviceLocation.city}</p>
+                      <p className="text-gray-200">{booking.serviceLocation.address}, {booking.serviceLocation.city}</p>
                     </div>
                     <div>
-                      <p className="text-sm text-gray-600 mb-2 flex items-center">
+                      <p className="text-sm text-gray-400 mb-2 flex items-center">
                         <CalendarIcon className="w-4 h-4 mr-1" />
                         <strong>Scheduled:</strong>
                       </p>
-                      <p className="text-gray-800">{booking.date} at {booking.time}</p>
+                      <p className="text-gray-200">{booking.date} at {booking.time}</p>
                     </div>
                     <div>
-                      <p className="text-sm text-gray-600 mb-2"><strong>Urgency:</strong></p>
-                      <span className={`px-2 py-1 rounded text-xs font-medium ${
-                        booking.urgency === 'Emergency' ? 'bg-red-100 text-red-800' :
-                        booking.urgency === 'Urgent' ? 'bg-yellow-100 text-yellow-800' :
-                        'bg-green-100 text-green-800'
+                      <p className="text-sm text-gray-400 mb-2"><strong>Urgency:</strong></p>
+                      <span className={`px-2 py-1 rounded text-xs font-medium border ${
+                        booking.urgency === 'Emergency' ? 'bg-red-900/30 text-red-400 border-red-700' :
+                        booking.urgency === 'Urgent' ? 'bg-yellow-900/30 text-yellow-400 border-yellow-700' :
+                        'bg-green-900/30 text-green-400 border-green-700'
                       }`}>
                         {booking.urgency}
                       </span>
@@ -395,24 +395,24 @@ const MyServices = () => {
 
                   {/* Status-specific messages */}
                   {booking.status === 'pending' && (
-                    <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
-                      <p className="text-sm text-yellow-800">
+                    <div className="mt-4 p-3 bg-yellow-900/30 border border-yellow-700 rounded-md">
+                      <p className="text-sm text-yellow-300">
                         🕐 Waiting for a worker to accept your request. You'll be notified once someone accepts!
                       </p>
                     </div>
                   )}
 
                   {booking.status === 'rejected' && (
-                    <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-md">
-                      <p className="text-sm text-red-800">
+                    <div className="mt-4 p-3 bg-red-900/30 border border-red-700 rounded-md">
+                      <p className="text-sm text-red-300">
                         ❌ This request was not accepted. You can book again for this service.
                       </p>
                     </div>
                   )}
 
                   {booking.status === 'accepted' && (
-                    <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-md">
-                      <p className="text-sm text-green-800">
+                    <div className="mt-4 p-3 bg-green-900/30 border border-green-700 rounded-md">
+                      <p className="text-sm text-green-300">
                         ✅ Worker is on the way! Contact them if needed.
                       </p>
                     </div>
