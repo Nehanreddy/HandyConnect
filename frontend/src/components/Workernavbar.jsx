@@ -3,14 +3,14 @@ import { useWorkerAuth } from '../context/WorkerAuthContext';
 import { useState } from 'react';
 import logo from '../assets/image.png';
 import WorkerSidebar from './WorkerSidebar';
-import AdminLoginModal from './AdminLoginModal'; // 🆕 NEW
+import AdminLoginModal from './AdminLoginModal'; 
 
 const WorkerNavbar = () => {
   const { worker, logoutWorker } = useWorkerAuth();
   const navigate = useNavigate();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false);
-  const [showAdminLogin, setShowAdminLogin] = useState(false); // 🆕 NEW
+  const [showAdminLogin, setShowAdminLogin] = useState(false); 
 
   const handleLogout = () => {
     logoutWorker();
