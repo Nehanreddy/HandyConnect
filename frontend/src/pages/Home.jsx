@@ -9,6 +9,7 @@ import {
   PaintBrushIcon,
   Cog6ToothIcon,
   StarIcon,
+  SparklesIcon,
 } from '@heroicons/react/24/outline';
 
 import hero3 from '../assets/hero3.avif';
@@ -19,6 +20,7 @@ import plumberImg from '../assets/plumber.jpg';
 import carpenterImg from '../assets/carpenter.jpg';
 import painterImg from '../assets/paint.jpg';
 import applianceRepairImg from '../assets/appliancerepair.jpg';
+import cleaning from '../assets/cleaning.jpeg';
 
 const HomePage = () => {
   const navigate = useNavigate();
@@ -115,6 +117,12 @@ const HomePage = () => {
       icon: <Cog6ToothIcon className="h-8 w-8 text-purple-400" />,
       img: applianceRepairImg,
     },
+    {
+      label: 'Housekeeping',
+      description: 'House Cleaning, Sanitization, more',
+      icon: <SparklesIcon className="h-8 w-8 text-purple-400" />,
+      img: cleaning,
+    },
   ];
 
   const reviews = [
@@ -136,10 +144,10 @@ const HomePage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black via-black to-black text-gray-200 pt-20">
-      {/* Hero Section with Full Background Image */}
+    <div className="min-h-screen bg-gradient-to-br from-black via-black to-black text-gray-200">
+      {/* Hero Section with Full Background Image - Now covers full viewport */}
       <section 
-        className="relative flex flex-col items-center justify-center px-4 py-12 lg:py-20 min-h-[80vh] w-full"
+        className="relative flex flex-col items-center justify-center px-4 py-12 lg:py-20 min-h-screen w-full"
         style={{
           backgroundImage: `url(${hero3})`,
           backgroundSize: 'cover',
@@ -151,8 +159,8 @@ const HomePage = () => {
         {/* Dark overlay for better text readability */}
         <div className="absolute inset-0 bg-black/50"></div>
         
-        {/* Content - centered text only */}
-        <div className="relative z-10 w-full max-w-7xl mx-auto text-center space-y-6" data-aos="fade-up">
+        {/* Content - centered text with extra top margin to account for floating navbar */}
+        <div className="relative z-10 w-full max-w-7xl mx-auto text-center space-y-6 mt-24" data-aos="fade-up">
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold leading-tight tracking-tight text-white drop-shadow-2xl">
             Welcome to{' '}
             <span className="bg-gradient-to-r from-purple-300 via-white to-purple-400 bg-clip-text text-transparent font-extrabold">
@@ -305,7 +313,7 @@ const HomePage = () => {
             <p>
               Phone:{' '}
               <a href="tel:+919876543210" className="text-gray-300 hover:underline">
-                +91 9876543210
+                +919876543210
               </a>
             </p>
           </address>

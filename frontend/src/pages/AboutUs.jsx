@@ -5,7 +5,7 @@ const AboutUs = () => {
     // Outer container with purple gradient background matching homepage
     <div className="min-h-screen bg-gradient-to-br from-black via-black to-black text-gray-200 pt-20">
       {/* Inner container constrains the content width and adds padding */}
-      <div className="pt-8 px-6 max-w-4xl mx-auto space-y-12">
+      <div className="pt-8 px-6 max-w-4xl mx-auto space-y-12 pb-16"> {/* Added pb-16 for bottom padding */}
         <h1
           className="text-5xl font-extrabold text-purple-400 mb-8 text-center tracking-wide"
           data-aos="fade-down"
@@ -90,10 +90,10 @@ const AboutUs = () => {
           </div>
         </section>
 
-        {/* Why Handy Connect Section */}
-        <section data-aos="fade-up" data-aos-delay="500" className="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-2xl p-8 shadow-lg">
-          <h2 className="text-3xl font-bold text-purple-800 mb-4 tracking-wide">Why Handy Connect?</h2>
-          <p className="text-gray-800 leading-relaxed">
+        {/* Why Handy Connect Section - FIXED: Changed to dark background */}
+        <section data-aos="fade-up" data-aos-delay="500" className="bg-gray-900 rounded-2xl p-8 shadow-lg border border-purple-700">
+          <h2 className="text-3xl font-bold text-purple-400 mb-4 tracking-wide">Why Handy Connect?</h2>
+          <p className="text-gray-300 leading-relaxed">
             Because we put your convenience and trust first. With an easy-to-use platform, vetted professionals, transparent pricing,
             and fast bookings, Handy Connect is your go-to solution for all home maintenance and repair needs.
             Join thousands of satisfied customers who have made seamless home service booking a reality.

@@ -124,25 +124,44 @@ const updateWorkerProfile = async (req, res) => {
     const worker = await Worker.findById(req.user.id);
     if (!worker) return res.status(404).json({ msg: 'Worker not found' });
 
+    // Update all profile fields
     worker.name = req.body.name || worker.name;
+    worker.phone = req.body.phone || worker.phone;
     worker.email = req.body.email || worker.email;
+    worker.address = req.body.address || worker.address;
+    worker.city = req.body.city || worker.city;
+    worker.state = req.body.state || worker.state;
+    worker.pincode = req.body.pincode || worker.pincode;
+    worker.aadhaar = req.body.aadhaar || worker.aadhaar;
 
+    // Handle password update if provided
     if (req.body.password) {
       const salt = await bcrypt.genSalt(10);
       worker.password = await bcrypt.hash(req.body.password, salt);
     }
 
     const updatedWorker = await worker.save();
+    
+    // Return all updated fields
     res.json({
       _id: updatedWorker._id,
       name: updatedWorker.name,
+      phone: updatedWorker.phone,
       email: updatedWorker.email,
+      address: updatedWorker.address,
+      city: updatedWorker.city,
+      state: updatedWorker.state,
+      pincode: updatedWorker.pincode,
+      aadhaar: updatedWorker.aadhaar,
+      serviceType: updatedWorker.serviceType,
+      status: updatedWorker.status,
     });
   } catch (err) {
     console.error('❌ Error updating profile:', err);
     res.status(500).json({ msg: 'Server error' });
   }
 };
+
 
 const resetWorkerPassword = async (req, res) => {
   const { email, newPassword } = req.body;

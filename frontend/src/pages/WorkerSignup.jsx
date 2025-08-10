@@ -333,6 +333,7 @@ const WorkerSignup = () => {
               <option value="Carpenter">Carpenter</option>
               <option value="Painter">Painter</option>
               <option value="Appliance Repair">Appliance Repair</option>
+              <option value="Housekeeping">Housekeeping</option>
             </select>
           </div>
 

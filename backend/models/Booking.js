@@ -21,7 +21,7 @@ const bookingSchema = new mongoose.Schema({
   contactEmail: { type: String, required: true },
   status: {
     type: String,
-    enum: ['pending', 'accepted', 'rejected', 'completed', 'rated'], // 🆕 Added 'completed' and 'rated'
+    enum: ['pending', 'accepted', 'rejected', 'completed'], // 🔄 REMOVED 'rated'
     default: 'pending',
   },
   acceptedBy: {
@@ -31,11 +31,22 @@ const bookingSchema = new mongoose.Schema({
   },
   acceptedAt: { type: Date, default: null },
   
-  // 🆕 NEW FIELDS FOR COMPLETION AND RATING
+  // Completion and Rating fields
   completedAt: { type: Date, default: null },
-  rating: { type: Number, min: 1, max: 5, default: null },
-  review: { type: String, default: null },
-  ratedAt: { type: Date, default: null },
+  rating: { 
+    type: Number, 
+    min: 1, 
+    max: 5, 
+    default: null 
+  },
+  review: { 
+    type: String, 
+    default: null 
+  },
+  ratedAt: { 
+    type: Date, 
+    default: null 
+  },
   
   createdAt: { type: Date, default: Date.now }
 });

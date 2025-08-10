@@ -126,7 +126,6 @@ exports.updateBookingStatus = async (req, res) => {
   }
 };
 
-// 🆕 NEW: Mark booking as completed (Worker function)
 exports.markBookingCompleted = async (req, res) => {
   const { id } = req.params;
 
@@ -137,7 +136,6 @@ exports.markBookingCompleted = async (req, res) => {
       return res.status(404).json({ msg: 'Booking not found' });
     }
 
-    // Check if the worker who accepted this booking is trying to complete it
     if (booking.acceptedBy.toString() !== req.worker.id.toString()) {
       return res.status(403).json({ msg: 'You can only complete bookings you accepted' });
     }
@@ -160,7 +158,7 @@ exports.markBookingCompleted = async (req, res) => {
   }
 };
 
-// 🆕 NEW: Submit rating and review (User function)
+// 🔄 UPDATED: Keep status as 'completed' after rating
 exports.rateBooking = async (req, res) => {
   const { id } = req.params;
   const { rating, review } = req.body;
@@ -187,7 +185,7 @@ exports.rateBooking = async (req, res) => {
     booking.rating = rating;
     booking.review = review || '';
     booking.ratedAt = new Date();
-    booking.status = 'rated';
+    // 🔄 REMOVED: booking.status = 'rated'; - Keep status as 'completed'
     await booking.save();
 
     res.status(200).json({ 
@@ -200,7 +198,6 @@ exports.rateBooking = async (req, res) => {
   }
 };
 
-// 🆕 NEW: Get accepted jobs by specific worker (for WorkerHome persistence)
 exports.getWorkerAcceptedJobs = async (req, res) => {
   try {
     const { workerId } = req.query;
@@ -209,10 +206,9 @@ exports.getWorkerAcceptedJobs = async (req, res) => {
       return res.status(400).json({ msg: 'Worker ID is required' });
     }
 
-    // Find all bookings accepted by this worker that are not yet completed
     const acceptedBookings = await Booking.find({
       acceptedBy: workerId,
-      status: { $in: ['accepted', 'in-progress'] } // Only get active jobs
+      status: { $in: ['accepted', 'in-progress'] }
     })
     .populate('user', 'name email phone')
     .sort({ acceptedAt: -1 });
@@ -227,19 +223,19 @@ exports.getWorkerAcceptedJobs = async (req, res) => {
   }
 };
 
-// 🆕 NEW: Get worker's completed bookings with ratings (Worker Dashboard)
+// 🔄 UPDATED: Only look for 'completed' status (includes both rated and non-rated)
 exports.getWorkerCompletedJobs = async (req, res) => {
   try {
     const completedJobs = await Booking.find({
       acceptedBy: req.worker.id,
-      status: { $in: ['completed', 'rated'] }
+      status: 'completed' // 🔄 Only 'completed' status now
     })
     .populate('user', 'name email')
     .sort({ completedAt: -1 });
 
-    // Calculate worker statistics
+    // Calculate worker statistics - check for rating field instead of status
     const totalJobs = completedJobs.length;
-    const ratedJobs = completedJobs.filter(job => job.rating);
+    const ratedJobs = completedJobs.filter(job => job.rating && job.rating > 0); // 🔄 Check rating field
     const totalRatings = ratedJobs.length;
     const averageRating = totalRatings > 0 
       ? (ratedJobs.reduce((sum, job) => sum + job.rating, 0) / totalRatings).toFixed(1)
@@ -268,20 +264,19 @@ exports.getWorkerCompletedJobs = async (req, res) => {
   }
 };
 
-// 🔄 UPDATED: Enhanced getUserBookingsWithWorkers to include completed/rated
+// 🔄 UPDATED: Remove separate 'rated' category - merge into 'completed'
 exports.getUserBookingsWithWorkers = async (req, res) => {
   try {
     const bookings = await Booking.find({ user: req.user.id })
       .populate('acceptedBy', 'name phone email city serviceType profilePhoto')
       .sort({ createdAt: -1 });
 
-    // Categorize bookings
+    // Categorize bookings - no more 'rated' category
     const categorizedBookings = {
       pending: bookings.filter(b => b.status === 'pending'),
       accepted: bookings.filter(b => b.status === 'accepted'),
       rejected: bookings.filter(b => b.status === 'rejected'),
-      completed: bookings.filter(b => b.status === 'completed'),
-      rated: bookings.filter(b => b.status === 'rated') // 🆕 Added rated category
+      completed: bookings.filter(b => b.status === 'completed') // 🔄 This includes both rated and non-rated
     };
 
     res.status(200).json(categorizedBookings);

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import API from '../services/api';
 import Navbar from '../components/Navbar';
-import RatingModal from '../components/RatingModal'; // 🆕 Import the RatingModal
+import RatingModal from '../components/RatingModal';
 import {
   ClockIcon,
   CheckCircleIcon,
@@ -12,9 +12,9 @@ import {
   CalendarIcon,
   UserIcon,
   WrenchScrewdriverIcon,
-  StarIcon // 🆕 Add StarIcon
+  StarIcon
 } from '@heroicons/react/24/outline';
-import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid'; // 🆕 Add solid star
+import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
 
 const MyServices = () => {
   const { user } = useAuth();
@@ -22,13 +22,12 @@ const MyServices = () => {
     pending: [],
     accepted: [],
     rejected: [],
-    completed: [],
-    rated: [] // 🆕 Add rated category
+    completed: [] // Only completed - no more rated category
   });
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('all');
-  const [showRatingModal, setShowRatingModal] = useState(false); // 🆕 Rating modal state
-  const [selectedBooking, setSelectedBooking] = useState(null); // 🆕 Selected booking for rating
+  const [showRatingModal, setShowRatingModal] = useState(false);
+  const [selectedBooking, setSelectedBooking] = useState(null);
 
   useEffect(() => {
     fetchMyServices();
@@ -44,7 +43,19 @@ const MyServices = () => {
           Authorization: `Bearer ${user.token}`
         }
       });
-      setBookings(response.data);
+      
+      // Merge completed and rated into just completed
+      const processedBookings = {
+        pending: response.data.pending || [],
+        accepted: response.data.accepted || [],
+        rejected: response.data.rejected || [],
+        completed: [
+          ...(response.data.completed || []),
+          ...(response.data.rated || []) // Merge rated into completed
+        ]
+      };
+      
+      setBookings(processedBookings);
     } catch (error) {
       console.error('Error fetching services:', error);
     } finally {
@@ -52,7 +63,6 @@ const MyServices = () => {
     }
   };
 
-  // 🆕 Handle rating submission
   const handleRatingSubmit = async (bookingId, rating, review) => {
     try {
       const response = await API.put(`/bookings/${bookingId}/rate`, {
@@ -64,9 +74,7 @@ const MyServices = () => {
         }
       });
 
-      // Refresh the services after rating
       await fetchMyServices();
-      
       alert('✅ Thank you for your rating!');
     } catch (error) {
       console.error('Error submitting rating:', error);
@@ -74,19 +82,17 @@ const MyServices = () => {
     }
   };
 
-  // 🆕 Open rating modal
   const openRatingModal = (booking) => {
     setSelectedBooking(booking);
     setShowRatingModal(true);
   };
 
-  // 🆕 Close rating modal
   const closeRatingModal = () => {
     setShowRatingModal(false);
     setSelectedBooking(null);
   };
 
-  const getStatusIcon = (status) => {
+  const getStatusIcon = (status, hasRating = false) => {
     switch (status) {
       case 'pending':
         return <ClockIcon className="w-5 h-5 text-yellow-400" />;
@@ -95,15 +101,16 @@ const MyServices = () => {
       case 'rejected':
         return <XCircleIcon className="w-5 h-5 text-red-400" />;
       case 'completed':
-        return <CheckCircleIcon className="w-5 h-5 text-blue-400" />;
-      case 'rated': // 🆕 Add rated status
-        return <StarIconSolid className="w-5 h-5 text-purple-400" />;
+        // Show star if rated, checkmark if not rated
+        return hasRating ? 
+          <StarIconSolid className="w-5 h-5 text-purple-400" /> : 
+          <CheckCircleIcon className="w-5 h-5 text-blue-400" />;
       default:
         return <ClockIcon className="w-5 h-5 text-gray-400" />;
     }
   };
 
-  const getStatusColor = (status) => {
+  const getStatusColor = (status, hasRating = false) => {
     switch (status) {
       case 'pending':
         return 'bg-yellow-900/30 text-yellow-400 border border-yellow-700';
@@ -112,12 +119,19 @@ const MyServices = () => {
       case 'rejected':
         return 'bg-red-900/30 text-red-400 border border-red-700';
       case 'completed':
-        return 'bg-blue-900/30 text-blue-400 border border-blue-700';
-      case 'rated': // 🆕 Add rated status color
-        return 'bg-purple-900/30 text-purple-400 border border-purple-700';
+        return hasRating ? 
+          'bg-purple-900/30 text-purple-400 border border-purple-700' :
+          'bg-blue-900/30 text-blue-400 border border-blue-700';
       default:
         return 'bg-gray-900/30 text-gray-400 border border-gray-700';
     }
+  };
+
+  const getStatusText = (status, hasRating = false) => {
+    if (status === 'completed') {
+      return hasRating ? 'Completed & Rated' : 'Completed';
+    }
+    return status;
   };
 
   const getAllBookings = () => {
@@ -125,8 +139,7 @@ const MyServices = () => {
       ...bookings.pending,
       ...bookings.accepted,
       ...bookings.rejected,
-      ...bookings.completed,
-      ...bookings.rated // 🆕 Include rated bookings
+      ...bookings.completed
     ].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
   };
 
@@ -135,7 +148,6 @@ const MyServices = () => {
     return bookings[activeTab] || [];
   };
 
-  // 🆕 Render stars for rated services
   const renderStars = (rating) => {
     return (
       <div className="flex items-center">
@@ -152,7 +164,7 @@ const MyServices = () => {
   };
 
   const renderWorkerDetails = (booking) => {
-    if ((booking.status === 'accepted' || booking.status === 'completed' || booking.status === 'rated') && booking.acceptedBy) {
+    if ((booking.status === 'accepted' || booking.status === 'completed') && booking.acceptedBy) {
       return (
         <div className="mt-4 p-4 bg-green-900/30 border border-green-700 rounded-lg">
           <h4 className="font-semibold text-green-300 mb-2 flex items-center">
@@ -185,47 +197,50 @@ const MyServices = () => {
     return null;
   };
 
-  // 🆕 Render rating section for completed/rated services
   const renderRatingSection = (booking) => {
     if (booking.status === 'completed') {
-      return (
-        <div className="mt-4 p-4 bg-blue-900/30 border border-blue-700 rounded-lg">
-          <div className="flex justify-between items-center">
-            <div>
-              <h4 className="font-semibold text-blue-300 mb-1">Service Completed!</h4>
-              <p className="text-sm text-blue-200">How was your experience? Rate this service.</p>
+      // Check if already rated
+      if (booking.rating && booking.rating > 0) {
+        // Already rated - show rating
+        return (
+          <div className="mt-4 p-4 bg-purple-900/30 border border-purple-700 rounded-lg">
+            <h4 className="font-semibold text-purple-300 mb-2">Your Rating</h4>
+            <div className="space-y-2">
+              {renderStars(booking.rating)}
+              {booking.review && (
+                <div>
+                  <p className="text-sm text-purple-300 font-medium">Your Review:</p>
+                  <p className="text-sm text-purple-200 italic">"{booking.review}"</p>
+                </div>
+              )}
+              {booking.ratedAt && (
+                <p className="text-xs text-purple-400">
+                  Rated on {new Date(booking.ratedAt).toLocaleDateString()}
+                </p>
+              )}
             </div>
-            <button
-              onClick={() => openRatingModal(booking)}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-            >
-              ⭐ Rate Service
-            </button>
           </div>
-        </div>
-      );
-    }
-
-    if (booking.status === 'rated' && booking.rating) {
-      return (
-        <div className="mt-4 p-4 bg-purple-900/30 border border-purple-700 rounded-lg">
-          <h4 className="font-semibold text-purple-300 mb-2">Your Rating</h4>
-          <div className="space-y-2">
-            {renderStars(booking.rating)}
-            {booking.review && (
+        );
+      } else {
+        // Not rated yet - show rate button
+        return (
+          <div className="mt-4 p-4 bg-blue-900/30 border border-blue-700 rounded-lg">
+            <div className="flex justify-between items-center">
               <div>
-                <p className="text-sm text-purple-300 font-medium">Your Review:</p>
-                <p className="text-sm text-purple-200 italic">"{booking.review}"</p>
+                <h4 className="font-semibold text-blue-300 mb-1">Service Completed!</h4>
+                <p className="text-sm text-blue-200">How was your experience? Rate this service.</p>
               </div>
-            )}
-            <p className="text-xs text-purple-400">
-              Rated on {new Date(booking.ratedAt).toLocaleDateString()}
-            </p>
+              <button
+                onClick={() => openRatingModal(booking)}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+              >
+                ⭐ Rate Service
+              </button>
+            </div>
           </div>
-        </div>
-      );
+        );
+      }
     }
-
     return null;
   };
 
@@ -250,8 +265,8 @@ const MyServices = () => {
         <div className="pt-8 px-6 max-w-6xl mx-auto space-y-8">
           <h1 className="text-4xl font-bold text-purple-400 mb-6 tracking-wide">My Services</h1>
 
-          {/* Status Summary Cards - 🔄 Updated to include rated */}
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
+          {/* Status Summary Cards - Updated to remove rated */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
             <div className="bg-gray-900 p-4 rounded-2xl shadow-lg border border-purple-700 border-l-4 border-l-yellow-500">
               <div className="flex items-center">
                 <ClockIcon className="w-8 h-8 text-yellow-400 mr-3" />
@@ -285,26 +300,19 @@ const MyServices = () => {
                 <div>
                   <p className="text-sm text-gray-400">Completed</p>
                   <p className="text-2xl font-bold text-white">{bookings.completed.length}</p>
-                </div>
-              </div>
-            </div>
-            {/* 🆕 NEW: Rated card */}
-            <div className="bg-gray-900 p-4 rounded-2xl shadow-lg border border-purple-700 border-l-4 border-l-purple-500">
-              <div className="flex items-center">
-                <StarIconSolid className="w-8 h-8 text-purple-400 mr-3" />
-                <div>
-                  <p className="text-sm text-gray-400">Rated</p>
-                  <p className="text-2xl font-bold text-white">{bookings.rated.length}</p>
+                  <p className="text-xs text-gray-500">
+                    {bookings.completed.filter(b => b.rating).length} rated
+                  </p>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Filter Tabs - 🔄 Updated to include rated */}
+          {/* Filter Tabs - Updated to remove rated */}
           <div className="mb-6">
             <div className="border-b border-gray-700">
               <nav className="-mb-px flex space-x-8">
-                {['all', 'pending', 'accepted', 'rejected', 'completed', 'rated'].map((tab) => (
+                {['all', 'pending', 'accepted', 'rejected', 'completed'].map((tab) => (
                   <button
                     key={tab}
                     onClick={() => setActiveTab(tab)}
@@ -334,97 +342,97 @@ const MyServices = () => {
                 </p>
               </div>
             ) : (
-              getFilteredBookings().map((booking) => (
-                <div key={booking._id} className="bg-gray-900 rounded-2xl shadow-lg p-6 border border-purple-700">
-                  <div className="flex justify-between items-start mb-4">
-                    <div className="flex items-center space-x-3">
-                      <div className="p-2 bg-purple-700 rounded-lg">
-                        <WrenchScrewdriverIcon className="w-6 h-6 text-purple-200" />
+              getFilteredBookings().map((booking) => {
+                const hasRating = booking.rating && booking.rating > 0;
+                
+                return (
+                  <div key={booking._id} className="bg-gray-900 rounded-2xl shadow-lg p-6 border border-purple-700">
+                    <div className="flex justify-between items-start mb-4">
+                      <div className="flex items-center space-x-3">
+                        <div className="p-2 bg-purple-700 rounded-lg">
+                          <WrenchScrewdriverIcon className="w-6 h-6 text-purple-200" />
+                        </div>
+                        <div>
+                          <h3 className="text-xl font-semibold text-purple-400">{booking.serviceType}</h3>
+                          <p className="text-sm text-gray-400">
+                            Booked on {new Date(booking.createdAt).toLocaleDateString()}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        {getStatusIcon(booking.status, hasRating)}
+                        <span className={`px-3 py-1 rounded-full text-xs font-medium capitalize ${getStatusColor(booking.status, hasRating)}`}>
+                          {getStatusText(booking.status, hasRating)}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                      <div>
+                        <p className="text-sm text-gray-400 mb-2"><strong>Problem:</strong></p>
+                        <p className="text-gray-200">{booking.problem}</p>
                       </div>
                       <div>
-                        <h3 className="text-xl font-semibold text-purple-400">{booking.serviceType}</h3>
-                        <p className="text-sm text-gray-400">
-                          Booked on {new Date(booking.createdAt).toLocaleDateString()}
+                        <p className="text-sm text-gray-400 mb-2 flex items-center">
+                          <MapPinIcon className="w-4 h-4 mr-1" />
+                          <strong>Location:</strong>
                         </p>
+                        <p className="text-gray-200">{booking.serviceLocation.address}, {booking.serviceLocation.city}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-400 mb-2 flex items-center">
+                          <CalendarIcon className="w-4 h-4 mr-1" />
+                          <strong>Scheduled:</strong>
+                        </p>
+                        <p className="text-gray-200">{booking.date} at {booking.time}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-400 mb-2"><strong>Urgency:</strong></p>
+                        <span className={`px-2 py-1 rounded text-xs font-medium border ${
+                          booking.urgency === 'Emergency' ? 'bg-red-900/30 text-red-400 border-red-700' :
+                          booking.urgency === 'Urgent' ? 'bg-yellow-900/30 text-yellow-400 border-yellow-700' :
+                          'bg-green-900/30 text-green-400 border-green-700'
+                        }`}>
+                          {booking.urgency}
+                        </span>
                       </div>
                     </div>
-                    <div className="flex items-center space-x-2">
-                      {getStatusIcon(booking.status)}
-                      <span className={`px-3 py-1 rounded-full text-xs font-medium capitalize ${getStatusColor(booking.status)}`}>
-                        {booking.status}
-                      </span>
-                    </div>
+
+                    {renderWorkerDetails(booking)}
+                    {renderRatingSection(booking)}
+
+                    {/* Status-specific messages */}
+                    {booking.status === 'pending' && (
+                      <div className="mt-4 p-3 bg-yellow-900/30 border border-yellow-700 rounded-md">
+                        <p className="text-sm text-yellow-300">
+                          🕐 Waiting for a worker to accept your request. You'll be notified once someone accepts!
+                        </p>
+                      </div>
+                    )}
+
+                    {booking.status === 'rejected' && (
+                      <div className="mt-4 p-3 bg-red-900/30 border border-red-700 rounded-md">
+                        <p className="text-sm text-red-300">
+                          ❌ This request was not accepted. You can book again for this service.
+                        </p>
+                      </div>
+                    )}
+
+                    {booking.status === 'accepted' && (
+                      <div className="mt-4 p-3 bg-green-900/30 border border-green-700 rounded-md">
+                        <p className="text-sm text-green-300">
+                          ✅ Worker is on the way! Contact them if needed.
+                        </p>
+                      </div>
+                    )}
                   </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <div>
-                      <p className="text-sm text-gray-400 mb-2"><strong>Problem:</strong></p>
-                      <p className="text-gray-200">{booking.problem}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-400 mb-2 flex items-center">
-                        <MapPinIcon className="w-4 h-4 mr-1" />
-                        <strong>Location:</strong>
-                      </p>
-                      <p className="text-gray-200">{booking.serviceLocation.address}, {booking.serviceLocation.city}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-400 mb-2 flex items-center">
-                        <CalendarIcon className="w-4 h-4 mr-1" />
-                        <strong>Scheduled:</strong>
-                      </p>
-                      <p className="text-gray-200">{booking.date} at {booking.time}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-400 mb-2"><strong>Urgency:</strong></p>
-                      <span className={`px-2 py-1 rounded text-xs font-medium border ${
-                        booking.urgency === 'Emergency' ? 'bg-red-900/30 text-red-400 border-red-700' :
-                        booking.urgency === 'Urgent' ? 'bg-yellow-900/30 text-yellow-400 border-yellow-700' :
-                        'bg-green-900/30 text-green-400 border-green-700'
-                      }`}>
-                        {booking.urgency}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Worker Details */}
-                  {renderWorkerDetails(booking)}
-
-                  {/* 🆕 NEW: Rating Section */}
-                  {renderRatingSection(booking)}
-
-                  {/* Status-specific messages */}
-                  {booking.status === 'pending' && (
-                    <div className="mt-4 p-3 bg-yellow-900/30 border border-yellow-700 rounded-md">
-                      <p className="text-sm text-yellow-300">
-                        🕐 Waiting for a worker to accept your request. You'll be notified once someone accepts!
-                      </p>
-                    </div>
-                  )}
-
-                  {booking.status === 'rejected' && (
-                    <div className="mt-4 p-3 bg-red-900/30 border border-red-700 rounded-md">
-                      <p className="text-sm text-red-300">
-                        ❌ This request was not accepted. You can book again for this service.
-                      </p>
-                    </div>
-                  )}
-
-                  {booking.status === 'accepted' && (
-                    <div className="mt-4 p-3 bg-green-900/30 border border-green-700 rounded-md">
-                      <p className="text-sm text-green-300">
-                        ✅ Worker is on the way! Contact them if needed.
-                      </p>
-                    </div>
-                  )}
-                </div>
-              ))
+                );
+              })
             )}
           </div>
         </div>
       </div>
 
-      {/* 🆕 NEW: Rating Modal */}
       {showRatingModal && selectedBooking && (
         <RatingModal
           booking={selectedBooking}

@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useWorkerAuth } from '../context/WorkerAuthContext';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import logo from '../assets/image.png';
 import WorkerSidebar from './WorkerSidebar';
 import AdminLoginModal from './AdminLoginModal'; 
@@ -11,6 +11,24 @@ const WorkerNavbar = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false);
   const [showAdminLogin, setShowAdminLogin] = useState(false); 
+  const dropdownRef = useRef(null);
+
+  // Handle clicking outside dropdown to close it
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setDropdownOpen(false);
+      }
+    };
+
+    if (dropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [dropdownOpen]);
 
   const handleLogout = () => {
     logoutWorker();
@@ -28,12 +46,12 @@ const WorkerNavbar = () => {
     setDropdownOpen(false);
   };
 
-  // 🆕 NEW: Handle Admin Login
+  // Handle Admin Login
   const handleAdminLogin = () => {
     setShowAdminLogin(true);
   };
 
-  // 🔄 UPDATED: Handle logo click to redirect to main home page
+  // Handle logo click to redirect to main home page
   const handleLogoClick = () => {
     navigate('/worker')
   };
@@ -68,20 +86,22 @@ const WorkerNavbar = () => {
 
         {/* Right Side - User Actions */}
         <div className="flex items-center space-x-4">
-          {/* 🆕 NEW: Admin Button */}
-          <button
-            onClick={handleAdminLogin}
-            className="bg-red-600 text-white px-3 py-1 rounded-md text-sm hover:bg-red-700 transition font-medium"
-          >
-            🔐 Admin
-          </button>
+          {/* Admin Button - Only show when worker is NOT logged in */}
+          {!worker && (
+            <button
+              onClick={handleAdminLogin}
+              className="bg-red-600 text-white px-3 py-1 rounded-md text-sm hover:bg-red-700 transition font-medium"
+            >
+              🔐 Admin
+            </button>
+          )}
 
           {!worker ? (
             <button onClick={() => setShowSidebar(true)} className="text-blue-600 hover:underline">
               Login / SignUp
             </button>
           ) : (
-            <div className="relative">
+            <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setDropdownOpen(!dropdownOpen)}
                 className="text-blue-600 font-medium flex items-center space-x-2"
@@ -122,7 +142,7 @@ const WorkerNavbar = () => {
         {showSidebar && <WorkerSidebar onClose={() => setShowSidebar(false)} />}
       </nav>
 
-      {/* 🆕 NEW: Admin Login Modal */}
+      {/* Admin Login Modal */}
       <AdminLoginModal 
         isOpen={showAdminLogin} 
         onClose={() => setShowAdminLogin(false)} 
