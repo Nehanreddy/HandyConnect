@@ -16,6 +16,7 @@ import WorkerResetPassword from '../pages/WorkerResetPassword';
 import AboutUs from '../pages/AboutUs';
 import ContactUs from '../pages/ContactUs';
 import Login from '../pages/Login';
+import AdminWorkerList from '../components/AdminWorkerList';
 
 const WorkerProtectedRoute = ({ element }) => {
   const { worker } = useWorkerAuth();

@@ -7,8 +7,10 @@ const AdminDashboard = () => {
   const { admin, logoutAdmin } = useAdminAuth();
   const navigate = useNavigate();
   const [pendingWorkers, setPendingWorkers] = useState([]);
+  const [approvedWorkers, setApprovedWorkers] = useState([]); // New state for approved workers
   const [stats, setStats] = useState({ pending: 0, approved: 0, rejected: 0, total: 0 });
   const [loading, setLoading] = useState(true);
+  const [workersLoading, setWorkersLoading] = useState(false); // New loading state for worker management
   const [selectedWorker, setSelectedWorker] = useState(null);
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [rejectionReason, setRejectionReason] = useState('');
@@ -19,6 +21,7 @@ const AdminDashboard = () => {
       return;
     }
     fetchDashboardData();
+    fetchApprovedWorkers(); // Fetch approved workers on load
   }, [admin, navigate]);
 
   const fetchDashboardData = async () => {
@@ -52,6 +55,52 @@ const AdminDashboard = () => {
     }
   };
 
+  // New function to fetch approved workers
+  const fetchApprovedWorkers = async () => {
+    setWorkersLoading(true);
+    try {
+      const token = localStorage.getItem('adminToken');
+      const response = await fetch('/api/admin/workers/all', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const data = await response.json();
+      
+      if (data.success) {
+        setApprovedWorkers(data.workers);
+      }
+    } catch (error) {
+      console.error('Error fetching approved workers:', error);
+    } finally {
+      setWorkersLoading(false);
+    }
+  };
+
+  // New function to remove worker
+  const handleRemoveWorker = async (workerId, workerName) => {
+    if (!window.confirm(`Are you sure you want to remove ${workerName}? This action cannot be undone.`)) {
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('adminToken');
+      const response = await fetch(`/api/admin/workers/${workerId}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      if (response.ok) {
+        setApprovedWorkers(prev => prev.filter(worker => worker._id !== workerId));
+        setStats(prev => ({ ...prev, approved: prev.approved - 1, total: prev.total - 1 }));
+        alert('Worker removed successfully!');
+      } else {
+        alert('Error removing worker');
+      }
+    } catch (error) {
+      console.error('Error removing worker:', error);
+      alert('Error removing worker');
+    }
+  };
+
   const handleApprove = async (workerId) => {
     try {
       const token = localStorage.getItem('adminToken');
@@ -63,6 +112,7 @@ const AdminDashboard = () => {
       if (response.ok) {
         setPendingWorkers(prev => prev.filter(worker => worker._id !== workerId));
         setStats(prev => ({ ...prev, pending: prev.pending - 1, approved: prev.approved + 1 }));
+        fetchApprovedWorkers(); // Refresh approved workers list
         alert('Worker approved successfully!');
       }
     } catch (error) {
@@ -185,7 +235,7 @@ const AdminDashboard = () => {
           </div>
 
           {/* Pending Workers */}
-          <div className="bg-white rounded-lg shadow-sm">
+          <div className="bg-white rounded-lg shadow-sm mb-8">
             <div className="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-purple-50 to-indigo-50">
               <h2 className="text-xl font-semibold text-purple-800">
                 Pending Worker Approvals ({pendingWorkers.length})
@@ -272,6 +322,95 @@ const AdminDashboard = () => {
                             className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors duration-200 font-medium"
                           >
                             ✗ Reject
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+
+          {/* Worker Management Section */}
+          <div className="bg-white rounded-lg shadow-sm">
+            <div className="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-green-50 to-blue-50">
+              <h2 className="text-xl font-semibold text-green-800">
+                Worker Management ({approvedWorkers.length})
+              </h2>
+              <p className="text-sm text-gray-600 mt-1">Manage approved workers and their ratings</p>
+            </div>
+
+            {workersLoading ? (
+              <div className="p-8 text-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto"></div>
+                <p className="mt-2 text-gray-600">Loading workers...</p>
+              </div>
+            ) : approvedWorkers.length === 0 ? (
+              <div className="p-8 text-center text-gray-500">
+                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
+                  <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                  </svg>
+                </div>
+                <p className="text-lg">No approved workers found</p>
+                <p className="text-sm mt-1">Approved workers will appear here</p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Name
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Email
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Jobs Completed
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Rating
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Action
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {approvedWorkers.map((worker) => (
+                      <tr key={worker._id} className="hover:bg-gray-50 transition-colors">
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="font-medium text-gray-900">{worker.name}</div>
+                          <div className="text-sm text-gray-500">{worker.serviceType}</div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          {worker.email}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
+                          <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                            {worker.jobCount}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex items-center">
+                            <span className={`text-sm font-medium ${worker.averageRating < 3 ? 'text-red-600' : worker.averageRating >= 4 ? 'text-green-600' : 'text-yellow-600'}`}>
+                              {worker.averageRating > 0 ? `${worker.averageRating} ⭐` : 'No ratings'}
+                            </span>
+                            {worker.totalRatings > 0 && (
+                              <span className="text-xs text-gray-500 ml-2">
+                                ({worker.totalRatings} ratings)
+                              </span>
+                            )}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                          <button
+                            onClick={() => handleRemoveWorker(worker._id, worker.name)}
+                            className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors duration-200 font-medium"
+                          >
+                            Remove
                           </button>
                         </td>
                       </tr>

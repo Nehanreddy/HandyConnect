@@ -50,27 +50,7 @@ const getPendingWorkers = async (req, res) => {
   }
 };
 
-// Get All Workers (with status filter)
-const getAllWorkers = async (req, res) => {
-  try {
-    const { status } = req.query; // ?status=approved or ?status=rejected
-    const filter = status ? { status } : {};
-    
-    const workers = await Worker.find(filter)
-      .select('-password')
-      .populate('approvedBy', 'name email')
-      .sort({ createdAt: -1 });
-    
-    res.json({
-      success: true,
-      count: workers.length,
-      workers
-    });
-  } catch (err) {
-    console.error('❌ Error fetching workers:', err);
-    res.status(500).json({ msg: 'Server error fetching workers' });
-  }
-};
+
 
 // Get Single Worker Details
 const getWorkerDetails = async (req, res) => {
@@ -197,6 +177,80 @@ const getDashboardStats = async (req, res) => {
   }
 };
 
+// Replace your existing getAllWorkers method with this
+const getAllWorkers = async (req, res) => {
+  try {
+    const { status } = req.query;
+    const filter = status ? { status } : { status: 'approved' }; // Only show approved workers by default
+    
+    const workers = await Worker.find(filter)
+      .select('-password')
+      .sort({ createdAt: -1 });
+
+    // Get job counts and ratings for each worker
+    const Booking = require('../models/Booking');
+    const workersWithStats = await Promise.all(
+      workers.map(async (worker) => {
+        const completedJobs = await Booking.find({ 
+          acceptedBy: worker._id, 
+          status: 'completed' 
+        });
+        
+        const jobCount = completedJobs.length;
+        const ratedJobs = completedJobs.filter(job => job.rating && job.rating > 0);
+        const averageRating = ratedJobs.length > 0 
+          ? (ratedJobs.reduce((sum, job) => sum + job.rating, 0) / ratedJobs.length).toFixed(1)
+          : 0;
+
+        return {
+          _id: worker._id,
+          name: worker.name,
+          email: worker.email,
+          phone: worker.phone,
+          city: worker.city,
+          serviceType: worker.serviceType,
+          jobCount,
+          averageRating: parseFloat(averageRating),
+          totalRatings: ratedJobs.length
+        };
+      })
+    );
+    
+    res.json({
+      success: true,
+      count: workersWithStats.length,
+      workers: workersWithStats
+    });
+  } catch (err) {
+    console.error('❌ Error fetching workers:', err);
+    res.status(500).json({ msg: 'Server error fetching workers' });
+  }
+};
+
+// Add this new method
+const removeWorker = async (req, res) => {
+  try {
+    const { workerId } = req.params;
+    
+    const worker = await Worker.findById(workerId);
+    if (!worker) {
+      return res.status(404).json({ msg: 'Worker not found' });
+    }
+
+    await Worker.findByIdAndDelete(workerId);
+    
+    res.json({ 
+      success: true, 
+      message: 'Worker removed successfully'
+    });
+  } catch (err) {
+    console.error('❌ Error removing worker:', err);
+    res.status(500).json({ msg: 'Server error removing worker' });
+  }
+};
+
+
+
 module.exports = {
   adminLogin,
   getPendingWorkers,
@@ -205,4 +259,5 @@ module.exports = {
   approveWorker,
   rejectWorker,
   getDashboardStats,
+  removeWorker,
 };

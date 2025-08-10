@@ -8,6 +8,7 @@ const {
   approveWorker,
   rejectWorker,
   getDashboardStats,
+  removeWorker,
 } = require('../controllers/adminController');
 const { protectAdmin } = require('../middleware/adminAuthMiddleware');
 
@@ -21,5 +22,6 @@ router.get('/workers/all', protectAdmin, getAllWorkers);
 router.get('/workers/:workerId', protectAdmin, getWorkerDetails);
 router.put('/workers/:workerId/approve', protectAdmin, approveWorker);
 router.put('/workers/:workerId/reject', protectAdmin, rejectWorker);
+router.delete('/workers/:workerId', protectAdmin, removeWorker);
 
 module.exports = router;
