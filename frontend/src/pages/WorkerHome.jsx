@@ -2,6 +2,10 @@ import React, { useEffect, useState } from 'react';
 import WorkerNavbar from '../components/Workernavbar';
 import { useWorkerAuth } from '../context/WorkerAuthContext';
 import { useNavigate } from 'react-router-dom';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import Swal from 'sweetalert2';
+import 'sweetalert2/dist/sweetalert2.min.css';
 
 const WorkerHome = () => {
   const { worker } = useWorkerAuth();
@@ -10,31 +14,24 @@ const WorkerHome = () => {
   const [loading, setLoading] = useState(true);
 
   const fetchRequests = async () => {
-    // Check if both city and serviceType are available
     if (!worker?.city || !worker?.serviceType || !worker?._id) return;
 
     setLoading(true);
     try {
-      // 🔄 SOLUTION: Fetch BOTH pending requests AND accepted jobs by this worker
       const [pendingRes, acceptedRes] = await Promise.all([
-        // Get pending requests in this city/serviceType (available to all workers)
         fetch(`/api/bookings/by-city?city=${encodeURIComponent(worker.city)}&serviceType=${encodeURIComponent(worker.serviceType)}`),
-        // Get accepted jobs by this worker (your ongoing work)
         fetch(`/api/bookings/worker-accepted?workerId=${worker._id}`)
       ]);
 
       let allRequests = [];
 
-      // Handle pending requests
       if (pendingRes.ok) {
         const pendingData = await pendingRes.json();
         allRequests = [...pendingData];
       }
 
-      // Handle accepted requests by this worker  
       if (acceptedRes.ok) {
         const acceptedData = await acceptedRes.json();
-        // Add accepted jobs, avoiding duplicates
         const acceptedJobs = acceptedData.filter(job => 
           !allRequests.some(req => req._id === job._id)
         );
@@ -44,6 +41,7 @@ const WorkerHome = () => {
       setRequests(allRequests);
     } catch (err) {
       console.error('Error fetching bookings:', err);
+      toast.error('Failed to load service requests. Please refresh the page.');
       setRequests([]);
     } finally {
       setLoading(false);
@@ -51,10 +49,9 @@ const WorkerHome = () => {
   };
 
   const handleAction = async (bookingId, action) => {
-    // Check if worker has token
     if (!worker?.token) {
       console.error('No worker token found');
-      alert('Authentication required. Please login again.');
+      toast.error('Authentication required. Please login again.');
       return;
     }
 
@@ -76,68 +73,73 @@ const WorkerHome = () => {
       const responseData = await res.json();
       console.log('✅ Booking status updated:', responseData);
 
-      // 🔄 UPDATED: Different handling for accepted vs rejected
       if (action === 'accepted') {
-        // Keep accepted jobs in the list with updated status and worker info
         const updatedRequests = requests.map((req) =>
           req._id === bookingId 
             ? { ...req, status: action, acceptedBy: worker._id, acceptedAt: new Date() } 
             : req
         );
         setRequests(updatedRequests);
-        alert('✅ Service request accepted! Complete the work and mark it as done.');
+        toast.success('Service request accepted! Complete the work and mark it as done. 🎉');
       } else if (action === 'rejected') {
         // Remove rejected jobs from the list
         setRequests(prev => prev.filter(req => req._id !== bookingId));
-        alert('❌ Service request rejected.');
+        toast.info('Service request rejected.');
       }
 
     } catch (err) {
       console.error('Error updating booking status:', err);
-      alert(`Failed to ${action} the request: ${err.message}`);
+      toast.error(`Failed to ${action} the request: ${err.message}`);
     }
   };
 
   // Handle Mark Complete function
-  const handleMarkComplete = async (bookingId) => {
-    if (!worker?.token) {
-      alert('Authentication required. Please login again.');
-      return;
+ const handleMarkComplete = async (bookingId) => {
+  if (!worker?.token) {
+    toast.error('Authentication required. Please login again.');
+    return;
+  }
+
+  // Replace confirm() with SweetAlert2
+  const result = await Swal.fire({
+    title: 'Are you sure?',
+    text: 'Do you want to mark this job as completed?',
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, mark it!',
+    cancelButtonText: 'Cancel',
+    showCloseButton: true, 
+    focusCancel: true
+  });
+
+  if (!result.isConfirmed) return;
+
+  try {
+    const res = await fetch(`/api/bookings/${bookingId}/complete`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${worker.token}`,
+      },
+    });
+
+    if (!res.ok) {
+      const errorData = await res.json();
+      throw new Error(errorData.msg || 'Failed to mark as completed');
     }
 
-    if (!confirm('Are you sure you want to mark this job as completed?')) {
-      return;
-    }
+    setRequests(prev => prev.filter(req => req._id !== bookingId));
+    toast.success('Job marked as completed! The user can now rate your service. ⭐');
+  } catch (err) {
+    console.error('Error marking job complete:', err);
+    toast.error(`Failed to mark job as completed: ${err.message}`);
+  }
+};
 
-    try {
-      const res = await fetch(`/api/bookings/${bookingId}/complete`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${worker.token}`,
-        },
-      });
-
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.msg || 'Failed to mark as completed');
-      }
-
-      // 🔄 UPDATED: Remove completed jobs from worker's view (now user can rate)
-      setRequests(prev => prev.filter(req => req._id !== bookingId));
-      alert('✅ Job marked as completed! The user can now rate your service.');
-    } catch (err) {
-      console.error('Error marking job complete:', err);
-      alert(`Failed to mark job as completed: ${err.message}`);
-    }
-  };
-
-  // 🆕 NEW: Handle navigation to worker registration
   const handleWorkerSignup = () => {
     navigate('/worker-register');
   };
 
-  // 🆕 NEW: Handle navigation to worker login
   const handleWorkerLogin = () => {
     navigate('/worker-login');
   };
@@ -167,10 +169,16 @@ const WorkerHome = () => {
             </div>
 
             {loading ? (
-              <p className="text-center text-gray-600">Loading...</p>
+              <div className="text-center py-12">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+                <p className="mt-4 text-gray-600">Loading service requests...</p>
+              </div>
             ) : requests.length === 0 ? (
-              <div className="text-center text-gray-500">
-                <p>No {worker.serviceType} requests in {worker.city} right now.</p>
+              <div className="text-center text-gray-500 py-12 bg-gray-50 rounded-lg">
+                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
+                  <span className="text-2xl">🔍</span>
+                </div>
+                <p className="text-lg font-medium">No {worker.serviceType} requests in {worker.city} right now.</p>
                 <p className="text-sm mt-2">Check back later for new service requests!</p>
               </div>
             ) : (
@@ -178,7 +186,7 @@ const WorkerHome = () => {
                 {requests.map((req) => (
                   <div
                     key={req._id}
-                    className={`p-6 rounded-xl shadow-md border ${
+                    className={`p-6 rounded-xl shadow-md border transition-all ${
                       req.acceptedBy?.toString() === worker._id 
                         ? 'bg-green-50 border-green-200' 
                         : 'bg-white border-gray-200'
@@ -225,13 +233,13 @@ const WorkerHome = () => {
                       <div className="flex gap-4 mt-4">
                         <button
                           onClick={() => handleAction(req._id, 'accepted')}
-                          className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+                          className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-medium"
                         >
                           Accept
                         </button>
                         <button
                           onClick={() => handleAction(req._id, 'rejected')}
-                          className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
+                          className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition font-medium"
                         >
                           Reject
                         </button>
@@ -240,7 +248,7 @@ const WorkerHome = () => {
                       <div className="mt-4">
                         <button
                           onClick={() => handleMarkComplete(req._id)}
-                          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition mr-4"
+                          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition mr-4 font-medium"
                         >
                           ✅ Mark as Completed
                         </button>
@@ -435,6 +443,20 @@ const WorkerHome = () => {
             </div>
           </div>
         )}
+
+        {/* Toast Container */}
+        <ToastContainer
+          position="top-right"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+        />
       </div>
     </div>
   );

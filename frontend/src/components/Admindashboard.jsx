@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useAdminAuth } from '../context/AdminAuthContext';
 import { useNavigate } from 'react-router-dom';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import logo from '../assets/logo.png';
 
 const AdminDashboard = () => {
@@ -50,6 +52,7 @@ const AdminDashboard = () => {
       }
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
+      toast.error('Failed to fetch dashboard data');
     } finally {
       setLoading(false);
     }
@@ -70,6 +73,7 @@ const AdminDashboard = () => {
       }
     } catch (error) {
       console.error('Error fetching approved workers:', error);
+      toast.error('Failed to fetch approved workers');
     } finally {
       setWorkersLoading(false);
     }
@@ -91,13 +95,13 @@ const AdminDashboard = () => {
       if (response.ok) {
         setApprovedWorkers(prev => prev.filter(worker => worker._id !== workerId));
         setStats(prev => ({ ...prev, approved: prev.approved - 1, total: prev.total - 1 }));
-        alert('Worker removed successfully!');
+        toast.success(`${workerName} has been removed successfully!`);
       } else {
-        alert('Error removing worker');
+        toast.error('Failed to remove worker. Please try again.');
       }
     } catch (error) {
       console.error('Error removing worker:', error);
-      alert('Error removing worker');
+      toast.error('An error occurred while removing the worker');
     }
   };
 
@@ -113,11 +117,13 @@ const AdminDashboard = () => {
         setPendingWorkers(prev => prev.filter(worker => worker._id !== workerId));
         setStats(prev => ({ ...prev, pending: prev.pending - 1, approved: prev.approved + 1 }));
         fetchApprovedWorkers(); // Refresh approved workers list
-        alert('Worker approved successfully!');
+        toast.success('Worker approved successfully! 🎉');
+      } else {
+        toast.error('Failed to approve worker. Please try again.');
       }
     } catch (error) {
       console.error('Error approving worker:', error);
-      alert('Error approving worker');
+      toast.error('An error occurred while approving the worker');
     }
   };
 
@@ -141,11 +147,13 @@ const AdminDashboard = () => {
         setShowRejectModal(false);
         setRejectionReason('');
         setSelectedWorker(null);
-        alert('Worker rejected successfully!');
+        toast.success(`${selectedWorker.name}'s application has been rejected`);
+      } else {
+        toast.error('Failed to reject worker. Please try again.');
       }
     } catch (error) {
       console.error('Error rejecting worker:', error);
-      alert('Error rejecting worker');
+      toast.error('An error occurred while rejecting the worker');
     }
   };
 
@@ -466,6 +474,20 @@ const AdminDashboard = () => {
           </div>
         </div>
       )}
+
+      {/* Toast Container - Add this at the bottom */}
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
     </div>
   );
 };

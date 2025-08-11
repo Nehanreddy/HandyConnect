@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import API from "../services/api";
 import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
@@ -28,18 +30,42 @@ const Signup = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    
     if (form.password !== form.confirmPassword) {
-      alert("Passwords do not match");
-      setLoading(false);
+      toast.error("Passwords do not match");
       return;
     }
+
+    if (form.password.length < 6) {
+      toast.warning("Password must be at least 6 characters long");
+      return;
+    }
+
+    setLoading(true);
     try {
       await API.post("/auth/signup", form);
-      alert("Signup successful! Please login.");
-      navigate("/");
+      toast.success("Account created successfully! Please login to continue. 🎉");
+      
+      // Clear form after successful signup
+      setForm({
+        name: "",
+        phone: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+        address: "",
+        city: "",
+        state: "",
+        pincode: "",
+      });
+      
+      // Navigate after a short delay to let user see the success message
+      setTimeout(() => {
+        navigate("/");
+      }, 2000);
     } catch (err) {
-      alert(err.response?.data?.msg || "Signup failed");
+      console.error('Signup error:', err);
+      toast.error(err.response?.data?.msg || "Registration failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -68,8 +94,9 @@ const Signup = () => {
               value={form.name}
               onChange={handleChange}
               placeholder="John Doe"
+              disabled={loading}
               required
-              className="w-full rounded-md border border-gray-600 bg-gray-800 px-4 py-3 text-gray-200 placeholder-gray-400 focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400 transition"
+              className="w-full rounded-md border border-gray-600 bg-gray-800 px-4 py-3 text-gray-200 placeholder-gray-400 focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400 transition disabled:opacity-50 disabled:cursor-not-allowed"
             />
           </div>
 
@@ -88,8 +115,9 @@ const Signup = () => {
               value={form.phone}
               onChange={handleChange}
               placeholder="+91 9876543210"
+              disabled={loading}
               required
-              className="w-full rounded-md border border-gray-600 bg-gray-800 px-4 py-3 text-gray-200 placeholder-gray-400 focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400 transition"
+              className="w-full rounded-md border border-gray-600 bg-gray-800 px-4 py-3 text-gray-200 placeholder-gray-400 focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400 transition disabled:opacity-50 disabled:cursor-not-allowed"
               pattern="^[0-9+\-\s]{7,15}$"
               title="Enter a valid phone number"
             />
@@ -110,8 +138,9 @@ const Signup = () => {
               value={form.email}
               onChange={handleChange}
               placeholder="email@example.com"
+              disabled={loading}
               required
-              className="w-full rounded-md border border-gray-600 bg-gray-800 px-4 py-3 text-gray-200 placeholder-gray-400 focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400 transition"
+              className="w-full rounded-md border border-gray-600 bg-gray-800 px-4 py-3 text-gray-200 placeholder-gray-400 focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400 transition disabled:opacity-50 disabled:cursor-not-allowed"
             />
           </div>
 
@@ -130,14 +159,16 @@ const Signup = () => {
               value={form.password}
               onChange={handleChange}
               placeholder="Enter password"
+              disabled={loading}
               required
               minLength={6}
-              className="w-full rounded-md border border-gray-600 bg-gray-800 px-4 py-3 pr-10 text-gray-200 placeholder-gray-400 focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400 transition"
+              className="w-full rounded-md border border-gray-600 bg-gray-800 px-4 py-3 pr-10 text-gray-200 placeholder-gray-400 focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400 transition disabled:opacity-50 disabled:cursor-not-allowed"
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-[2.65rem] text-gray-400 hover:text-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400 rounded"
+              disabled={loading}
+              className="absolute right-3 top-[2.65rem] text-gray-400 hover:text-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400 rounded disabled:opacity-50 disabled:cursor-not-allowed"
               aria-label={showPassword ? "Hide password" : "Show password"}
             >
               {showPassword ? <EyeOff size={22} /> : <Eye size={22} />}
@@ -159,14 +190,16 @@ const Signup = () => {
               value={form.confirmPassword}
               onChange={handleChange}
               placeholder="Confirm your password"
+              disabled={loading}
               required
               minLength={6}
-              className="w-full rounded-md border border-gray-600 bg-gray-800 px-4 py-3 pr-10 text-gray-200 placeholder-gray-400 focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400 transition"
+              className="w-full rounded-md border border-gray-600 bg-gray-800 px-4 py-3 pr-10 text-gray-200 placeholder-gray-400 focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400 transition disabled:opacity-50 disabled:cursor-not-allowed"
             />
             <button
               type="button"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              className="absolute right-3 top-[2.65rem] text-gray-400 hover:text-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400 rounded"
+              disabled={loading}
+              className="absolute right-3 top-[2.65rem] text-gray-400 hover:text-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400 rounded disabled:opacity-50 disabled:cursor-not-allowed"
               aria-label={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
             >
               {showConfirmPassword ? <EyeOff size={22} /> : <Eye size={22} />}
@@ -187,7 +220,8 @@ const Signup = () => {
               value={form.address}
               onChange={handleChange}
               placeholder="123 Main St"
-              className="w-full rounded-md border border-gray-600 bg-gray-800 px-4 py-3 text-gray-200 placeholder-gray-400 focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400 transition"
+              disabled={loading}
+              className="w-full rounded-md border border-gray-600 bg-gray-800 px-4 py-3 text-gray-200 placeholder-gray-400 focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400 transition disabled:opacity-50 disabled:cursor-not-allowed"
             />
           </div>
 
@@ -205,7 +239,8 @@ const Signup = () => {
               value={form.city}
               onChange={handleChange}
               placeholder="City"
-              className="w-full rounded-md border border-gray-600 bg-gray-800 px-4 py-3 text-gray-200 placeholder-gray-400 focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400 transition"
+              disabled={loading}
+              className="w-full rounded-md border border-gray-600 bg-gray-800 px-4 py-3 text-gray-200 placeholder-gray-400 focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400 transition disabled:opacity-50 disabled:cursor-not-allowed"
             />
           </div>
 
@@ -223,7 +258,8 @@ const Signup = () => {
               value={form.state}
               onChange={handleChange}
               placeholder="State"
-              className="w-full rounded-md border border-gray-600 bg-gray-800 px-4 py-3 text-gray-200 placeholder-gray-400 focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400 transition"
+              disabled={loading}
+              className="w-full rounded-md border border-gray-600 bg-gray-800 px-4 py-3 text-gray-200 placeholder-gray-400 focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400 transition disabled:opacity-50 disabled:cursor-not-allowed"
             />
           </div>
 
@@ -241,7 +277,8 @@ const Signup = () => {
               value={form.pincode}
               onChange={handleChange}
               placeholder="Pincode"
-              className="w-full rounded-md border border-gray-600 bg-gray-800 px-4 py-3 text-gray-200 placeholder-gray-400 focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400 transition"
+              disabled={loading}
+              className="w-full rounded-md border border-gray-600 bg-gray-800 px-4 py-3 text-gray-200 placeholder-gray-400 focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400 transition disabled:opacity-50 disabled:cursor-not-allowed"
             />
           </div>
 
@@ -249,13 +286,20 @@ const Signup = () => {
           <button
             type="submit"
             disabled={loading}
-            className={`col-span-2 py-3 rounded-xl font-semibold text-white shadow-md transition ${
+            className={`col-span-2 py-3 rounded-xl font-semibold text-white shadow-md transition flex items-center justify-center ${
               loading
                 ? "bg-purple-400 cursor-not-allowed"
                 : "bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
             }`}
           >
-            {loading ? "Creating Account..." : "Submit"}
+            {loading ? (
+              <>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                Creating Account...
+              </>
+            ) : (
+              "Submit"
+            )}
           </button>
 
           {/* Login Link */}
@@ -265,13 +309,28 @@ const Signup = () => {
               <button
                 type="button"
                 onClick={() => navigate('/login')}
-                className="text-purple-400 hover:text-purple-300 font-semibold focus:outline-none focus:underline"
+                disabled={loading}
+                className="text-purple-400 hover:text-purple-300 font-semibold focus:outline-none focus:underline disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Login here
               </button>
             </p>
           </div>
         </form>
+
+        {/* Toast Container */}
+        <ToastContainer
+          position="top-right"
+          autoClose={4000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="dark"
+        />
       </div>
     </div>
   );

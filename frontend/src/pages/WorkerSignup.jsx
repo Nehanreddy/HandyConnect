@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import API from "../services/api";
 import { Eye, EyeOff } from "lucide-react";
 
@@ -34,17 +36,22 @@ const WorkerSignup = () => {
     e.preventDefault();
 
     if (!profilePhoto || !aadhaarCard) {
-      alert("Please upload both profile photo and Aadhaar card");
+      toast.error("Please upload both profile photo and Aadhaar card");
       return;
     }
 
     if (!form.serviceType) {
-      alert("Please select your service type");
+      toast.warning("Please select your service type");
       return;
     }
 
     if (form.password !== form.confirmPassword) {
-      alert("Passwords do not match");
+      toast.error("Passwords do not match");
+      return;
+    }
+
+    if (form.password.length < 6) {
+      toast.warning("Password must be at least 6 characters long");
       return;
     }
 
@@ -63,11 +70,27 @@ const WorkerSignup = () => {
           "Content-Type": "multipart/form-data",
         },
       });
-      alert("Worker signup successful!");
+      toast.success("Worker registration successful! 🎉 Please wait for admin approval.");
+      // Clear form after successful submission
+      setForm({
+        name: "",
+        phone: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+        address: "",
+        city: "",
+        state: "",
+        pincode: "",
+        aadhaar: "",
+        serviceType: "",
+      });
+      setProfilePhoto(null);
+      setAadhaarCard(null);
       navigate("/worker");
     } catch (err) {
-      console.error(err);
-      alert(err.response?.data?.msg || "Signup failed");
+      console.error('Registration error:', err);
+      toast.error(err.response?.data?.msg || "Registration failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -100,8 +123,9 @@ const WorkerSignup = () => {
               value={form.name}
               onChange={handleChange}
               placeholder="John Doe"
+              disabled={loading}
               required
-              className="w-full rounded-md border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+              className="w-full rounded-md border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition disabled:opacity-50 disabled:cursor-not-allowed"
               autoComplete="name"
             />
           </div>
@@ -121,8 +145,9 @@ const WorkerSignup = () => {
               value={form.aadhaar}
               onChange={handleChange}
               placeholder="1234 5678 9012"
+              disabled={loading}
               required
-              className="w-full rounded-md border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+              className="w-full rounded-md border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition disabled:opacity-50 disabled:cursor-not-allowed"
               inputMode="numeric"
               pattern="\d{12}"
               title="Enter 12 digit Aadhaar number"
@@ -144,8 +169,9 @@ const WorkerSignup = () => {
               value={form.phone}
               onChange={handleChange}
               placeholder="+91 9876543210"
+              disabled={loading}
               required
-              className="w-full rounded-md border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+              className="w-full rounded-md border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition disabled:opacity-50 disabled:cursor-not-allowed"
               pattern="^[0-9+\-\s]{7,15}$"
               title="Enter a valid phone number"
               autoComplete="tel"
@@ -167,8 +193,9 @@ const WorkerSignup = () => {
               value={form.email}
               onChange={handleChange}
               placeholder="email@example.com"
+              disabled={loading}
               required
-              className="w-full rounded-md border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+              className="w-full rounded-md border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition disabled:opacity-50 disabled:cursor-not-allowed"
               autoComplete="email"
             />
           </div>
@@ -188,15 +215,17 @@ const WorkerSignup = () => {
               value={form.password}
               onChange={handleChange}
               placeholder="Enter password"
+              disabled={loading}
               required
               minLength={6}
-              className="w-full rounded-md border border-gray-300 bg-white px-4 py-3 pr-10 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+              className="w-full rounded-md border border-gray-300 bg-white px-4 py-3 pr-10 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition disabled:opacity-50 disabled:cursor-not-allowed"
               autoComplete="new-password"
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-[2.65rem] text-gray-500 hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
+              disabled={loading}
+              className="absolute right-3 top-[2.65rem] text-gray-500 hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded disabled:opacity-50 disabled:cursor-not-allowed"
               aria-label={showPassword ? "Hide password" : "Show password"}
             >
               {showPassword ? <EyeOff size={22} /> : <Eye size={22} />}
@@ -218,15 +247,17 @@ const WorkerSignup = () => {
               value={form.confirmPassword}
               onChange={handleChange}
               placeholder="Confirm your password"
+              disabled={loading}
               required
               minLength={6}
-              className="w-full rounded-md border border-gray-300 bg-white px-4 py-3 pr-10 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+              className="w-full rounded-md border border-gray-300 bg-white px-4 py-3 pr-10 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition disabled:opacity-50 disabled:cursor-not-allowed"
               autoComplete="new-password"
             />
             <button
               type="button"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              className="absolute right-3 top-[2.65rem] text-gray-500 hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
+              disabled={loading}
+              className="absolute right-3 top-[2.65rem] text-gray-500 hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded disabled:opacity-50 disabled:cursor-not-allowed"
               aria-label={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
             >
               {showConfirmPassword ? <EyeOff size={22} /> : <Eye size={22} />}
@@ -247,7 +278,8 @@ const WorkerSignup = () => {
               value={form.address}
               onChange={handleChange}
               placeholder="123 Main St"
-              className="w-full rounded-md border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+              disabled={loading}
+              className="w-full rounded-md border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition disabled:opacity-50 disabled:cursor-not-allowed"
               autoComplete="street-address"
             />
           </div>
@@ -266,7 +298,8 @@ const WorkerSignup = () => {
               value={form.city}
               onChange={handleChange}
               placeholder="City"
-              className="w-full rounded-md border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+              disabled={loading}
+              className="w-full rounded-md border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition disabled:opacity-50 disabled:cursor-not-allowed"
               autoComplete="address-level2"
             />
           </div>
@@ -285,7 +318,8 @@ const WorkerSignup = () => {
               value={form.state}
               onChange={handleChange}
               placeholder="State"
-              className="w-full rounded-md border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+              disabled={loading}
+              className="w-full rounded-md border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition disabled:opacity-50 disabled:cursor-not-allowed"
               autoComplete="address-level1"
             />
           </div>
@@ -304,7 +338,8 @@ const WorkerSignup = () => {
               value={form.pincode}
               onChange={handleChange}
               placeholder="Pincode"
-              className="w-full rounded-md border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+              disabled={loading}
+              className="w-full rounded-md border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition disabled:opacity-50 disabled:cursor-not-allowed"
               autoComplete="postal-code"
             />
           </div>
@@ -322,8 +357,9 @@ const WorkerSignup = () => {
               name="serviceType"
               value={form.serviceType}
               onChange={handleChange}
+              disabled={loading}
               required
-              className="w-full rounded-md border border-gray-300 bg-white px-4 py-3 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+              className="w-full rounded-md border border-gray-300 bg-white px-4 py-3 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <option value="" disabled>
                 Select Service Type
@@ -350,7 +386,8 @@ const WorkerSignup = () => {
               type="file"
               accept="image/*"
               onChange={(e) => setProfilePhoto(e.target.files[0])}
-              className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 transition cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-600 hover:file:bg-blue-100"
+              disabled={loading}
+              className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 transition cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-600 hover:file:bg-blue-100 disabled:opacity-50 disabled:cursor-not-allowed"
               required
               aria-describedby="profilePhotoHelp"
             />
@@ -372,7 +409,8 @@ const WorkerSignup = () => {
               type="file"
               accept="image/*"
               onChange={(e) => setAadhaarCard(e.target.files[0])}
-              className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 transition cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-600 hover:file:bg-blue-100"
+              disabled={loading}
+              className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 transition cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-600 hover:file:bg-blue-100 disabled:opacity-50 disabled:cursor-not-allowed"
               required
               aria-describedby="aadhaarCardHelp"
             />
@@ -385,13 +423,20 @@ const WorkerSignup = () => {
           <button
             type="submit"
             disabled={loading}
-            className={`col-span-2 py-3 rounded-lg font-semibold text-white shadow-md transition ${
+            className={`col-span-2 py-3 rounded-lg font-semibold text-white shadow-md transition flex items-center justify-center ${
               loading
                 ? "bg-blue-400 cursor-not-allowed"
                 : "bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
             }`}
           >
-            {loading ? "Registering..." : "Register"}
+            {loading ? (
+              <>
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                Registering...
+              </>
+            ) : (
+              "Register"
+            )}
           </button>
 
           {/* Login Link */}
@@ -401,13 +446,28 @@ const WorkerSignup = () => {
               <button
                 type="button"
                 onClick={() => navigate('/worker-login')}
-                className="text-blue-600 hover:text-blue-700 font-medium underline focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
+                disabled={loading}
+                className="text-blue-600 hover:text-blue-700 font-medium underline focus:outline-none focus:ring-2 focus:ring-blue-500 rounded disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Login here
               </button>
             </p>
           </div>
         </form>
+
+        {/* Toast Container */}
+        <ToastContainer
+          position="top-right"
+          autoClose={4000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+        />
       </div>
     </div>
   );

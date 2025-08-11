@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { StarIcon } from '@heroicons/react/24/outline';
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const RatingModal = ({ booking, onClose, onSubmit }) => {
   const [rating, setRating] = useState(0);
@@ -11,16 +13,18 @@ const RatingModal = ({ booking, onClose, onSubmit }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (rating === 0) {
-      alert('Please select a rating');
+      toast.warning('Please select a rating before submitting');
       return;
     }
 
     setSubmitting(true);
     try {
       await onSubmit(booking._id, rating, review);
+      toast.success('Thank you for your feedback! 🌟');
       onClose();
     } catch (error) {
       console.error('Error submitting rating:', error);
+      toast.error('Failed to submit rating. Please try again.');
     } finally {
       setSubmitting(false);
     }
@@ -51,6 +55,7 @@ const RatingModal = ({ booking, onClose, onSubmit }) => {
                   onMouseEnter={() => setHoveredRating(star)}
                   onMouseLeave={() => setHoveredRating(0)}
                   className="focus:outline-none"
+                  disabled={submitting}
                 >
                   {star <= (hoveredRating || rating) ? (
                     <StarIconSolid className="w-8 h-8 text-yellow-400 hover:text-yellow-500 transition" />
@@ -79,7 +84,8 @@ const RatingModal = ({ booking, onClose, onSubmit }) => {
               value={review}
               onChange={(e) => setReview(e.target.value)}
               rows={4}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              disabled={submitting}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50"
               placeholder="Share your experience with this service..."
             />
           </div>
@@ -88,7 +94,8 @@ const RatingModal = ({ booking, onClose, onSubmit }) => {
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition"
+              disabled={submitting}
+              className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition disabled:opacity-50"
             >
               Cancel
             </button>
@@ -105,6 +112,20 @@ const RatingModal = ({ booking, onClose, onSubmit }) => {
             </button>
           </div>
         </form>
+
+        {/* Toast Container */}
+        <ToastContainer
+          position="top-right"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+        />
       </div>
     </div>
   );

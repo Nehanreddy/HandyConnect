@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import API from '../services/api';
 import Navbar from '../components/Navbar';
 import RatingModal from '../components/RatingModal';
@@ -58,6 +60,7 @@ const MyServices = () => {
       setBookings(processedBookings);
     } catch (error) {
       console.error('Error fetching services:', error);
+      toast.error('Failed to load your services. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -75,10 +78,10 @@ const MyServices = () => {
       });
 
       await fetchMyServices();
-      alert('✅ Thank you for your rating!');
+      toast.success('Thank you for your rating! 🌟');
     } catch (error) {
       console.error('Error submitting rating:', error);
-      alert('❌ Failed to submit rating. Please try again.');
+      toast.error('Failed to submit rating. Please try again.');
     }
   };
 
@@ -431,6 +434,20 @@ const MyServices = () => {
             )}
           </div>
         </div>
+
+        {/* Toast Container */}
+        <ToastContainer
+          position="top-right"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="dark"
+        />
       </div>
 
       {showRatingModal && selectedBooking && (

@@ -218,24 +218,7 @@ const WorkerProfile = () => {
               )}
             </form>
 
-            {/* Profile completion indicator */}
-            <div className="mt-8 p-4 bg-blue-50 rounded-lg">
-              <h3 className="font-medium text-blue-800 mb-2">Profile Status</h3>
-              <div className="flex items-center space-x-2">
-                <div className="w-full bg-blue-200 rounded-full h-2">
-                  <div 
-                    className="bg-blue-600 h-2 rounded-full transition-all duration-300" 
-                    style={{ 
-                      width: `${Object.values(form).filter(value => value && value.trim() !== '').length / Object.keys(form).length * 100}%` 
-                    }}
-                  ></div>
-                </div>
-                <span className="text-sm text-blue-700 font-medium">
-                  {Math.round(Object.values(form).filter(value => value && value.trim() !== '').length / Object.keys(form).length * 100)}%
-                </span>
-              </div>
-              <p className="text-xs text-blue-600 mt-1">Complete your profile to get more service requests</p>
-            </div>
+          
           </div>
         </div>
       </div>

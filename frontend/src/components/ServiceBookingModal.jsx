@@ -1,6 +1,8 @@
 import { Dialog, Transition } from '@headlessui/react';
 import { Fragment, useEffect, useState } from 'react';
 import { X, Home, User } from 'lucide-react';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
 
 // You can move this list to a separate file if it's too large
@@ -15,11 +17,11 @@ const cities = [
   "Madurai", "Tiruchirappalli", "Salem", "Warangal", "Vijayawada", "Visakhapatnam"
 ];
 
-
 const ServiceBookingModal = ({ serviceType, onClose }) => {
   const [step, setStep] = useState(1);
   const [bookingFor, setBookingFor] = useState('self');
   const [loadingProfile, setLoadingProfile] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     problem: '',
     urgency: 'Normal',
@@ -61,6 +63,7 @@ const ServiceBookingModal = ({ serviceType, onClose }) => {
         }));
       } catch (err) {
         console.error("Error fetching profile:", err);
+        toast.error('Failed to load profile data');
       } finally {
         setLoadingProfile(false);
       }
@@ -74,56 +77,57 @@ const ServiceBookingModal = ({ serviceType, onClose }) => {
   };
 
   const validateStep = () => {
-  if (step === 1) {
-    return formData.problem.trim() !== '' && formData.urgency.trim() !== '';
-  }
+    if (step === 1) {
+      return formData.problem.trim() !== '' && formData.urgency.trim() !== '';
+    }
 
-  if (step === 2) {
-    if (bookingFor === 'self') {
-      return formData.location.trim() !== '' && formData.city.trim() !== '';
-    } else {
+    if (step === 2) {
+      if (bookingFor === 'self') {
+        return formData.location.trim() !== '' && formData.city.trim() !== '';
+      } else {
+        return (
+          formData.otherName.trim() !== '' &&
+          formData.otherPhone.trim() !== '' &&
+          formData.otherEmail.trim() !== '' &&
+          formData.otherAddress.trim() !== '' &&
+          formData.otherCity.trim() !== ''
+        );
+      }
+    }
+
+    if (step === 3) {
+      return formData.date.trim() !== '' && formData.time.trim() !== '';
+    }
+
+    if (step === 4) {
       return (
-        formData.otherName.trim() !== '' &&
-        formData.otherPhone.trim() !== '' &&
-        formData.otherEmail.trim() !== '' &&
-        formData.otherAddress.trim() !== '' &&
-        formData.otherCity.trim() !== ''
+        formData.name.trim() !== '' &&
+        formData.phone.trim() !== '' &&
+        formData.email.trim() !== ''
       );
     }
-  }
 
-  if (step === 3) {
-    return formData.date.trim() !== '' && formData.time.trim() !== '';
-  }
-
-  if (step === 4) {
-    return (
-      formData.name.trim() !== '' &&
-      formData.phone.trim() !== '' &&
-      formData.email.trim() !== ''
-    );
-  }
-
-  return true;
-};
-
+    return true;
+  };
 
   const handleNext = () => {
-  if (validateStep()) {
-    setStep((prev) => Math.min(prev + 1, 4));
-  } else {
-    alert("Please fill in all required fields before continuing.");
-  }
-};
+    if (validateStep()) {
+      setStep((prev) => Math.min(prev + 1, 4));
+    } else {
+      toast.warning("Please fill in all required fields before continuing");
+    }
+  };
 
   const handleBack = () => setStep((prev) => Math.max(prev - 1, 1));
 
   const handleSubmit = async () => {
     const token = localStorage.getItem('token');
     if (!token) {
-      alert("You're not logged in.");
+      toast.error("You're not logged in. Please login first.");
       return;
     }
+
+    setSubmitting(true);
 
     const serviceLocation = bookingFor === 'self'
       ? { address: formData.location, city: formData.city }
@@ -142,8 +146,7 @@ const ServiceBookingModal = ({ serviceType, onClose }) => {
       contactEmail: bookingFor === 'self' ? formData.email : formData.otherEmail,
     };
 
-
-    console.log('🚀 Booking Data:', bookingData); // ADD THIS
+    console.log('🚀 Booking Data:', bookingData);
 
     // Optional: Check for missing fields
     const missingFields = Object.entries(bookingData).filter(
@@ -155,7 +158,8 @@ const ServiceBookingModal = ({ serviceType, onClose }) => {
     );
 
     if (missingFields.length > 0) {
-      alert(`Missing required field: ${missingFields[0][0]}`);
+      toast.error(`Missing required field: ${missingFields[0][0]}`);
+      setSubmitting(false);
       return;
     }
 
@@ -163,15 +167,15 @@ const ServiceBookingModal = ({ serviceType, onClose }) => {
       const res = await axios.post('/api/bookings', bookingData, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      alert('✅ Booking submitted!');
+      toast.success('Booking submitted successfully! 🎉');
       onClose();
     } catch (err) {
       console.error('❌ Booking Error:', err);
-      alert('Failed to submit booking.');
+      toast.error(err.response?.data?.msg || 'Failed to submit booking. Please try again.');
+    } finally {
+      setSubmitting(false);
     }
   };
-
-
 
   return (
     <Transition appear show={true} as={Fragment}>
@@ -208,7 +212,8 @@ const ServiceBookingModal = ({ serviceType, onClose }) => {
                   </div>
                   <button
                     onClick={onClose}
-                    className="text-gray-400 hover:text-gray-600 transition p-2 hover:bg-gray-100 rounded-full"
+                    disabled={submitting}
+                    className="text-gray-400 hover:text-gray-600 transition p-2 hover:bg-gray-100 rounded-full disabled:opacity-50"
                   >
                     <X className="h-5 w-5" />
                   </button>
@@ -234,8 +239,9 @@ const ServiceBookingModal = ({ serviceType, onClose }) => {
                           value={formData.problem}
                           onChange={handleChange}
                           rows={4}
+                          disabled={submitting}
                           placeholder="Describe the issue in detail..."
-                          className="w-full px-4 py-3 border border-gray-300 rounded-xl resize-none"
+                          className="w-full px-4 py-3 border border-gray-300 rounded-xl resize-none disabled:opacity-50"
                           required
                         />
                       </div>
@@ -245,7 +251,8 @@ const ServiceBookingModal = ({ serviceType, onClose }) => {
                           name="urgency"
                           value={formData.urgency}
                           onChange={handleChange}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-xl"
+                          disabled={submitting}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-xl disabled:opacity-50"
                           required
                         >
                           <option>Normal</option>
@@ -271,10 +278,11 @@ const ServiceBookingModal = ({ serviceType, onClose }) => {
                               value={value}
                               checked={bookingFor === value}
                               onChange={(e) => setBookingFor(e.target.value)}
+                              disabled={submitting}
                               className="sr-only"
                             />
                             <div className={`p-4 rounded-xl border-2 text-center ${bookingFor === value ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'
-                              }`}>
+                              } ${submitting ? 'opacity-50' : ''}`}>
                               <Icon className="h-6 w-6 mx-auto mb-2 text-blue-600" />
                               <div className="font-medium text-gray-900">{label}</div>
                               <div className="text-xs text-gray-600">
@@ -297,40 +305,45 @@ const ServiceBookingModal = ({ serviceType, onClose }) => {
                             name="otherName"
                             value={formData.otherName}
                             onChange={handleChange}
+                            disabled={submitting}
                             placeholder="Contact person name"
-                            className="w-full px-4 py-3 border border-gray-300 rounded-xl"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-xl disabled:opacity-50"
                             required
                           />
                           <input
                             name="otherPhone"
                             value={formData.otherPhone}
                             onChange={handleChange}
+                            disabled={submitting}
                             placeholder="Phone number"
-                            className="w-full px-4 py-3 border border-gray-300 rounded-xl"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-xl disabled:opacity-50"
                             required
                           />
                           <input
                             name="otherEmail"
                             value={formData.otherEmail}
                             onChange={handleChange}
+                            disabled={submitting}
                             placeholder="Email address"
                             type="email"
-                            className="w-full px-4 py-3 border border-gray-300 rounded-xl"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-xl disabled:opacity-50"
                             required
                           />
                           <input
                             name="otherAddress"
                             value={formData.otherAddress}
                             onChange={handleChange}
+                            disabled={submitting}
                             placeholder="Service address"
-                            className="w-full px-4 py-3 border border-gray-300 rounded-xl"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-xl disabled:opacity-50"
                             required
                           />
                           <select
                             name="otherCity"
                             value={formData.otherCity}
                             onChange={handleChange}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-xl"
+                            disabled={submitting}
+                            className="w-full px-4 py-3 border border-gray-300 rounded-xl disabled:opacity-50"
                             required
                           >
                             <option value="">Select city</option>
@@ -339,7 +352,6 @@ const ServiceBookingModal = ({ serviceType, onClose }) => {
                             ))}
                           </select>
                         </div>
-
                       )}
                     </>
                   )}
@@ -352,8 +364,9 @@ const ServiceBookingModal = ({ serviceType, onClose }) => {
                         name="date"
                         value={formData.date}
                         onChange={handleChange}
+                        disabled={submitting}
                         min={new Date().toISOString().split('T')[0]}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-xl"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-xl disabled:opacity-50"
                         required
                       />
                       <label className="block text-sm font-medium mb-2 mt-4">Preferred Time Slot</label>
@@ -361,7 +374,8 @@ const ServiceBookingModal = ({ serviceType, onClose }) => {
                         name="time"
                         value={formData.time}
                         onChange={handleChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-xl"
+                        disabled={submitting}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-xl disabled:opacity-50"
                         required
                       >
                         <option value="">Select</option>
@@ -379,16 +393,18 @@ const ServiceBookingModal = ({ serviceType, onClose }) => {
                         name="name"
                         value={formData.name}
                         onChange={handleChange}
+                        disabled={submitting}
                         placeholder="Your full name"
-                        className="w-full px-4 py-3 border border-gray-300 rounded-xl"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-xl disabled:opacity-50"
                         required
                       />
                       <input
                         name="phone"
                         value={formData.phone}
                         onChange={handleChange}
+                        disabled={submitting}
                         placeholder="Phone number"
-                        className="w-full px-4 py-3 border border-gray-300 rounded-xl"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-xl disabled:opacity-50"
                         required
                       />
                       <input
@@ -396,8 +412,9 @@ const ServiceBookingModal = ({ serviceType, onClose }) => {
                         type="email"
                         value={formData.email}
                         onChange={handleChange}
+                        disabled={submitting}
                         placeholder="Email address"
-                        className="w-full px-4 py-3 border border-gray-300 rounded-xl"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-xl disabled:opacity-50"
                         required
                       />
                     </>
@@ -409,7 +426,8 @@ const ServiceBookingModal = ({ serviceType, onClose }) => {
                       <button
                         type="button"
                         onClick={handleBack}
-                        className="px-6 py-2.5 text-gray-600 border border-gray-300 rounded-xl hover:bg-gray-50"
+                        disabled={submitting}
+                        className="px-6 py-2.5 text-gray-600 border border-gray-300 rounded-xl hover:bg-gray-50 disabled:opacity-50 transition-colors"
                       >
                         Back
                       </button>
@@ -418,7 +436,8 @@ const ServiceBookingModal = ({ serviceType, onClose }) => {
                       <button
                         type="button"
                         onClick={handleNext}
-                        className="ml-auto px-6 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl hover:from-blue-700 hover:to-blue-800 transform hover:scale-105 shadow-lg"
+                        disabled={submitting}
+                        className="ml-auto px-6 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl hover:from-blue-700 hover:to-blue-800 transform hover:scale-105 shadow-lg disabled:opacity-50 transition-all"
                       >
                         Continue
                       </button>
@@ -426,13 +445,35 @@ const ServiceBookingModal = ({ serviceType, onClose }) => {
                       <button
                         type="button"
                         onClick={handleSubmit}
-                        className="ml-auto px-6 py-2.5 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-xl hover:from-green-700 hover:to-green-800 transform hover:scale-105 shadow-lg"
+                        disabled={submitting}
+                        className="ml-auto px-6 py-2.5 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-xl hover:from-green-700 hover:to-green-800 transform hover:scale-105 shadow-lg disabled:opacity-50 transition-all flex items-center"
                       >
-                        Submit Request
+                        {submitting ? (
+                          <>
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                            Submitting...
+                          </>
+                        ) : (
+                          'Submit Request'
+                        )}
                       </button>
                     )}
                   </div>
                 </form>
+
+                {/* Toast Container */}
+                <ToastContainer
+                  position="top-right"
+                  autoClose={3000}
+                  hideProgressBar={false}
+                  newestOnTop={false}
+                  closeOnClick
+                  rtl={false}
+                  pauseOnFocusLoss
+                  draggable
+                  pauseOnHover
+                  theme="light"
+                />
               </Dialog.Panel>
             </Transition.Child>
           </div>

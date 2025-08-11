@@ -1,5 +1,7 @@
 import { useParams } from 'react-router-dom';
 import { useState } from 'react';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import API from '../services/api';
 
 const ServiceBookingPage = () => {
@@ -18,6 +20,13 @@ const ServiceBookingPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Basic validation
+    if (!form.name.trim() || !form.contact.trim() || !form.address.trim() || !form.issue.trim()) {
+      toast.warning("Please fill in all required fields");
+      return;
+    }
+
     setSubmitting(true);
 
     try {
@@ -27,11 +36,13 @@ const ServiceBookingPage = () => {
       });
 
       console.log('✅ Booking submitted:', response.data);
-      alert('✅ Service booked successfully!');
+      toast.success(`${serviceName} service booked successfully! 🎉`);
+      
+      // Clear form after successful submission
       setForm({ name: '', contact: '', address: '', issue: '' });
     } catch (error) {
       console.error('❌ Booking failed:', error.response?.data || error.message);
-      alert('❌ Failed to book service. Please try again.');
+      toast.error(error.response?.data?.msg || 'Failed to book service. Please try again.');
     } finally {
       setSubmitting(false);
     }
@@ -53,7 +64,8 @@ const ServiceBookingPage = () => {
           placeholder="Your Name"
           value={form.name}
           onChange={handleChange}
-          className="w-full mb-4 px-4 py-2 border rounded"
+          disabled={submitting}
+          className="w-full mb-4 px-4 py-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent transition disabled:opacity-50 disabled:cursor-not-allowed"
           required
         />
 
@@ -63,7 +75,8 @@ const ServiceBookingPage = () => {
           placeholder="Contact Number"
           value={form.contact}
           onChange={handleChange}
-          className="w-full mb-4 px-4 py-2 border rounded"
+          disabled={submitting}
+          className="w-full mb-4 px-4 py-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent transition disabled:opacity-50 disabled:cursor-not-allowed"
           required
         />
 
@@ -73,7 +86,8 @@ const ServiceBookingPage = () => {
           placeholder="Service Address"
           value={form.address}
           onChange={handleChange}
-          className="w-full mb-4 px-4 py-2 border rounded"
+          disabled={submitting}
+          className="w-full mb-4 px-4 py-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent transition disabled:opacity-50 disabled:cursor-not-allowed"
           required
         />
 
@@ -83,17 +97,39 @@ const ServiceBookingPage = () => {
           value={form.issue}
           onChange={handleChange}
           rows={4}
-          className="w-full mb-6 px-4 py-2 border rounded"
+          disabled={submitting}
+          className="w-full mb-6 px-4 py-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent transition disabled:opacity-50 disabled:cursor-not-allowed resize-none"
           required
         />
 
         <button
           type="submit"
           disabled={submitting}
-          className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition disabled:opacity-50"
+          className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center w-full font-medium"
         >
-          {submitting ? 'Booking...' : 'Book Service'}
+          {submitting ? (
+            <>
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+              Booking...
+            </>
+          ) : (
+            'Book Service'
+          )}
         </button>
+
+        {/* Toast Container */}
+        <ToastContainer
+          position="top-right"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+        />
       </form>
     </div>
   );

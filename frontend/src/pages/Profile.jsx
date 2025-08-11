@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import API from "../services/api";
 import { Pen, X, Check } from "lucide-react";
 
@@ -39,7 +41,8 @@ const Profile = () => {
           state: res.data.state || ""
         });
       } catch (err) {
-        alert("Failed to load profile");
+        console.error('Error loading profile:', err);
+        toast.error("Failed to load profile. Please refresh the page.");
       } finally {
         setLoading(false);
       }
@@ -48,6 +51,7 @@ const Profile = () => {
   }, [user]);
 
   const handleEdit = (fieldKey) => {
+    if (updating) return; // Prevent editing during update
     setEditing(fieldKey);
     setTemp(profile[fieldKey]);
   };
@@ -62,9 +66,14 @@ const Profile = () => {
   };
 
   const handleSaveField = (fieldKey) => {
+    if (temp.trim() === "") {
+      toast.warning("Field cannot be empty");
+      return;
+    }
     setProfile((p) => ({ ...p, [fieldKey]: temp }));
     setEditing(null);
     setTemp("");
+    toast.success("Field updated locally. Don't forget to save changes!");
   };
 
   const handleSubmit = async (e) => {
@@ -74,9 +83,10 @@ const Profile = () => {
       await API.put("/auth/profile", profile, {
         headers: { Authorization: `Bearer ${user?.token}` }
       });
-      alert("Profile updated!");
+      toast.success("Profile updated successfully! 🎉");
     } catch (err) {
-      alert("Update failed.");
+      console.error('Error updating profile:', err);
+      toast.error(err.response?.data?.msg || "Failed to update profile. Please try again.");
     } finally {
       setUpdating(false);
     }
@@ -84,8 +94,11 @@ const Profile = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-80 text-gray-600">
-        Loading profile...
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex flex-col items-center justify-center px-4">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-600 mx-auto"></div>
+          <p className="mt-4 text-gray-300">Loading profile...</p>
+        </div>
       </div>
     );
   }
@@ -118,7 +131,8 @@ const Profile = () => {
                     value={temp}
                     autoFocus
                     onChange={handleTempChange}
-                    className="border border-gray-300 rounded-md px-3 py-1 w-full text-gray-800 outline-none focus:ring-2 focus:ring-cyan-200 transition"
+                    disabled={updating}
+                    className="border border-gray-300 rounded-md px-3 py-1 w-full text-gray-800 outline-none focus:ring-2 focus:ring-cyan-200 transition disabled:opacity-50 disabled:cursor-not-allowed"
                     onKeyDown={(e) => {
                       if (e.key === "Enter") handleSaveField(key);
                       if (e.key === "Escape") handleCancel();
@@ -127,7 +141,8 @@ const Profile = () => {
                   <button
                     type="button"
                     onClick={() => handleSaveField(key)}
-                    className="text-green-600 hover:text-green-800"
+                    disabled={updating}
+                    className="text-green-600 hover:text-green-800 disabled:opacity-50 disabled:cursor-not-allowed"
                     tabIndex={0}
                     aria-label="Save"
                   >
@@ -136,7 +151,8 @@ const Profile = () => {
                   <button
                     type="button"
                     onClick={handleCancel}
-                    className="text-red-600 hover:text-red-800"
+                    disabled={updating}
+                    className="text-red-600 hover:text-red-800 disabled:opacity-50 disabled:cursor-not-allowed"
                     tabIndex={0}
                     aria-label="Cancel"
                   >
@@ -151,7 +167,8 @@ const Profile = () => {
                   <button
                     type="button"
                     onClick={() => handleEdit(key)}
-                    className="text-cyan-700 hover:text-cyan-900"
+                    disabled={updating}
+                    className="text-cyan-700 hover:text-cyan-900 disabled:opacity-50 disabled:cursor-not-allowed"
                     tabIndex={0}
                     aria-label={`Edit ${label}`}
                   >
@@ -166,15 +183,36 @@ const Profile = () => {
         <button
           type="submit"
           disabled={updating || editing !== null}
-          className={`w-full py-3 rounded-lg font-medium text-white shadow-md transition
+          className={`w-full py-3 rounded-lg font-medium text-white shadow-md transition flex items-center justify-center
           ${updating || editing !== null 
             ? "bg-cyan-400 cursor-not-allowed"
             : "bg-cyan-600 hover:bg-cyan-700"
           }`}
         >
-          {updating ? "Updating..." : "Save Changes"}
+          {updating ? (
+            <>
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+              Updating...
+            </>
+          ) : (
+            "Save Changes"
+          )}
         </button>
       </form>
+
+      {/* Toast Container */}
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
     </div>
   );
 };
