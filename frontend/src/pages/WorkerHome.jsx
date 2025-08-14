@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import WorkerNavbar from '../components/Workernavbar';
+import WorkerNavbar from '../components/WorkerNavbar';
 import { useWorkerAuth } from '../context/WorkerAuthContext';
 import { useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
@@ -463,3 +463,4 @@ const WorkerHome = () => {
 };
 
 export default WorkerHome;
+
