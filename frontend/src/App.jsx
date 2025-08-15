@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, useLocation } from 'react-router-dom';
 import AppRoutes from './routes/AppRoutes';
 import Navbar from './components/Navbar';
-import WorkerNavbar from './components/Workernavbar';
+import WorkerNavbar from './components/WorkerNavbar';
 import { useEffect, useState } from 'react';
 
 // Wrapper to use hooks outside <Router>
