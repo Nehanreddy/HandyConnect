@@ -30,7 +30,7 @@ const WorkerProfile = () => {
       }
 
       try {
-        const res = await API.get("/worker/profile", {
+        const res = await API.get("https://handy-connect1.vercel.app/worker/profile", {
           headers: {
             Authorization: `Bearer ${worker.token}`,
           },
@@ -58,7 +58,7 @@ const WorkerProfile = () => {
     setMessage({ type: "", text: "" });
 
     try {
-      const res = await API.put("/worker/profile", form, {
+      const res = await API.put("https://handy-connect1.vercel.app/worker/profile", form, {
         headers: {
           Authorization: `Bearer ${worker?.token}`,
         },
