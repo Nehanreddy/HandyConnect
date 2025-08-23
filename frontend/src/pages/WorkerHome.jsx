@@ -19,8 +19,8 @@ const WorkerHome = () => {
     setLoading(true);
     try {
       const [pendingRes, acceptedRes] = await Promise.all([
-        fetch(`/api/bookings/by-city?city=${encodeURIComponent(worker.city)}&serviceType=${encodeURIComponent(worker.serviceType)}`),
-        fetch(`/api/bookings/worker-accepted?workerId=${worker._id}`)
+        fetch(`https://handy-connect1.vercel.app/api/bookings/by-city?city=${encodeURIComponent(worker.city)}&serviceType=${encodeURIComponent(worker.serviceType)}`),
+        fetch(`https://handy-connect1.vercel.app/api/bookings/worker-accepted?workerId=${worker._id}`)
       ]);
 
       let allRequests = [];
@@ -463,5 +463,6 @@ const WorkerHome = () => {
 };
 
 export default WorkerHome;
+
 
 
