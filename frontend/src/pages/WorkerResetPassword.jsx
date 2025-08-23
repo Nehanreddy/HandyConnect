@@ -36,7 +36,7 @@ const WorkerResetPassword = () => {
 
     setLoading(true);
     try {
-      await API.post('/worker/reset-password', {
+      await API.post('https://handy-connect1.vercel.app/worker/reset-password', {
         email: form.email,
         newPassword: form.newPassword,
       });
@@ -181,3 +181,4 @@ const WorkerResetPassword = () => {
 };
 
 export default WorkerResetPassword;
+
