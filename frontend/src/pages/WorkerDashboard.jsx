@@ -35,7 +35,7 @@ const WorkerDashboard = () => {
 
     setLoading(true);
     try {
-      const response = await fetch('/api/bookings/worker/completed', {
+      const response = await fetch('https://handy-connect1.vercel.app/api/bookings/worker/completed', {
         headers: {
           'Authorization': `Bearer ${worker.token}`,
           'Content-Type': 'application/json',
@@ -314,3 +314,4 @@ const WorkerDashboard = () => {
 };
 
 export default WorkerDashboard;
+
