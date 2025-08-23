@@ -32,17 +32,17 @@ const WorkerNavbar = () => {
 
   const handleLogout = () => {
     logoutWorker();
-    navigate('/worker');
+    navigate('https://handy-connect1.vercel.app/worker');
     window.location.reload(); 
   };
 
   const handleProfile = () => {
-    navigate('/worker/profile');
+    navigate('https://handy-connect1.vercel.app/worker/profile');
     setDropdownOpen(false);
   };
 
   const handleDashboard = () => {
-    navigate('/worker/dashboard');
+    navigate('https://handy-connect1.vercel.app/worker/dashboard');
     setDropdownOpen(false);
   };
 
@@ -53,7 +53,7 @@ const WorkerNavbar = () => {
 
   // Handle logo click to redirect to main home page
   const handleLogoClick = () => {
-    navigate('/worker')
+    navigate('https://handy-connect1.vercel.app/worker')
   };
 
   return (
@@ -152,4 +152,5 @@ const WorkerNavbar = () => {
 };
 
 export default WorkerNavbar;
+
 
