@@ -26,7 +26,7 @@ const WorkerSidebar = ({ onClose }) => {
       
       loginWorker(res.data); // res.data already includes name, email, token
       toast.success(`Welcome back, ${res.data.name}! 👷‍♂️`);
-      navigate(`/worker/home/${res.data.name}`);
+      navigate(`https://handy-connect1.vercel.app/worker/home/${res.data.name}`);
       onClose();
     } catch (err) {
       console.error(err);  // Log the error
@@ -139,4 +139,5 @@ const WorkerSidebar = ({ onClose }) => {
 };
 
 export default WorkerSidebar;
+
 
