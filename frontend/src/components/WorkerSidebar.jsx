@@ -21,7 +21,7 @@ const WorkerSidebar = ({ onClose }) => {
     setIsLoading(true);
 
     try {
-      const res = await API.post('/worker/login', { email, password });
+      const res = await API.post('https://handyconnect.onrender.com/api/worker/login', { email, password });
       console.log(res);  // Log the full response to see what is returned
       
       loginWorker(res.data); // res.data already includes name, email, token
@@ -99,7 +99,7 @@ const WorkerSidebar = ({ onClose }) => {
             type="button"
             onClick={() => {
               onClose();
-              navigate('/worker/reset-password'); // changed route
+              navigate('https://handyconnect.onrender.com/api/worker/reset-password'); // changed route
             }}
             disabled={isLoading}
             className="text-sm text-blue-500 hover:text-blue-600 hover:underline block text-right transition-colors disabled:opacity-50"
@@ -139,3 +139,4 @@ const WorkerSidebar = ({ onClose }) => {
 };
 
 export default WorkerSidebar;
+
