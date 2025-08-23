@@ -56,7 +56,7 @@ const WorkerHome = () => {
     }
 
     try {
-      const res = await fetch(`/api/bookings/${bookingId}/status`, {
+      const res = await fetch(`https://handy-connect1.vercel.app/api/bookings/${bookingId}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -115,7 +115,7 @@ const WorkerHome = () => {
   if (!result.isConfirmed) return;
 
   try {
-    const res = await fetch(`/api/bookings/${bookingId}/complete`, {
+    const res = await fetch(`https://handy-connect1.vercel.app/api/bookings/${bookingId}/complete`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -137,11 +137,11 @@ const WorkerHome = () => {
 };
 
   const handleWorkerSignup = () => {
-    navigate('/worker-register');
+    navigate('https://handy-connect1.vercel.app/worker-register');
   };
 
   const handleWorkerLogin = () => {
-    navigate('/worker-login');
+    navigate('https://handy-connect1.vercel.app/worker-login');
   };
 
   useEffect(() => {
@@ -463,4 +463,5 @@ const WorkerHome = () => {
 };
 
 export default WorkerHome;
+
 
