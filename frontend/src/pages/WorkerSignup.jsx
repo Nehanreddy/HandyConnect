@@ -65,7 +65,7 @@ const WorkerSignup = () => {
     setLoading(true);
 
     try {
-      await API.post("/worker/signup", formData, {
+      await API.post("https://handy-connect1.vercel.app/worker/signup", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -474,3 +474,4 @@ const WorkerSignup = () => {
 };
 
 export default WorkerSignup;
+
