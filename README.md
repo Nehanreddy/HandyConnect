@@ -48,13 +48,11 @@ Follow the steps below to run the project locally.
 - MongoDB installed or MongoDB Atlas account
 - Git installed
 
-## Installation
-
-### 1. Clone the Repository
-```bash
-   git clone https://github.com/your-username/HandyConnect.git
-   cd HandyConnect
-
+### Installation
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/your-username/Prescripto-Hospital_Management_System.git
+   cd Prescripto-Hospital_Management_System
 
 ## Install dependencies
 
@@ -77,19 +75,13 @@ Follow the steps below to run the project locally.
    JWT_SECRET=your_jwt_secret
    Run the application
 
-4. **Start server:**
+4. **Start Backend server:**
    ```bash
    cd backend
    npm run server
    ```
 
-5. **Start Admin Panel:**
-   ```bash
-   cd admin
-   npm run dev
-   ```
-
-6. **Start Frontend Panel:**
+5. **Start Frontend Panel:**
    ```bash
    cd frontend
    npm run dev
