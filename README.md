@@ -69,11 +69,12 @@ Follow the steps below to run the project locally.
    ```
 
 3. **Set up environment variables**
-   In the server directory, create a .env file with the following:
-
    MONGODB_URI=your_mongodb_connection_string
    JWT_SECRET=your_jwt_secret
-   Run the application
+   CLOUDINARY_CLOUD_NAME=your_cloudinary_name
+   CLOUDINARY_API_KEY=your_cloudinary_key
+   CLOUDINARY_API_SECRET=your_cloudinary_secret
+
 
 4. **Start Backend server:**
    ```bash
@@ -86,6 +87,7 @@ Follow the steps below to run the project locally.
    cd frontend
    npm run dev
    ```
+
 
 
 
