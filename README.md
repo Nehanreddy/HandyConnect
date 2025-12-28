@@ -1,0 +1,100 @@
+# HandyConnect – Home Services Booking Platform
+
+## Description
+**HandyConnect** is a full-stack web platform built using the **MERN stack** that connects users with nearby home service professionals such as plumbers, electricians, carpenters, and painters.  
+The platform streamlines service discovery, booking, and management through role-based access for customers and workers, providing a scalable and user-friendly solution for on-demand home services.
+
+## Features
+- **User Authentication**
+  - Secure signup and login for customers and service providers
+  - Role-based access control using JWT
+
+- **Service Booking**
+  - Browse available services
+  - Book services in real time
+  - Track booking status
+
+- **Worker Profiles**
+  - Service provider profile creation
+  - Upload profile photo and identity proof
+  - Manage availability and service details
+
+- **Customer Dashboard**
+  - View booked services
+  - Manage profile information
+  - Track service history
+
+- **Admin / Platform Control**
+  - Manage users and service providers
+  - Monitor bookings and platform usage
+
+- **Secure Data Storage**
+  - User and booking data securely stored in MongoDB
+  - Image uploads handled via Cloudinary
+
+## Tech Stack
+- **Frontend**: React.js
+- **Backend**: Node.js, Express.js
+- **Database**: MongoDB
+- **Authentication**: JWT (JSON Web Tokens)
+- **Cloud Services**: Cloudinary (image uploads)
+- **API Testing**: Postman
+
+## Getting Started
+Follow the steps below to run the project locally.
+
+### Prerequisites
+- Node.js installed
+- MongoDB installed or MongoDB Atlas account
+- Git installed
+
+## Installation
+
+### 1. Clone the Repository
+```bash
+   git clone https://github.com/your-username/HandyConnect.git
+   cd HandyConnect
+
+
+## Install dependencies
+
+1. **Install admin dependencies**
+   ```bash
+   cd admin
+   npm install
+   ```
+
+2. **Install frontend dependencies**
+   ```bash
+   cd frontend
+   npm install
+   ```
+
+3. **Set up environment variables**
+   In the server directory, create a .env file with the following:
+
+   MONGODB_URI=your_mongodb_connection_string
+   JWT_SECRET=your_jwt_secret
+   Run the application
+
+4. **Start server:**
+   ```bash
+   cd backend
+   npm run server
+   ```
+
+5. **Start Admin Panel:**
+   ```bash
+   cd admin
+   npm run dev
+   ```
+
+6. **Start Frontend Panel:**
+   ```bash
+   cd frontend
+   npm run dev
+   ```
+
+
+
+
